@@ -26,14 +26,7 @@
         fill = color.lighten(40%).desaturate(40%)
     }
 
-    {
-        let padding-rest = padding.at("rest", default: 0em)
-        let padding-x = padding.at("x", default: padding-rest)
-        padding.insert("left", padding.at("left", default: padding-x))
-        padding.insert("right", padding.at("right", default: padding-x))
-        let padding-y = padding.at("y", default: padding-rest)
-        padding.insert("top", padding.at("top", default: padding-y))
-        padding.insert("bottom", padding.at("bottom", default: padding-y))
+    context {
     }
 
     // Place a highlight rect behind the `content`.
@@ -48,10 +41,10 @@
 
         let info = query(selector(info-lab).after(here())).first().value
         let hpos = here().position()
-        let dx = info.x - padding.left - hpos.x
-        let dy = info.y - padding.top - hpos.y
-        let width = info.width + padding.left + padding.right
-        let height = info.height + padding.top + padding.bottom
+        let dx = info.x - info.padding.left - hpos.x
+        let dy = info.y - info.padding.top - hpos.y
+        let width = info.width + info.padding.left + info.padding.right
+        let height = info.height + info.padding.top + info.padding.bottom
         place(dx: dx, dy: dy, rect(width: width, height: height, fill: fill, stroke: stroke, radius: radius))
     }
 
@@ -101,7 +94,19 @@
             let width = end.x - start.x
             let height = size.height
 
-            let info = (x: x, y: y, width: width, height: height, padding: padding, color: color)
+            let new-padding
+            {
+                let rest = padding.at("rest", default: 0em).to-absolute()
+                let x = padding.at("x", default: rest).to-absolute()
+                let left = padding.at("left", default: x).to-absolute()
+                let right = padding.at("right", default: x).to-absolute()
+                let y = padding.at("y", default: rest).to-absolute()
+                let top = padding.at("top", default: y).to-absolute()
+                let bottom = padding.at("bottom", default: y).to-absolute()
+                new-padding = (left: left, right: right, top: top, bottom: bottom)
+            }
+
+            let info = (x: x, y: y, width: width, height: height, padding: new-padding, color: color)
             [#metadata(info)#info-lab]
         }
     }

@@ -1,79 +1,47 @@
-#import "@preview/cetz:0.2.2"
+#import "arrow.typ": place-path-arrow
 
-#let isin-alignannot = state("_isin_alignannot", false)
-#let alignannot-cnt = counter("_alignannot")
-
-#let annot(tag, annotation, yshift: auto) = {
-    set text(size: 0.5em)
+#let annot(tag, annotation, yshift: 0em) = {
+    set text(size: 0.6em)
 
     context {
         let mark = query(selector(tag).before(here())).first().value
 
-        if isin-alignannot.get() {
-            let cnt-get = alignannot-cnt.get().first()
-            let info-lab = label("_annot_info_" + str(cnt-get))
-            let info = (mark: mark, annotation: annotation, yshift: yshift)
-            [#metadata(info)#info-lab]
-        } else {
-            let canvas = cetz.canvas({
-                import cetz.draw: *
+        let hpos = here().position()
+        let p3x = mark.x - mark.padding.left + mark.width / 2 - hpos.x
+        let p3y = mark.y + mark.height + mark.padding.bottom - hpos.y
 
-                let color = mark.color
-                content((0, -.6 - yshift.to-absolute().cm()), padding: .16em, text(fill: color, annotation), anchor: "west", name: "content")
-                line("content.south-east", "content.south-west", (0, 0), mark: (end: "straight"), stroke: color, name: "line")
-                // line((0, 0), "line.start", mark: (start: "straight"), stroke: color)
-            })
+        let color = mark.color
+        let annot-content = text(fill: color, annotation)
+        let annot-size = measure(annot-content)
+        let annot-padding = 0.3em.to-absolute()
 
-            let hpos = here().position()
-            let dx = mark.x - mark.padding.left + mark.width / 2 - hpos.x - 2.1pt
-            let dy = mark.y + mark.height + mark.padding.bottom - hpos.y + 1.3pt
+        let yshift = yshift.to-absolute()
+        let p2x = p3x
+        let p2y = p3y + annot-size.height + 1em + annot-padding + yshift
 
-            let size = measure(canvas)
-            // place(rect(width: size.width, height: size.height, fill: red.opacify(-50%)), dx: dx, dy: dy)
+        let p1x = p2x + annot-size.width + annot-padding
+        let p1y = p2y
 
-            $ limits(#none)^#v(0em)_#v(size.height) $
-            place(canvas, dx: dx, dy: dy)
-        }
+        $ limits(#none)^#v(0em)_#v(p2y - p3y) $
+        place-path-arrow(stroke: .06em + color, tail-length: .3em, (p1x, p1y), (p2x, p2y), (p3x, p3y + .3em))
+        place(bottom + left, annot-content, dx: p2x + annot-padding, dy: p2y - annot-padding)
     }
 }
 
-#let alignannot(annotations) = {
-    set text(size: 0.5em)
 
-    // $#h(0em)$
-    isin-alignannot.update(true)
-    annotations
-    isin-alignannot.update(false)
+#import "mark.typ": mark
 
-    context {
-        let cnt-get = alignannot-cnt.get().first()
-        let info-lab = label("_annot_info_" + str(cnt-get))
-        let info = query(info-lab).map((e) => e.value)
+$
+mark(2, tag: #<c1>)mark(x, tag: #<x1>, color: #blue)
++ mark(3, tag: #<c2>)mark(y, tag: #<y1>, color: #green)
+= 4
 
-        for i in info {
-            let canvas = cetz.canvas({
-                import cetz.draw: *
-
-                let color = i.mark.color
-                // content((0, -.6 - i.yshift.to-absolute().cm()), padding: .16em, text(fill: color, annotation), anchor: "west", name: "content")
-                content((0, -.6), padding: .16em, text(fill: color, i.annotation), anchor: "west", name: "content")
-                line("content.south-east", "content.south-west", (0, 0), mark: (end: "straight"), stroke: color, name: "line")
-                // line((0, 0), "line.start", mark: (start: "straight"), stroke: color)
-            })
-
-            let hpos = here().position()
-            let dx = i.mark.x - i.mark.padding.left + i.mark.width / 2 - hpos.x - 2.1pt
-            let dy = i.mark.y + i.mark.height + i.mark.padding.bottom - hpos.y + 1.3pt
-
-            let size = measure(canvas)
-            // place(rect(width: size.width, height: size.height, fill: red.opacify(-50%)), dx: dx, dy: dy)
-
-            place(canvas, dx: dx, dy: dy)
-        }
-
-        $ limits(#none)^#v(0em)_#v(1em) $
-    }
-
-
-    alignannot-cnt.step()
+#{
+    annot(<x1>, yshift: 1em)[annotation]
+    annot(<c1>)[annotation]
 }
+
+\
+
+2x + 3y = 4
+$
