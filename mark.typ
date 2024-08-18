@@ -30,11 +30,10 @@
     // Place a highlight rect behind the `content`.
     context{
         let cnt-get = _mark-cnt.get().first()
-        let info-lab
-        if tag == none {
-            info-lab = label("_mark-info-" + str(cnt-get))
+        let info-lab = if tag == none {
+            label("_mark-info-" + str(cnt-get))
         } else {
-            info-lab = tag
+            tag
         }
 
         let info = query(selector(info-lab).after(here())).first().value
@@ -49,11 +48,10 @@
     context {
         let cnt-get = _mark-cnt.get().first()
         let loc-lab = label("_mark-loc-" + str(cnt-get))
-        let info-lab
-        if tag == none {
-            info-lab = label("_mark-info-" + str(cnt-get))
+        let info-lab = if tag == none {
+            label("_mark-info-" + str(cnt-get))
         } else {
-            info-lab = tag
+            tag
         }
 
         let start = here().position()
@@ -78,13 +76,12 @@
             // absolute-place(dx: end.x, dy: end.y, circle(fill: red, radius: 1.2pt))
             // absolute-place(dx: start.x, dy: start.y, circle(fill: blue, radius: 1.2pt))
 
-            let size
-            if slevel == 0 {
-                size = measure($ content $)
+            let size = if slevel == 0 {
+                measure($ content $)
             } else if slevel == 1 {
-                size = measure($ script(content) $)
+                measure($ script(content) $)
             } else {
-                size = measure($ sscript(content) $)
+                measure($ sscript(content) $)
             }
 
             let x = start.x
@@ -104,7 +101,9 @@
                 new-padding = (left: left, right: right, top: top, bottom: bottom)
             }
 
-            let info = (x: x, y: y, width: width, height: height, padding: new-padding, color: color)
+            let info = (content: content, x: x, y: y,
+                    width: width, height: height,
+                    padding: new-padding, color: color)
             [#metadata(info)#info-lab]
         }
     }

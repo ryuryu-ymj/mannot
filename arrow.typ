@@ -1,3 +1,5 @@
+#import "util.typ": copy-stroke
+
 #let place-path-arrow(
     stroke: 1pt,
     tail-length: 5pt,
@@ -5,6 +7,8 @@
     ..vertices,
 ) = {
     place(path(stroke: stroke, ..vertices))
+
+    let stroke = copy-stroke(stroke, (dash: "solid"))
 
     context {
         let vertices = vertices.pos()

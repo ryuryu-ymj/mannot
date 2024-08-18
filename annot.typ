@@ -1,109 +1,125 @@
 #import "arrow.typ": place-path-arrow
+#import "util.typ": copy-stroke
 
-#let annot(tag, annotation, alignment: center + bottom, yshift: .6em, arrow-stroke: .06em) = {
+#let annot(tag, annotation, alignment: center + bottom, yshift: .6em, text-size: 0.6em, arrow-stroke: .06em) = {
     assert(
-        alignment.x == left or alignment.x == center or alignment.x == right,
+        alignment.x == left or alignment.x == center or
+            alignment.x == right or alignment.x == none,
         message: "The field `x` of the argument `alignment` of the function
-                `annot` must be `left`, `center` or `right`."
+                `annot` must be `left`, `center`, `right` or `none`."
     )
     assert(
-        alignment.y == top or alignment.y == bottom,
+        alignment.y == top or alignment.y == bottom or
+            alignment.y == none,
         message: "The field `y` of the argument `alignment` of the function
-                `annot` must be `top` or `bottom`."
+                `annot` must be `top`, `bottom` or `none`."
     )
+    let alignment = (
+        if alignment.x == none {
+            center
+        } else {
+            alignment.x
+        } + if alignment.y == none {
+            bottom
+        } else {
+            alignment.y
+        }
+    )
+
     let arrow-stroke = stroke(arrow-stroke)
     if arrow-stroke.thickness == auto {
-        arrow-stroke = stroke((
-            paint: arrow-stroke.paint,
-            thickness: .06em,
-            cap: arrow-stroke.cap,
-            join: arrow-stroke.join,
-            dash: arrow-stroke.dash,
-            miter-limit: arrow-stroke.miter-limit,
-        ))
+        arrow-stroke = copy-stroke(arrow-stroke, (thickness: .06em))
     }
 
-    set text(size: 0.6em)
+    // Avoid spacing before `place`.
+    h(0pt)
 
     context {
-        let mark = query(selector(tag).before(here())).last().value
-        let hpos = here().position()
+        let math-size = text.size
+        set text(size: text-size)
+        context {
+            let mark = query(selector(tag).before(here())).last().value
+            let hpos = here().position()
 
-        let color = mark.color
-        let arrow-stroke = arrow-stroke
-        if arrow-stroke.paint == auto {
-            arrow-stroke = stroke((
-                paint: color,
-                thickness: arrow-stroke.thickness,
-                cap: arrow-stroke.cap,
-                join: arrow-stroke.join,
-                dash: arrow-stroke.dash,
-                miter-limit: arrow-stroke.miter-limit,
-            ))
-        }
-
-        let annot-content = text(fill: color, annotation)
-        let annot-size = measure(annot-content)
-        let annot-padding = 0.3em
-
-        let p3x = (mark.x - mark.padding.left
-                + (mark.padding.left + mark.width + mark.padding.right) / 2
-                - hpos.x)
-        let p3y = if alignment.y == bottom {
-            mark.y + mark.height + mark.padding.bottom + arrow-stroke.thickness - hpos.y
-        } else {
-            mark.y - mark.padding.top - arrow-stroke.thickness - hpos.y
-        }
-
-        let p2x = p3x
-        let p2y = if alignment.y == bottom {
-            if alignment.x == center {
-                p3y + yshift
-            } else {
-                p3y + annot-size.height + annot-padding * 2 + yshift
+            let color = mark.color
+            let arrow-stroke = arrow-stroke
+            if arrow-stroke.paint == auto {
+                arrow-stroke = copy-stroke(arrow-stroke, (paint: color))
             }
-        } else {
-            p3y - yshift
-        }
 
-        let p1x = if alignment.x == right {
-            p2x + annot-size.width + annot-padding
-        } else if alignment.x == left {
-            p2x - annot-size.width - annot-padding
-        } else {
-            p2x
-        }
-        let p1y = p2y
+            let annot-content = text(fill: color, annotation)
+            let annot-size = measure(annot-content)
+            let annot-padding = 0.3em
 
-        if alignment.y == bottom {
-            let vs = .2em + yshift + annot-padding + annot-size.height
-            let vs = vs.to-absolute()
-            $ limits(#none)_#v(vs) $
-            // place($ limits(#none)_#rect(width: p2x * 2, height: vs) $)
-            // place(rect(width: p2x, height: vs) )
-        } else {
-            let vs = .8em + yshift + annot-padding + annot-size.height
-            let vs = vs.to-absolute()
-            $ limits(#none)^#v(vs) $
-            // $ limits(#none)^#rect(width: 4pt, height: vs) $
-            // place(dx: p3x, bottom, $ limits(#none)^#rect(width: 4pt, height: vs) $)
-        }
-
-        if alignment.x == center {
-            place-path-arrow(stroke: arrow-stroke, tail-length: .3em, (p2x, p2y), (p3x, p3y))
-        } else {
-            place-path-arrow(stroke: arrow-stroke, tail-length: .3em, (p1x, p1y), (p2x, p2y), (p3x, p3y))
-        }
-
-        if alignment.x == right {
-            place(bottom + left, annot-content, dx: p2x + annot-padding, dy: p2y - annot-padding)
-        } else if alignment.x == left {
-            place(bottom + right, annot-content, dx: p2x - annot-padding, dy: p2y - annot-padding)
-        } else {
-            if alignment.y == bottom {
-                place(top + center, annot-content, dx: p2x, dy: p2y + annot-padding)
+            let p3x = (mark.x - mark.padding.left
+                    + (mark.padding.left + mark.width + mark.padding.right) / 2
+                    - hpos.x)
+            let p3y = if alignment.y == bottom {
+                mark.y + mark.height + mark.padding.bottom + arrow-stroke.thickness - hpos.y
             } else {
-                place(bottom + center, annot-content, dx: p2x, dy: p2y - annot-padding)
+                mark.y - mark.padding.top - arrow-stroke.thickness - hpos.y
+            }
+
+            let p2x = p3x
+            let p2y = if alignment.y == bottom {
+                if alignment.x == center {
+                    p3y + yshift
+                } else {
+                    p3y + annot-size.height + annot-padding * 2 + yshift
+                }
+            } else {
+                p3y - yshift
+            }
+
+            let p1x = if alignment.x == right {
+                p2x + annot-size.width + annot-padding
+            } else if alignment.x == left {
+                p2x - annot-size.width - annot-padding
+            }
+            let p1y = p2y
+
+            if alignment.x == center {
+                place-path-arrow(stroke: arrow-stroke, tail-length: .3em, (p2x, p2y), (p3x, p3y))
+            } else {
+                place-path-arrow(stroke: arrow-stroke, tail-length: .3em, (p1x, p1y), (p2x, p2y), (p3x, p3y))
+            }
+
+            if alignment.x == right {
+                place(bottom + left, annot-content, dx: p2x + annot-padding, dy: p2y - annot-padding)
+            } else if alignment.x == left {
+                place(bottom + right, annot-content, dx: p2x - annot-padding, dy: p2y - annot-padding)
+            } else {
+                if alignment.y == bottom {
+                    place(top + center, annot-content, dx: p2x, dy: p2y + annot-padding)
+                } else {
+                    place(bottom + center, annot-content, dx: p2x, dy: p2y - annot-padding)
+                }
+            }
+
+            // Add space above/below the marked content.
+            if alignment.y == bottom {
+                let spacing = (mark.padding.bottom + arrow-stroke.thickness
+                        + yshift + annot-padding + annot-size.height)
+                spacing = spacing.to-absolute()
+                set text(size: math-size)
+                spacing -= .16em
+                math.attach(
+                    math.limits(hide(scale(x: 0%, reflow: true, $ mark.content $))),
+                    // math.limits(scale(x: 10%, reflow: true, $ mark.content $)),
+                    // b: rect(width: 1pt, height: spacing),
+                    b: v(spacing),
+                )
+            } else {
+                let spacing = (mark.padding.top + arrow-stroke.thickness
+                        + yshift + annot-padding + annot-size.height)
+                spacing = spacing.to-absolute()
+                set text(size: math-size)
+                spacing -= .16em
+                math.attach(
+                    math.limits(hide(scale(x: 0%, reflow: true, $ mark.content $))),
+                    // t: rect(width: 1pt, height: spacing),
+                    t: v(spacing),
+                )
             }
         }
     }
