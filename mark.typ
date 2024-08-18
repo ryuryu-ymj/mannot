@@ -26,8 +26,6 @@
         fill = color.lighten(40%).desaturate(40%)
     }
 
-    context {
-    }
 
     // Place a highlight rect behind the `content`.
     context{
