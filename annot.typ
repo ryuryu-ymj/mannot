@@ -90,14 +90,14 @@
 
             // Place the annotation.
             if alignment.x == right {
-                place(bottom + left, annot-content, dx: p2x + annot-padding, dy: p2y - annot-padding)
+                place(annot-content, dx: p2x + annot-padding, dy: p2y - annot-size.height - annot-padding)
             } else if alignment.x == left {
-                place(bottom + right, annot-content, dx: p2x - annot-padding, dy: p2y - annot-padding)
+                place(annot-content, dx: p2x - annot-size.width - annot-padding, dy: p2y - annot-size.height - annot-padding)
             } else {
                 if alignment.y == bottom {
-                    place(top + center, annot-content, dx: p2x, dy: p2y + annot-padding)
+                    place(annot-content, dx: p2x - annot-size.width / 2, dy: p2y + annot-padding)
                 } else {
-                    place(bottom + center, annot-content, dx: p2x, dy: p2y - annot-padding)
+                    place(annot-content, dx: p2x - annot-size.width / 2, dy: p2y - annot-size.height - annot-padding)
                 }
             }
 
