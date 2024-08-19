@@ -27,7 +27,14 @@
         if color == auto {
             color = orange
         }
-        fill = color.lighten(40%).desaturate(40%)
+        if color.components().len() > 2 {
+            // Create a pastel color.
+            let lch = oklch(color)
+            fill = lch.lighten(40%).desaturate(50%)
+        } else {
+            // If color is grayscale, then fill lightgray.
+            fill = luma(80%)
+        }
     } else if color == auto {
         color = black
     }
@@ -110,3 +117,9 @@
         }
     }
 }
+
+$
+mark(2, tag: #<c1>)
+mark(x, tag: #<x1>, color: #blue)
+mark(x, tag: #<x1>, color: #black)
+$
