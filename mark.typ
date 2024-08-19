@@ -4,7 +4,7 @@
 
 #let _label-each-child(content, label) = {
     if content.func() == _sequence-func {
-        // If `content` is sequence of contents,
+        // If `content` is the sequence of contents,
         // then put `lable` on each child.
         let children = content.children
             .filter((c) => c != [ ])
@@ -21,11 +21,16 @@
 }
 
 
-#let mark(content, tag: none, annot: none, color: orange, fill: auto, stroke: (:), radius: (:), padding: (y: 0.1em), slevel: 0) = {
+/// Define the target of annotation within some math block.
+#let mark(content, tag: none, color: auto, fill: auto, stroke: (:), radius: (:), padding: (y: 0.1em), scriptlevel: 0) = {
     if fill == auto {
+        if color == auto {
+            color = orange
+        }
         fill = color.lighten(40%).desaturate(40%)
+    } else if color == auto {
+        color = black
     }
-
 
     // Place a highlight rect behind the `content`.
     context{
@@ -45,6 +50,8 @@
         place(dx: dx, dy: dy, rect(width: width, height: height, fill: fill, stroke: stroke, radius: radius))
     }
 
+    // Produce labeled `content`, measure its location and size, and
+    // expose them as the metadata.
     context {
         let cnt-get = _mark-cnt.get().first()
         let loc-lab = label("_mark-loc-" + str(cnt-get))
@@ -61,24 +68,19 @@
         context {
             let elems = query(loc-lab)
 
-            // place(text(8pt)[#elems.len()])
-            // let start = elems.first().location().position()
             let min-y = start.y
             for e in elems {
                 let pos = e.location().position()
-                // absolute-place(dx: pos.x, dy: pos.y, circle(fill: green, radius: 1.2pt))
                 if start.x < pos.x and min-y > pos.y {
                     min-y = pos.y
                 }
             }
 
             let end = here().position()
-            // absolute-place(dx: end.x, dy: end.y, circle(fill: red, radius: 1.2pt))
-            // absolute-place(dx: start.x, dy: start.y, circle(fill: blue, radius: 1.2pt))
 
-            let size = if slevel == 0 {
+            let size = if scriptlevel == 0 {
                 measure($ content $)
-            } else if slevel == 1 {
+            } else if scriptlevel == 1 {
                 measure($ script(content) $)
             } else {
                 measure($ sscript(content) $)
