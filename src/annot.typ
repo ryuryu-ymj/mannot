@@ -3,6 +3,9 @@
 
 
 /// Annotate the marked content.
+///
+/// - tag (label): The tag of the target content.
+/// - annotation (content): The annotation to the target.
 #let annot(tag, annotation, alignment: center + bottom, yshift: .6em, text-props: (size: .6em), arrow-stroke: .06em) = {
     assert(
         alignment.x == left or alignment.x == center or
@@ -115,8 +118,8 @@
                 set text(size: outer-tsize)
                 spacing -= .16em  // space of math.attach
                 math.attach(
-                    math.limits(hide(scale(x: 0%, reflow: true, $ mark.content $))),
-                    // math.limits(mark.content),
+                    math.limits(hide(scale(x: 0%, reflow: true, $ mark.body $))),
+                    // math.limits(mark.body),
                     // b: rect(width: 1pt, height: spacing),
                     b: v(spacing),
                 )
@@ -127,8 +130,8 @@
                 set text(size: outer-tsize)
                 spacing -= .16em  // space of math.attach
                 math.attach(
-                    math.limits(hide(scale(x: 0%, reflow: true, $ mark.content $))),
-                    // math.limits(mark.content),
+                    math.limits(hide(scale(x: 0%, reflow: true, $ mark.body $))),
+                    // math.limits(mark.body),
                     // t: rect(width: 1pt, height: spacing),
                     t: v(spacing),
                 )

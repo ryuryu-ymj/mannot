@@ -22,7 +22,11 @@
 
 
 /// Define the target of annotation within some math block.
-#let mark(content, tag: none, color: auto, fill: auto, stroke: (:), radius: (:), padding: (y: 0.1em), scriptlevel: 0) = {
+///
+/// - body (content): The target of annotation.
+/// - tag (label): Optinal tag. If you mark content with a tag,
+///     you can annotate that content by specifying the tag.
+#let mark(body, tag: none, color: auto, fill: auto, stroke: (:), radius: (:), padding: (y: 0.1em), scriptlevel: 0) = {
     if fill == auto {
         if color == auto {
             color = orange
@@ -69,7 +73,7 @@
         }
 
         let start = here().position()
-        _label-each-child(content, loc-lab)
+        _label-each-child(body, loc-lab)
         _mark-cnt.step()
 
         context {
@@ -86,11 +90,11 @@
             let end = here().position()
 
             let size = if scriptlevel == 0 {
-                measure($ content $)
+                measure($ body $)
             } else if scriptlevel == 1 {
-                measure($ script(content) $)
+                measure($ script(body) $)
             } else {
-                measure($ sscript(content) $)
+                measure($ sscript(body) $)
             }
 
             let x = start.x
@@ -110,7 +114,7 @@
                 new-padding = (left: left, right: right, top: top, bottom: bottom)
             }
 
-            let info = (content: content, x: x, y: y,
+            let info = (body: body, x: x, y: y,
                     width: width, height: height,
                     padding: new-padding, color: color)
             [#metadata(info)#info-lab]
