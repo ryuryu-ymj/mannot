@@ -3,7 +3,7 @@
 
 
 /// Annotate the marked content.
-#let annot(tag, annotation, alignment: center + bottom, yshift: .6em, text-args: (size: .6em), arrow-stroke: .06em) = {
+#let annot(tag, annotation, alignment: center + bottom, yshift: .6em, text-props: (size: .6em), arrow-stroke: .06em) = {
     assert(
         alignment.x == left or alignment.x == center or
             alignment.x == right or alignment.x == none,
@@ -37,8 +37,10 @@
     h(0pt)
 
     context {
-        let math-size = text.size
-        set text(..text-args)
+        let outer-tsize = text.size
+        let text-args = text-props
+        let annot-tsize = text-args.remove("size", default: outer-tsize)
+        set text(size: annot-tsize)
 
         context {
             let mark = query(selector(tag).before(here())).last().value
@@ -49,8 +51,12 @@
             if arrow-stroke.paint == auto {
                 arrow-stroke = copy-stroke(arrow-stroke, (paint: color))
             }
+            let text-args = text-args
+            if text-args.at("fill", default: auto) == auto {
+                text-args.insert("fill", color)
+            }
 
-            let annot-content = text(fill: color, annotation)
+            let annot-content = text(..text-args, annotation)
             let annot-size = measure(annot-content)
             let annot-padding = 0.3em
 
@@ -106,11 +112,11 @@
                 let spacing = (mark.padding.bottom + arrow-stroke.thickness
                         + yshift + annot-padding + annot-size.height)
                 spacing = spacing.to-absolute()
-                set text(size: math-size)
+                set text(size: outer-tsize)
                 spacing -= .16em  // space of math.attach
                 math.attach(
                     math.limits(hide(scale(x: 0%, reflow: true, $ mark.content $))),
-                    // math.limits(scale(x: 10%, reflow: true, $ mark.content $)),
+                    // math.limits(mark.content),
                     // b: rect(width: 1pt, height: spacing),
                     b: v(spacing),
                 )
@@ -118,10 +124,11 @@
                 let spacing = (mark.padding.top + arrow-stroke.thickness
                         + yshift + annot-padding + annot-size.height)
                 spacing = spacing.to-absolute()
-                set text(size: math-size)
+                set text(size: outer-tsize)
                 spacing -= .16em  // space of math.attach
                 math.attach(
                     math.limits(hide(scale(x: 0%, reflow: true, $ mark.content $))),
+                    // math.limits(mark.content),
                     // t: rect(width: 1pt, height: spacing),
                     t: v(spacing),
                 )
