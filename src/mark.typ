@@ -12,8 +12,13 @@
                 _label-each-child(c, label)
             })
         return content.func()(children)
-    } else if content.fields() == (:) {
-        // Do not put `label` on no-field `content` such as align-point().
+    } else if (
+            content.fields() == (:)
+            or content.func() == h
+            or content.func() == v
+        ) {
+        // Do not put `label` on layout contents such as align-point(),
+        // h(), or v(), in order to avoid broken layout.
         return content
     } else {
         return [#content#label]
@@ -27,6 +32,10 @@
 /// - tag (label): Optinal tag. If you mark content with a tag,
 ///     you can annotate that content by specifying the tag.
 #let mark(body, tag: none, color: auto, fill: auto, stroke: (:), radius: (:), padding: (y: 0.1em), scriptlevel: 0) = {
+    while body.func() == math.equation {
+        body = body.body
+    }
+
     if fill == auto {
         if color == auto {
             color = orange
