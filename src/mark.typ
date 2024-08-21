@@ -1,9 +1,73 @@
 #let _mark-cnt = counter("_mark")
 
 #let _sequence-func = (math.text("x") + math.text("y")).func()
+#let _aling-point-func = $&$.body.func()
+
+
+#let _remove-leading-h(content) = {
+    if content.func() == _sequence-func {
+        let children = content.children
+        if children.len() == 0 {
+            return (none, none)
+        }
+        let rest
+        let remove
+        let leadingCount = 0
+        for c in children {
+            let (crest, cremove) = _remove-leading-h(c)
+            rest = crest
+            remove += cremove
+            if rest != none {
+                break
+            }
+            leadingCount += 1
+        }
+        children = children.slice(leadingCount)
+        children.first() = rest
+        let rest = _sequence-func(children)
+        return (rest, remove)
+    } else if content.func() == h {
+        return (none, content)
+    } else {
+        return (content, none)
+    }
+}
+
+#let _remove-trailing-h(content) = {
+    if content.func() == _sequence-func {
+        let children = content.children
+        if children.len() == 0 {
+            return (none, none)
+        }
+        let rest
+        let remove
+        let trailingCount = 0
+        for c in children.rev() {
+            let (crest, cremove) = _remove-leading-h(c)
+            rest = crest
+            remove += cremove
+            if rest != none {
+                break
+            }
+            trailingCount += 1
+        }
+        children = children.slice(0, children.len() - trailingCount)
+        children.last() = rest
+        let rest = _sequence-func(children)
+        return (rest, remove)
+    } else if content.func() == h {
+        return (none, content)
+    } else {
+        return (content, none)
+    }
+}
+
 
 #let _label-each-child(content, label) = {
-    if content.func() == _sequence-func {
+    if content.func() == math.equation {
+        let body = _label-each-child(content.body, label)
+        return math.equation(body)
+    } else if content.func() == _sequence-func {
         // If `content` is the sequence of contents,
         // then put `lable` on each child.
         let children = content.children
@@ -13,7 +77,7 @@
             })
         return content.func()(children)
     } else if (
-            content.fields() == (:)
+            content.func() == _aling-point-func
             or content.func() == h
             or content.func() == v
         ) {
@@ -31,10 +95,10 @@
 /// - body (content): The target of annotation.
 /// - tag (label): Optinal tag. If you mark content with a tag,
 ///     you can annotate that content by specifying the tag.
-#let mark(body, tag: none, color: auto, fill: auto, stroke: (:), radius: (:), padding: (y: 0.1em), scriptlevel: 0) = {
-    while body.func() == math.equation {
-        body = body.body
-    }
+#let mark(body, tag: none, color: auto, fill: auto, stroke: (:), radius: (:), padding: (y: 0.1em), scriptlevel: 0, background: true) = {
+    let (body, leading-h) = _remove-leading-h(body)
+    let (body, trailing-h) = _remove-trailing-h(body)
+    leading-h
 
     if fill == auto {
         if color == auto {
@@ -52,25 +116,32 @@
         color = black
     }
 
-    // Place a highlight rect behind the `content`.
-    context{
-        let cnt-get = _mark-cnt.get().first()
-        let info-lab = if tag == none {
-            label("_mark-info-" + str(cnt-get))
-        } else {
-            tag
-        }
+    _mark-cnt.step()
 
-        let info = query(selector(info-lab).after(here())).first().value
-        let hpos = here().position()
-        let dx = info.x - info.padding.left - hpos.x
-        let dy = info.y - info.padding.top - hpos.y
-        let width = info.width + info.padding.left + info.padding.right
-        let height = info.height + info.padding.top + info.padding.bottom
-        place(dx: dx, dy: dy, rect(width: width, height: height, fill: fill, stroke: stroke, radius: radius))
+    // Place a highlight rect behind the `content` if `background` is true.
+    if background and (fill != none or stroke != none) {
+        context {
+            let cnt-get = _mark-cnt.get().first()
+            let info-lab = if tag == none {
+                label("_mark-info-" + str(cnt-get))
+            } else {
+                tag
+            }
+
+            let info = query(selector(info-lab).after(here())).first().value
+            let hpos = here().position()
+            let dx = info.x - info.padding.left - hpos.x
+            let dy = info.y - info.padding.top - hpos.y
+            let width = info.width + info.padding.left + info.padding.right
+            let height = info.height + info.padding.top + info.padding.bottom
+            place(dx: dx, dy: dy, rect(width: width, height: height, fill: fill, stroke: stroke, radius: radius))
+            // place(dx: dx, dy: dy, line(start: (0pt, 0pt), end: (width, height)))
+        }
     }
 
-    // Produce labeled `content`, measure its location and size, and
+    h(0pt)
+
+    // Produce a labeled `content`, measure its location and size, and
     // expose them as the metadata.
     context {
         let cnt-get = _mark-cnt.get().first()
@@ -83,7 +154,6 @@
 
         let start = here().position()
         _label-each-child(body, loc-lab)
-        _mark-cnt.step()
 
         context {
             let elems = query(loc-lab)
@@ -126,9 +196,21 @@
             let info = (body: body, x: x, y: y,
                     width: width, height: height,
                     padding: new-padding, color: color)
+            // place(text(4pt)[#loc-lab])
             [#metadata(info)#info-lab]
+
+            if not background {
+                let hpos = here().position()
+                let dx = info.x - info.padding.left - hpos.x
+                let dy = info.y - info.padding.top - hpos.y
+                let width = info.width + info.padding.left + info.padding.right
+                let height = info.height + info.padding.top + info.padding.bottom
+                place(dx: dx, dy: dy, rect(width: width, height: height, fill: fill, stroke: stroke, radius: radius))
+            }
         }
     }
+
+    trailing-h
 }
 
 $
