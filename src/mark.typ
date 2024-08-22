@@ -90,36 +90,15 @@
 }
 
 
-/// Define the target of annotation within some math block.
-///
-/// - body (content): The target of annotation.
-/// - tag (label): Optinal tag. If you mark content with a tag,
-///     you can annotate that content by specifying the tag.
-#let mark(body, tag: none, color: auto, fill: auto, stroke: (:), radius: (:), padding: (y: 0.1em), scriptlevel: 0, background: true) = {
+#let core-mark(body, tag: none, color: black, bg: none, fg: none, padding: (y: 0.1em), scriptlevel: 0) = {
     let (body, leading-h) = _remove-leading-h(body)
     let (body, trailing-h) = _remove-trailing-h(body)
     leading-h
 
-    if fill == auto {
-        if color == auto {
-            color = orange
-        }
-        if color.components().len() > 2 {
-            // Create a pastel color.
-            let lch = oklch(color)
-            fill = lch.lighten(40%).desaturate(50%)
-        } else {
-            // If color is grayscale, then fill lightgray.
-            fill = luma(80%)
-        }
-    } else if color == auto {
-        color = black
-    }
-
     _mark-cnt.step()
 
     // Place a highlight rect behind the `content` if `background` is true.
-    if background and (fill != none or stroke != none) {
+    if bg != none {
         context {
             let cnt-get = _mark-cnt.get().first()
             let info-lab = if tag == none {
@@ -134,12 +113,11 @@
             let dy = info.y - info.padding.top - hpos.y
             let width = info.width + info.padding.left + info.padding.right
             let height = info.height + info.padding.top + info.padding.bottom
-            place(dx: dx, dy: dy, rect(width: width, height: height, fill: fill, stroke: stroke, radius: radius))
-            // place(dx: dx, dy: dy, line(start: (0pt, 0pt), end: (width, height)))
+            place(dx: dx, dy: dy, bg(width, height))
         }
+        h(0pt)
     }
 
-    h(0pt)
 
     // Produce a labeled `content`, measure its location and size, and
     // expose them as the metadata.
@@ -196,22 +174,55 @@
             let info = (body: body, x: x, y: y,
                     width: width, height: height,
                     padding: new-padding, color: color)
-            // place(text(4pt)[#loc-lab])
             [#metadata(info)#info-lab]
 
-            if not background {
+            if fg != none {
                 let hpos = here().position()
                 let dx = info.x - info.padding.left - hpos.x
                 let dy = info.y - info.padding.top - hpos.y
                 let width = info.width + info.padding.left + info.padding.right
                 let height = info.height + info.padding.top + info.padding.bottom
-                place(dx: dx, dy: dy, rect(width: width, height: height, fill: fill, stroke: stroke, radius: radius))
+                place(dx: dx, dy: dy, fg(width, height))
             }
         }
     }
 
     trailing-h
 }
+
+
+/// Define the target of annotation within some math block.
+///
+/// - body (content): The target of annotation.
+/// - tag (label): Optinal tag. If you mark content with a tag,
+///     you can annotate that content by specifying the tag.
+#let mark(body, tag: none, color: auto, fill: auto, stroke: (:), radius: (:), padding: (y: 0.1em), scriptlevel: 0) = {
+    if fill == auto {
+        if color == auto {
+            color = orange
+        }
+        if color.components().len() > 2 {
+            // Create a pastel color.
+            let lch = oklch(color)
+            fill = lch.lighten(40%).desaturate(50%)
+        } else {
+            // If color is grayscale, then fill lightgray.
+            fill = luma(80%)
+        }
+    } else if color == auto {
+        color = black
+    }
+
+    let bg(width, height) = {
+        if fill == none and stroke == none {
+            none
+        } else {
+            rect(width: width, height: height, fill: fill, stroke: stroke, radius: radius)
+        }
+    }
+    return core-mark(body, tag: tag, color: color, bg: bg, padding: padding, scriptlevel: scriptlevel)
+}
+
 
 $
 mark(2, tag: #<c1>)
