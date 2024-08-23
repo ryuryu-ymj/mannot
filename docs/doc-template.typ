@@ -3,7 +3,7 @@
 #let entrypoint = toml("/typst.toml").package.entrypoint
 #let import-statement = "#import \"/" + entrypoint + "\": *\n"
 
-#let exmaple(source) = {
+#let example(source) = {
   grid(
     columns: (1fr, 2fr),
     rows: (auto),

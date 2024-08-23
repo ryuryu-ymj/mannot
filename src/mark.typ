@@ -1,7 +1,7 @@
 #let _mark-cnt = counter("_mark")
 
 #let _sequence-func = (math.text("x") + math.text("y")).func()
-#let _aling-point-func = $&$.body.func()
+#let _align-point-func = $&$.body.func()
 
 
 #let _remove-leading-h(content) = {
@@ -70,7 +70,7 @@
     return math.equation(body)
   } else if content.func() == _sequence-func {
     // If `content` is the sequence of contents,
-    // then put `lable` on each child.
+    // then put `label` on each child.
     let children = content.children
       .filter((c) => c != [ ])
       .map((c) => {
@@ -78,7 +78,7 @@
       })
     return content.func()(children)
   } else if (
-      content.func() == _aling-point-func
+      content.func() == _align-point-func
       or content.func() == h
       or content.func() == v
     ) {
@@ -95,7 +95,7 @@
 /// The main purpose of this function is to create custom marking function.
 ///
 /// - body (content): The target of marking.
-/// - tag (label): Optinal tag. If you mark content with a tag,
+/// - tag (label): Optional tag. If you mark content with a tag,
 ///     you can annotate it by specifying the tag.
 /// - color (color): Color used for `bg`, `fg` and annotations.
 /// - bg (none, function): `bg(width, height, color)` is placed behind the `body`.
@@ -133,7 +133,7 @@
   // is determined in the following steps:
   //   1. Call `here().position()` before/after `body` to find the x and the width.
   //   2. Call `measure($ body $)` to find the height.
-  //   3. Labeld each child of content sequence to find the y.
+  //   3. Labeled each child of content sequence to find the y.
   context {
     set math.equation(numbering: none)
 
@@ -211,7 +211,7 @@
       if tag != none {
         let elems = query(tag)
         if elems.len() > 1 {
-          panic("tag `" + repr(tag) + "` occuers multiple times in the document")
+          panic("tag `" + repr(tag) + "` occurs multiple times in the document")
         }
 
         if elems.len() > 0 {
@@ -272,7 +272,7 @@
 /// Mark the part in a math block with highlighting.
 ///
 /// - body (content): The target of highlighting and annotation.
-/// - tag (none, label): Optinal tag. If you mark content with a tag,
+/// - tag (none, label): Optional tag. If you mark content with a tag,
 ///     you can annotate it by specifying the tag.
 /// - color (auto, color): Marking color used for highlighting and annotation.
 /// - fill (auto, none, color, gradient, pattern): The property of highlighting rect.

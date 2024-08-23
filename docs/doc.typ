@@ -20,23 +20,23 @@
 #let import-statement = "#import \"@preview/" + name + ":" + version + "\": *"
 #raw(block: true, lang: "typst", import-statement)
 
-= Exmaples
+= Examples
 
-#exmaple("$
+#example("$
 mark(x)
 $")
 
-#exmaple("$
+#example("$
 mark(3, color: #red)mark(x, color: #blue)
 + mark(integral x dif x, color: #green)
 $")
 
-#exmaple("$
+#example("$
 mark(x, tag: #<x>)
 #annot(<x>)[Annotation]
 $")
 
-#exmaple("#let rmark = mark.with(color: red)
+#example("#let rmark = mark.with(color: red)
 #let gmark = mark.with(color: green)
 #let bmark = mark.with(color: blue)
 
