@@ -48,10 +48,19 @@
 /// - annotation (content): The annotation to the target.
 /// - alignment (alignment): The direction of annotating.
 /// - yshift (length): Distance between annotation and the target.
+/// - margin (auto, length): Margin inserted above/below the equation.
 /// - text-props (dictionary): Properties of annotation text.
 /// - arrow-stroke (auto, color, length, dictionary, stroke):
 ///     Properties of arrow stroke.
-#let annot(tag, annotation, alignment: center + bottom, yshift: .6em, text-props: (size: .6em), arrow-stroke: .06em) = {
+#let annot(
+  tag,
+  annotation,
+  alignment: center + bottom,
+  yshift: .6em,
+  margin: auto,
+  text-props: (size: .6em),
+  arrow-stroke: .06em
+) = {
   assert(
     alignment.x == left or alignment.x == center or
       alignment.x == right or alignment.x == none,
@@ -150,13 +159,21 @@
 
       let top-margin = 0pt
       if alignment.y == top {
-        top-margin = annot-padding + yshift + annot-size.height
+        if margin != auto {
+          top-margin = margin
+        } else {
+          top-margin = annot-padding + yshift + annot-size.height
+        }
         top-margin = top-margin.to-absolute()
       }
 
       let bottom-margin = 0pt
       if alignment.y == bottom {
-        bottom-margin = annot-padding * 2 + yshift + annot-size.height
+        if margin != auto {
+          bottom-margin = margin
+        } else {
+          bottom-margin = annot-padding * 2 + yshift + annot-size.height
+        }
         bottom-margin = bottom-margin.to-absolute()
       }
 
