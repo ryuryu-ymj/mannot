@@ -91,8 +91,8 @@
 }
 
 
-/// Mark the part in a math block.
-/// The main purpose of this function is to create custom marking function.
+/// Mark the part of a math block.
+/// The main purpose of this function is to create custom marking functions.
 ///
 /// - body (content): The target of marking.
 /// - tag (label): Optional tag. If you mark content with a tag,
@@ -138,8 +138,8 @@
     set math.equation(numbering: none)
 
     let cnt-get = _mark-cnt.get().first()
-    let loc-lab = label("_mark-loc-" + str(cnt-get))
-    let info-lab = label("_mark-info-" + str(cnt-get))
+    let loc-lab = label("_mannot-mark-loc-" + str(cnt-get))
+    let info-lab = label("_mannot-mark-info-" + str(cnt-get))
 
     let start = here().position()
     _label-each-child(body, loc-lab)
@@ -256,8 +256,8 @@
 }
 
 
-/// Add a annotation to the marked content.
-/// The main purpose of this function is to create custom annotating function.
+/// Add an annotation to the marked content.
+/// The main purpose of this function is to create custom annotating functions.
 ///
 /// - tag (label): The tag of the target.
 /// - fg (none, function): `fg(width, height, color)` is placed on the target.
@@ -269,7 +269,7 @@
 }
 
 
-/// Mark the part in a math block with highlighting.
+/// Mark the part of a math block with highlighting.
 ///
 /// - body (content): The target of highlighting and annotation.
 /// - tag (none, label): Optional tag. If you mark content with a tag,

@@ -42,7 +42,7 @@
 }
 
 
-/// Annotate the marked content with arrow.
+/// Annotate the marked content with arrow and text.
 ///
 /// - tag (label): The tag of the target content.
 /// - annotation (content): The annotation to the target.
