@@ -1,0 +1,7 @@
+[package]
+name = "mannot"
+version = "0.1.0"
+entrypoint = "src/lib.typ"
+authors = ["ryuryu-ymj"]
+license = "MIT"
+description = "Math hilighting and annotating package."
