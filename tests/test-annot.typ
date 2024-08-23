@@ -8,52 +8,73 @@
 ]
 #set page(fill: cell-pat)
 // #show math.equation: set text(font: "STIX Two Math")
+#set math.equation(numbering: "(1)")
+
+#let rmark = mark.with(color: red)
+#let gmark = mark.with(color: green)
+#let bmark = mark.with(color: blue)
 
 
-$
-2x + 3y + 4z = 4 \
-
-mark(2, tag: #<c1>)mark(x, tag: #<x1>, color: #blue)
-+ mark(3, tag: #<c2>)mark(y, tag: #<y1>, color: #green)
-+ mark(4, tag: #<c3>)mark(z, tag: #<z1>, color: #red)
+#rect(width: 100%)[$
+mark(2, tag: #<c1>)rmark(x, tag: #<x1>)
++ mark(3, tag: #<c2>)gmark(y, tag: #<y1>)
++ mark(4, tag: #<c3>)bmark(z, tag: #<z1>)
 = 4
 
 #{
-  annot(<c1>, alignment: top + left)[this is 2]
-  annot(<c2>, alignment: top + center)[const.]
-  annot(<c3>, alignment: top + right)[const.]
-  annot(<x1>, alignment: bottom + left)[this is $x$]
-  annot(<y1>, arrow-stroke: (paint: red, thickness: 1pt, cap: "round"))[TTT]
-  annot(<z1>, alignment: bottom + right, arrow-stroke: (dash: (1pt, .6pt)))[this is $z$]
+  annot(<c1>, alignment: top + left)[top left]
+  annot(<c2>, alignment: top + center)[top center]
+  annot(<c3>, alignment: top + right)[top right]
+  annot(<x1>, alignment: bottom + left)[bottom left]
+  annot(<y1>, alignment: bottom + center)[bottom center]
+  annot(<z1>, alignment: bottom + right)[bottom right]
 }
+$]
 
-\
 
-mark(2, tag: #<c1>)mark(x, tag: #<x1>, color: #blue)
-+ mark(3, tag: #<c2>)mark(y, tag: #<y1>, color: #green)
-+ mark(4, tag: #<c3>)mark(z, tag: #<z1>, color: #red)
-= 4
-
-#{
-  annot(<c1>, alignment: top + left)[thi is 2]
-  annot(<c2>, alignment: top + center)[h]
-  annot(<c3>, alignment: top + right)[const.]
-  annot(<x1>, alignment: bottom + left)[this is $x$]
-  annot(<y1>, arrow-stroke: (paint: red, thickness: 1pt, cap: "round"))[TTT]
-  annot(<z1>, alignment: bottom + right, arrow-stroke: (dash: (1pt, .6pt)))[this is $z$]
-}
-
-\
-
-mark(x + 1, tag: #<num>) / mark(2, tag: #<den>)
+#rect(width: 100%)[$
+mark(x + 1, tag: #<num>) / bmark(2, tag: #<den>)
 
 #{
   annot(<num>, alignment: top + right)[Numerator]
   annot(<den>, alignment: right)[Denominator]
 }
+$]
 
-\
 
-2x + 3y + 4z = 4 \
+#rect(width: 100%)[$
+integral_rmark(0, tag: #<i0>)^bmark(1, tag: #<i1>)
+mark(x^2 + 1, tag: #<i2>) dif""gmark(x, tag: #<i3>)
 
-$
+#{
+  annot(<i0>)[Start]
+  annot(<i1>, alignment: top)[End]
+  annot(<i2>, alignment: top + right)[Integrand]
+  annot(<i3>, alignment: right)[Variable]
+}
+$]
+
+
+#rect(width: 100%)[$
+2 x &+ 3 y &+ 4 z &= 5 \
+mark(22 x &+ 33 y, tag: #<e1>) & &= 55 \
+rmark(x, tag: #<x2>) & &+ gmark(44 z, tag: #<z2>) &= bmark(5) \
+
+#{
+  annot(<e1>)[Containing align-point()]
+  annot(<x2>)[This is $x$.]
+  annot(<z2>, alignment: top)[Term]
+}
+$]
+
+
+#rect(width: 100%)[$
+mark(x, tag: #<x3>)
+
+#{
+  annot(<x3>, alignment: top)[Top]
+}
+$]
+
+
+// privateなラベルシステムを作る関数を作ればいいのでは？

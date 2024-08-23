@@ -40,6 +40,7 @@ mark(x + integral x dif x) \
 mark(x + vec(1, 2, delim: "[")) \
 mark(x + vec(1, 2, delim: "[") + vec(1, 2, 3, delim: "{")) \
 mark(x + mat(1, 2; 3, 4; delim: "[")) \
+mark(x_1) x_rmark(i + 1)_bmark(j + 1) \
 $
 
 = Check nesting
@@ -117,8 +118,6 @@ x mark(y) z \
 x""mark(y)z \
 $
 
-This is because unexpected space will be inserted
-between context and text:
 $
 x y z \
 x #context{$y$} z \
