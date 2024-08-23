@@ -33,6 +33,7 @@
   }
 }
 
+
 #let _remove-trailing-h(content) = {
   if content.func() == _sequence-func {
     let children = content.children
@@ -91,13 +92,14 @@
 
 
 #let core-mark(body, tag: none, color: black, bg: none, fg: none, padding: (:), scriptlevel: 0) = {
+  // Extract leading/trailing horizontal space from body.
   let (body, leading-h) = _remove-leading-h(body)
   let (body, trailing-h) = _remove-trailing-h(body)
   leading-h
 
   _mark-cnt.step()
 
-  // Place a highlight rect behind the `content` if `background` is true.
+  // Place `bg(width, height, color)` behind the `body` using the metadata.
   if bg != none {
     context {
       let cnt-get = _mark-cnt.get().first()
@@ -107,15 +109,22 @@
       let hpos = here().position()
       let dx = info.x - hpos.x
       let dy = info.y - hpos.y
-      place(dx: dx, dy: dy, bg(info.width, info.height))
+      place(dx: dx, dy: dy, bg(info.width, info.height, color))
     }
     h(0pt)
   }
 
 
-  // Produce a labeled `content`, measure its location and size, and
+  // Produce a labeled `body`, measure its position and size, and
   // expose them as the metadata.
+  // The body's top-left position (x, y) and its size (width, height)
+  // is determined in the following steps:
+  //   1. Call `here().position()` before/after `body` to find the x and the width.
+  //   2. Call `measure($ body $)` to find the height.
+  //   3. Labeld each child of content sequence to find the y.
   context {
+    set math.equation(numbering: none)
+
     let cnt-get = _mark-cnt.get().first()
     let loc-lab = label("_mark-loc-" + str(cnt-get))
     let info-lab = label("_mark-info-" + str(cnt-get))
@@ -124,17 +133,16 @@
     _label-each-child(body, loc-lab)
 
     context {
+      let end = here().position()
       let elems = query(loc-lab)
 
       let min-y = start.y
       for e in elems {
         let pos = e.location().position()
-        if start.x < pos.x and min-y > pos.y {
+        if min-y > pos.y {
           min-y = pos.y
         }
       }
-
-      let end = here().position()
 
       let size = if scriptlevel == 0 {
         measure($ body $)
@@ -165,22 +173,29 @@
           width: width, height: height, color: color)
       [#metadata(info)#info-lab]
 
+      // Place `fg(width, height, color)` in front of the `body`.
       if fg != none {
         let hpos = here().position()
         let dx = x - hpos.x
         let dy = y - hpos.y
-        place(dx: dx, dy: dy, fg(width, height))
+        place(dx: dx, dy: dy, fg(width, height, color))
       }
 
+      // Place added annotation and insert top/bottom margin.
       if tag != none {
-        let elems = query(selector(tag).after(here()))
+        let elems = query(tag)
+        if elems.len() > 1 {
+          panic("tag `" + repr(tag) + "` occuers multiple times in the document")
+        }
 
         if elems.len() > 0 {
           let info = elems.first().value
+          let fg = info.fg
+          let top-margin = info.top-margin
+          let bottom-margin = info.bottom-margin
 
-          if info.at("fg", default: none) != none {
+          if fg != none {
             let hpos = here().position()
-            let fg = info.fg
             if fg != none {
               let dx = x - hpos.x
               let dy = y - hpos.y
@@ -188,26 +203,23 @@
             }
           }
 
-          if info.at("margin", default: (:)) != (:) {
-            let margin = info.margin
-            if margin.at("top", default: 0pt) != 0pt {
-              let spacing = padding.top + margin.top - .1em
-              math.attach(
-                math.limits(hide(scale($ body $, x: 0%, reflow: true))),
-                // math.limits(body),
-                t: v(spacing),
-                // t: rect(fill: red, width: 1pt, height: spacing),
-              )
-            }
-            if margin.at("bottom", default: 0pt) != 0pt {
-              let spacing = padding.bottom + margin.bottom - .1em
-              math.attach(
-                math.limits(hide(scale($ body $, x: 0%, reflow: true))),
-                // math.limits(body),
-                b: v(spacing),
-                // b: rect(fill: red, width: 1pt, height: spacing),
-              )
-            }
+          if top-margin != 0pt {
+            let spacing = padding.top + top-margin - .1em
+            math.attach(
+              math.limits(hide(scale($ body $, x: 0%, reflow: true))),
+              // math.limits(scale($ body $, x: 20%, reflow: true)),
+              t: v(spacing),
+              // t: rect(fill: red, width: 1pt, height: spacing),
+            )
+          }
+          if bottom-margin != 0pt {
+            let spacing = padding.bottom + bottom-margin - .1em
+            math.attach(
+              math.limits(hide(scale($ body $, x: 0%, reflow: true))),
+              // math.limits(scale($ body $, x: 20%, reflow: true)),
+              b: v(spacing),
+              // b: rect(fill: red, width: 1pt, height: spacing),
+            )
           }
         }
       }
@@ -215,6 +227,16 @@
   }
 
   trailing-h
+}
+
+
+/// - tag (label):
+/// - fg (none, function):
+/// - top-margin (length):
+/// - bottom-margin (length):
+#let core-add-annot(tag, fg: none, top-margin: 0pt, bottom-margin: 0pt) = {
+  let info = (fg: fg, top-margin: top-margin, bottom-margin: bottom-margin)
+  return h(0pt) + [#metadata(info)#tag]
 }
 
 
@@ -240,12 +262,13 @@
     color = black
   }
 
-  let bg(width, height) = {
+  let bg(width, height, _) = {
     if fill == none and stroke == none {
       none
     } else {
       rect(width: width, height: height, fill: fill, stroke: stroke, radius: radius)
     }
   }
+
   return core-mark(body, tag: tag, color: color, bg: bg, padding: padding, scriptlevel: scriptlevel)
 }
