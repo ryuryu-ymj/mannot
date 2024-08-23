@@ -180,7 +180,7 @@
 
       let padding = padding
       {
-        let rest = padding.at("rest", default: 0em).to-absolute()
+        let rest = padding.at("rest", default: 0pt).to-absolute()
         let x = padding.at("x", default: rest).to-absolute()
         let left = padding.at("left", default: x).to-absolute()
         let right = padding.at("right", default: x).to-absolute()
@@ -192,7 +192,7 @@
 
       let x = start.x - padding.left
       let y = min-y - padding.top
-      let width = end.x + padding.right - start.x
+      let width = end.x + padding.right - x
       let height = size.height + padding.top + padding.bottom
 
       let info = (body: body, x: x, y: y,
