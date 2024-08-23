@@ -91,7 +91,19 @@
 }
 
 
-#let core-mark(body, tag: none, color: black, bg: none, fg: none, padding: (:), scriptlevel: 0) = {
+/// Mark the part in a math block.
+/// The main purpose of this function is to create custom marking function.
+///
+/// - body (content): The target of marking.
+/// - tag (label): Optinal tag. If you mark content with a tag,
+///     you can annotate it by specifying the tag.
+/// - color (color): Color used for `bg`, `fg` and annotations.
+/// - bg (none, function): `bg(width, height, color)` is placed behind the `body`.
+/// - fg (none, function): `fg(width, height, color)` is placed in front of the `body`.
+/// - padding (dictionary): Padding for `bg`, `fg` and annotations.
+/// - scriptlevel (auto, 0, 1, 2): 0: normal, 1: script, 2: scriptscript,
+///     auto: Automatically determined.
+#let core-mark(body, tag: none, color: black, bg: none, fg: none, padding: (:), scriptlevel: auto) = {
   // Extract leading/trailing horizontal space from body.
   let (body, leading-h) = _remove-leading-h(body)
   let (body, trailing-h) = _remove-trailing-h(body)
@@ -144,12 +156,26 @@
         }
       }
 
-      let size = if scriptlevel == 0 {
-        measure($ body $)
+      let size
+      if scriptlevel == 0 {
+        size = measure($ body $)
       } else if scriptlevel == 1 {
-        measure($ script(body) $)
+        size = measure($ script(body) $)
+      } else if scriptlevel == 2 {
+        size = measure($ sscript(body) $)
       } else {
-        measure($ sscript(body) $)
+        // Find scriptlevel.
+        let width = end.x - start.x
+        size = measure($ body $)
+        let size1 = measure($ script(body) $)
+        let size2 = measure($ sscript(body) $)
+        if width < size.width - .01pt {
+          if calc.abs(width - size1.width) < .01pt {
+            size = size1
+          } else if calc.abs(width - size2.width) < .01pt {
+            size = size2
+          }
+        }
       }
 
       let padding = padding
@@ -230,22 +256,31 @@
 }
 
 
-/// - tag (label):
-/// - fg (none, function):
-/// - top-margin (length):
-/// - bottom-margin (length):
-#let core-add-annot(tag, fg: none, top-margin: 0pt, bottom-margin: 0pt) = {
+/// Add a annotation to the marked content.
+/// The main purpose of this function is to create custom annotating function.
+///
+/// - tag (label): The tag of the target.
+/// - fg (none, function): `fg(width, height, color)` is placed on the target.
+/// - top-margin (length): Margin inserted above the target.
+/// - bottom-margin (length): Margin inserted below the target.
+#let core-annot(tag, fg: none, top-margin: 0pt, bottom-margin: 0pt) = {
   let info = (fg: fg, top-margin: top-margin, bottom-margin: bottom-margin)
   return h(0pt) + [#metadata(info)#tag]
 }
 
 
-/// Define the target of annotation within some math block.
+/// Mark the part in a math block with highlighting.
 ///
-/// - body (content): The target of annotation.
-/// - tag (label): Optinal tag. If you mark content with a tag,
-///   you can annotate that content by specifying the tag.
-#let mark(body, tag: none, color: auto, fill: auto, stroke: (:), radius: (:), padding: (y: .1em), scriptlevel: 0) = {
+/// - body (content): The target of highlighting and annotation.
+/// - tag (none, label): Optinal tag. If you mark content with a tag,
+///     you can annotate it by specifying the tag.
+/// - color (auto, color): Marking color used for highlighting and annotation.
+/// - fill (auto, none, color, gradient, pattern): The property of highlighting rect.
+/// - stroke (none, auto, length, color, gradient, stroke, pattern, dictionary): The property of highlighting rect.
+/// - radius (relative, dictionary): The property of highlighting rect.
+/// - scriptlevel (auto, 0, 1, 2): 0: normal, 1: script, 2: scriptscript,
+///     auto: Automatically determined.
+#let mark(body, tag: none, color: auto, fill: auto, stroke: none, radius: (:), padding: (y: .1em), scriptlevel: auto) = {
   if fill == auto {
     if color == auto {
       color = orange
