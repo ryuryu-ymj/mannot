@@ -115,7 +115,7 @@
   if bg != none {
     context {
       let cnt-get = _mark-cnt.get().first()
-      let info-lab = label("_mark-info-" + str(cnt-get))
+      let info-lab = label("_mannot-mark-info-" + str(cnt-get))
 
       let info = query(selector(info-lab).after(here())).first().value
       let hpos = here().position()
@@ -234,8 +234,8 @@
             math.attach(
               math.limits(hide(scale($ body $, x: 0%, reflow: true))),
               // math.limits(scale($ body $, x: 20%, reflow: true)),
-              t: v(spacing),
-              // t: rect(fill: red, width: 1pt, height: spacing),
+              // t: v(spacing),
+              t: rect(fill: red, width: 1pt, height: spacing),
             )
           }
           if bottom-margin != 0pt {
