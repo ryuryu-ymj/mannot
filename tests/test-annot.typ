@@ -16,39 +16,43 @@ $
 
   #{
     annot(<x>)[T]
-    annot(<x>, alignment: top)[y]
+    annot(<x>, pos: top)[p]
   }
 $
 
 $
+  #v(1em) \
   mark(2, tag: #<c1>) rmark(x, tag: #<x1>)
   + mark(3, tag: #<c2>) gmark(y, tag: #<y1>)
   + mark(4, tag: #<c3>) bmark(z, tag: #<z1>)
   = 4 \
+  #v(1em)
 
   #{
-    annot(<c1>, alignment: top + left)[top left]
-    annot(<c2>, alignment: top + center)[top center]
-    annot(<c3>, alignment: top + right)[top right]
-    annot(<x1>, alignment: bottom + left)[bottom left]
-    annot(<y1>, alignment: bottom + center)[bottom center]
-    annot(<z1>, alignment: bottom + right)[bottom right]
+    annot(<c1>, pos: top + left     )[left \ top left]
+    annot(<c2>, pos: top + center   )[center \ top center]
+    annot(<c3>, pos: top + right    )[right \ top right]
+    annot(<x1>, pos: bottom + left  )[bottom left \ left]
+    annot(<y1>, pos: bottom + center)[bottom center \ center]
+    annot(<z1>, pos: bottom + right )[bottom right \ right]
   }
 $
 
 $
+  #v(1em) \
   mark(2, tag: #<c1>) rmark(x, tag: #<x1>)
   + mark(3, tag: #<c2>) gmark(y, tag: #<y1>)
   + mark(4, tag: #<c3>) bmark(z, tag: #<z1>)
   = 4 \
+  #v(1em)
 
   #{
-    annot(<c1>, alignment: top + left, yshift: .6em)[top left]
-    annot(<c2>, alignment: top + center, yshift: .6em)[top center]
-    annot(<c3>, alignment: top + right, yshift: .6em)[top right]
-    annot(<x1>, alignment: bottom + left, yshift:.6em)[bottom left]
-    annot(<y1>, alignment: bottom + center, yshift:.6em)[bottom center]
-    annot(<z1>, alignment: bottom + right, yshift:.6em)[bottom right]
+    annot(<c1>, pos: top + left     , yshift: .6em)[left \ top left]
+    annot(<c2>, pos: top + center   , yshift: .6em)[center \ top center]
+    annot(<c3>, pos: top + right    , yshift: .6em)[right \ top right]
+    annot(<x1>, pos: bottom + left  , yshift: .6em)[bottom left \ left]
+    annot(<y1>, pos: bottom + center, yshift: .6em)[bottom center \ center]
+    annot(<z1>, pos: bottom + right , yshift: .6em)[bottom right \ right]
   }
 $
 
@@ -56,8 +60,8 @@ $
   mark(x + 1, tag: #<num>) / bmark(2, tag: #<den>)
 
   #{
-    annot(<num>, alignment: top + right)[Numerator]
-    annot(<den>, alignment: right)[Denominator]
+    annot(<num>, pos: top + right)[Numerator]
+    annot(<den>, pos: right)[Denominator]
   }
 $
 
@@ -66,9 +70,9 @@ $
   mark(x^2 + 1, tag: #<i2>) dif gmark(x, tag: #<i3>)
 
   #{
-    annot(<i0>)[Start]
-    annot(<i1>, alignment: top)[End]
-    annot(<i2>, alignment: top + right)[Integrand]
-    annot(<i3>, alignment: right)[Variable]
+    annot(<i0>)[Begin]
+    annot(<i1>, pos: top)[End]
+    annot(<i2>, pos: top + right)[Integrand]
+    annot(<i3>, pos: right)[Variable]
   }
 $

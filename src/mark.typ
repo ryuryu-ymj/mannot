@@ -81,17 +81,43 @@
   }
 }
 
-/// Mark the part of a math block.
-/// The main purpose of this function is to create custom marking functions.
+/// Marks a part of a math block with a custom overlay.
 ///
-/// - body (content): The target of marking.
-/// - tag (none, label): Optional tag. If you mark content with a tag,
-///     you can annotate it by specifying the tag.
-/// - color (color): Color used in overlay and annotations.
-/// - overlay (none, function): `overlay(width, height, color)` is placed over the `body`.
-/// - padding (dictionary): Padding of `overlay`.
+/// This function measures the position and size of the marked content,
+/// places an overlay on it, and exposes metadata labeled with a tag.
+/// This metadata includes the original content, its position (x, y), size (width, height),
+/// and the color used for the overlay.
+/// Its purpose is to create custom marking functions.
+///
+/// *Example*
+/// #example(```
+///let mymark(body, tag: none) = {
+///  let overlay(width, height, color) = {
+///    rect(width: width, height: height, stroke: color)
+///  }
+///  return core-mark(body, tag: tag, color: red, overlay: overlay, padding: (y: .1em))
+///}
+///
+///$ mymark(x, tag: #<e>) $
+///
+///context {
+///  let info = query(<e>).last()
+///  repr(info.value)
+///}
+///```)
+///
+/// - body (content): The content to be marked within a math block.
+/// - tag (none, label): An optional tag associated with the metadata.
+/// - color (color): The color for the overlay and annotations put to this.
+/// - overlay (none, function): An optional function to create a custom overlay.
+///     The function takes `width`, `height`, and `color` as arguments,
+///     where `width` and `height` represent the size of the marked content including padding,
+///     and `color` is the same color passed to core-mark.
+/// - padding (none, length, dictionary): The space between the marked content and the border of the overlay.
+///     You can specify `left`, `right`, `top`, `bottom`, `x`, `y`, or a `rest` value.
+/// -> content
 #let core-mark(body, tag: none, color: black, overlay: none, padding: (:)) = {
-  // Extract leading/trailing horizontal space from body.
+  // Extract leading/trailing horizontal spaces from body.
   let (body, leading-h) = _remove-leading-h(body)
   let (body, trailing-h) = _remove-trailing-h(body)
   leading-h
@@ -99,13 +125,6 @@
   _mark-cnt.step()
   h(0pt)
 
-  // Produce a labeled `body`, measure its position and size, and
-  // expose them as the metadata.
-  // The body's top-left position (x, y) and its size (width, height)
-  // is determined in the following steps:
-  //   1. Call `here().position()` before/after `body` to find the x and the width.
-  //   2. Call `measure($ body $)` to find the height.
-  //   3. Labeled each child of content sequence to find the y.
   context {
     set math.equation(numbering: none)
 
@@ -135,7 +154,7 @@
 
       let size = measure($ body $)
       {
-        // Apply script size.
+        // Check if the body is script/sscript.
         let width = end.x - start.x
         let size1 = measure($ script(body) $)
         let size2 = measure($ sscript(body) $)
@@ -163,7 +182,6 @@
         (left: left, right: right, top: top, bottom: bottom)
       }
 
-
       let x = start.x - padding.left
       let y = min-y - padding.top
       let width = end.x + padding.right - x
@@ -172,7 +190,7 @@
       let info = (body: body, x: x, y: y, width: width, height: height, color: color)
       [#metadata(info)#info-lab]
 
-      // Place `fg(width, height, color)` in front of the `body`.
+      // Place `overlay(width, height, color)` in front of the `body`.
       if overlay != none {
         let hpos = here().position()
         let dx = x - hpos.x
@@ -185,15 +203,29 @@
   trailing-h
 }
 
-/// Mark the part of a math block with highlighting.
+
+/// Marks a part of a math block with highlighting.
 ///
-/// - body (content): The target of highlighting and annotation.
-/// - tag (none, label): Optional tag. If you mark content with a tag,
-///     you can annotate it by specifying the tag.
-/// - color (auto, color): Marking color used in highlighting and annotation.
-/// - fill (auto, none, color, gradient, pattern): The property of highlighting rect.
-/// - stroke (none, auto, length, color, gradient, stroke, pattern, dictionary): The property of highlighting rect.
-/// - radius (relative, dictionary): The property of highlighting rect.
+/// Marked content can be annotated with `annot` function.
+///
+/// *Example*
+/// #example(```
+///$ mark(x) $
+/// ```)
+///
+/// - body (content): The content to be highlighted within a math block.
+/// - tag (none, label):  An optional tag used to identify the highlighted content for later annotation.
+/// - color (auto, color): The color used for the highlight.
+///     If set to `auto` and `fill` is `auto`, `color` will set be set to `orange`.
+///     Otherwise, it defaults to `black`.
+/// - fill (auto, none, color, gradient, pattern): The fill style for the highlight rectangle.
+///     If set to `auto`, `fill` will be set to `color.transparentize(70%)`.
+/// - stroke (none, auto, length, color, gradient, stroke, pattern, dictionary):
+///     The stroke style for the highlight rectangle.
+/// - radius (relative, dictionary): The corner radius of the highlight rectangle.
+/// - padding (none, length, dictionary): he space between the highlighted content and the border of the highlight.
+///     You can specify `left`, `right`, `top`, `bottom`, `x`, `y`, or a `rest` value.
+/// -> content
 #let mark(
   body,
   tag: none,
@@ -230,8 +262,16 @@
 }
 
 
+/// Setup function.
+///
+/// To start using mannot, you need to initialize mannot using a show rule:
+///
+/// ```typ
+/// #show: mannot-init
+/// ```
+///
+/// This removes unintentional spaces around marked elements within math blocks.
 #let mannot-init(body) = {
-  let _sequence-func = (math.text("x") + math.text("y")).func()
   show math.equation: content => {
     if content.body.func() == _sequence-func and content.body.children.any(c => c == [ ]) {
       let children = content.body.children.filter(c => c != [ ])

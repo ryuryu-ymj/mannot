@@ -5,17 +5,18 @@
 
 #let example(source) = {
   grid(
-    columns: (1fr, 2fr),
+    columns: (2fr, 1fr),
     rows: (auto),
     align: center + horizon,
-    gutter: 8pt,
+    gutter: 5pt,
+    {
+      set text(0.8em)
+      raw(block: true, lang: "typst", source)
+    },
     rect(
       width: 100%,
       inset: 10pt,
-      {
-        eval(usage + source, mode: "markup")
-      },
+      eval(usage + source, mode: "markup"),
     ),
-    raw(block: true, lang: "typst", source),
   )
 }
