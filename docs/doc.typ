@@ -17,7 +17,7 @@
 #text(1.2em, "v" + version)
 
 
-A package to highlight and annotate parts of math block in Typst.
+A package for highlighting and annotating in math blocks in Typst.
 
 #outline(depth: 1, indent: auto)
 

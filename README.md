@@ -1,5 +1,5 @@
 # Mannot
-A package to highlight and annotate parts of math block in [Typst](https://typst.app/).
+A package for highlighting and annotating in math blocks in [Typst](https://typst.app/).
 
 ## Example
 ```typst
