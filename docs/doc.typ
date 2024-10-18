@@ -49,10 +49,10 @@ You can customize the position of the annotation and the vertical distance from 
 mark(integral x dif x, tag: #<i>, color: #green)
 + mark(3, tag: #<3>, color: #red) mark(x, tag: #<x>, color: #blue)
 
-#annot(<i>, pos: left)[left]
-#annot(<i>, pos: top + left)[top + left]
-#annot(<3>, pos: top, yshift: 1.2em)[top + yshift]
-#annot(<x>, pos: right, yshift: 1.2em)[right + yshift]
+#annot(<i>, pos: left)[Set pos to left.]
+#annot(<i>, pos: top + left)[Top left.]
+#annot(<3>, pos: top, yshift: 1.2em)[Use yshift.]
+#annot(<x>, pos: right, yshift: 1.2em)[Auto arrow.]
 $")
 
 For convenience, you can define custom mark functions:
@@ -67,8 +67,16 @@ mark(x^2 + 1, tag: #<i2>) dif gmark(x, tag: #<i3>)
 #annot(<i0>)[Begin]
 #annot(<i1>, pos: top)[End]
 #annot(<i2>, pos: top + right)[Integrand]
-#annot(<i3>, pos: right)[Variable]
+#annot(<i3>, pos: right, yshift: .6em)[Variable]
 $")
+
+
+= Limitations
+If you mark a inline math element containing linebreaks,
+its layout will be broken:
+#example("
+$mark(x + x + x + x + x + x + x + x)$
+")
 
 
 = API

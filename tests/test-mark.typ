@@ -1,6 +1,11 @@
 #import "/src/mark.typ": mark, mannot-init
 
 // #set page(width: 12cm, height: 16cm, margin: (x: 24pt, y: 24pt))
+#let cell-pat = pattern(size: (20pt, 20pt))[
+  #place(line(start: (0%, 0%), end: (0%, 100%), stroke: silver))
+  #place(line(start: (0%, 0%), end: (1000%, 0%), stroke: silver))
+]
+#set page(fill: cell-pat)
 #set heading(numbering: "1.")
 
 // #show math.equation: set text(20pt)
@@ -54,30 +59,45 @@ $
 $
 
 
-= Check sizes and positions
+= Size / position
+== Block
 $
   mark(x y T) \
+  mark(x + y) \
   mark(x + integral x dif x) \
   mark(x + vec(1, 2, delim: "[")) \
   mark(x + vec(1, 2, delim: "[") + vec(1, 2, 3, delim: "{")) \
   mark(x + mat(1, 2; 3, 4; delim: "[")) \
-  mark(x_(1+1)^T) x_rmark(i + 1)_bmark(j + 1)_gmark(k + 1) x^rmark(i + 1)^bmark(j + 1)^gmark(k + 1) \
+  mark(x_(1+p)^T) x_rmark(i + 1)_bmark(j + 1)_gmark(k + 1) x^rmark(i + 1)^bmark(j + 1)^gmark(k + 1) \
 $
+== Inline
+$mark(x)$
+$mark(y)$
+$mark(T)$
+$mark(x y T)$
+$mark(x + y)$
+$mark(x + integral x dif x)$
+$mark(x + vec(1, 2, delim: "["))$
+$mark(x + vec(1, 2, delim: "[") + vec(1, 2, 3, delim: "{"))$
+$mark(x + mat(1, 2; 3, 4; delim: "["))$
+$mark(x_(1+p)^T) x_rmark(i + 1)_bmark(j + 1)_gmark(k + 1) x^rmark(i + 1)^bmark(j + 1)^gmark(k + 1)$
 
-= Check nesting
+$mark(#{
+  for i in range(30) {
+    $x + $
+  }
+  $x$
+})$
+
+
+= Nesting
 $
   mark(gmark(x) + bmark(y) + z) \
   boxmark(boxmark(x) + boxmark(integral boxmark(x) dif x) + boxmark(y)) \
 $
 
 
-#let cell-pat = pattern(size: (20pt, 20pt))[
-  #place(line(start: (0%, 0%), end: (0%, 100%), stroke: silver))
-  #place(line(start: (0%, 0%), end: (1000%, 0%), stroke: silver))
-]
-#set page(fill: cell-pat)
-
-= Check layout
+= Layout
 
 $
   x \
@@ -87,6 +107,26 @@ $
 $
   x + 1 \
   mark(x + 1) \
+$
+
+$
+  x + integral x dif x \
+  mark(x + integral x dif x) \
+$
+
+$
+  x + vec(1, 2, delim: "[") + vec(1, 2, 3, delim: "{") \
+  mark(x + vec(1, 2, delim: "[") + vec(1, 2, 3, delim: "{")) \
+$
+
+$
+  x < integral_0^1 x dif x \
+  mark(x < integral_0^1 x dif x) \
+$
+
+$
+  x + x_1 + x_1 \
+  mark(x + x_1 + x_1)
 $
 
 $

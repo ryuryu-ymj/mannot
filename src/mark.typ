@@ -64,7 +64,7 @@
 #let _label-each-child(content, label) = {
   if content.func() == math.equation {
     let body = _label-each-child(content.body, label)
-    return math.equation(body)
+    return body
   } else if content.func() == _sequence-func {
     // If `content` is the sequence of contents,
     // then put `label` on each child.
@@ -115,8 +115,9 @@
 ///     and `color` is the same color passed to core-mark.
 /// - padding (none, length, dictionary): The space between the marked content and the border of the overlay.
 ///     You can specify `left`, `right`, `top`, `bottom`, `x`, `y`, or a `rest` value.
+/// - ctx (auto, string): The context of the marked content.
 /// -> content
-#let core-mark(body, tag: none, color: black, overlay: none, padding: (:)) = {
+#let core-mark(body, tag: none, color: black, overlay: none, padding: (:), ctx: auto) = {
   // Extract leading/trailing horizontal spaces from body.
   let (body, leading-h) = _remove-leading-h(body)
   let (body, trailing-h) = _remove-trailing-h(body)
@@ -138,7 +139,8 @@
     }
 
     let start = here().position()
-    _label-each-child(body, loc-lab)
+    let labeled-body = _label-each-child(body, loc-lab)
+    labeled-body
 
     context {
       let end = here().position()
@@ -152,19 +154,28 @@
         }
       }
 
-      let size = measure($ body $)
-      {
-        // Check if the body is script/sscript.
+      let size
+      if ctx == auto {
+        size = measure($ body $)
         let width = end.x - start.x
-        let size1 = measure($ script(body) $)
-        let size2 = measure($ sscript(body) $)
+        let size1 = measure($ inline(#labeled-body) $)
+        let size2 = measure($ script(#labeled-body) $)
+        let size3 = measure($ sscript(#labeled-body) $)
         if width < size.width - .01pt {
           if calc.abs(width - size1.width) < .01pt {
             size = size1
           } else if calc.abs(width - size2.width) < .01pt {
             size = size2
+          } else if calc.abs(width - size3.width) < .01pt {
+            size = size3
           }
         }
+      } else if ctx == "inline" {
+        size = measure($ inline(body) $)
+      } else if ctx == "script" {
+        size = measure($ script(body) $)
+      } else if ctx == "sscript" {
+        size = measure($ sscript(body) $)
       }
 
       let padding = if type(padding) == none {
@@ -234,6 +245,7 @@
   stroke: none,
   radius: (:),
   padding: (y: .1em),
+  ctx: auto,
 ) = {
   if fill == auto {
     if color == auto {
@@ -258,7 +270,7 @@
     }
   }
 
-  return core-mark(body, tag: tag, color: color, overlay: overlay, padding: padding)
+  return core-mark(body, tag: tag, color: color, overlay: overlay, padding: padding, ctx: ctx)
 }
 
 
