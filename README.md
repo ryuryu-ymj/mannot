@@ -1,6 +1,8 @@
 # Mannot
 A package for highlighting and annotating in math blocks in [Typst](https://typst.app/).
 
+A full documentation is [here](/docs/doc.pdf).
+
 ## Example
 ```typst
 $
