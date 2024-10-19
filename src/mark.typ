@@ -1,4 +1,4 @@
-#let _mark-cnt = counter("_mark")
+#let _mark-cnt = counter("_mannot-mark-cnt")
 
 #let _sequence-func = (math.text("x") + math.text("y")).func()
 #let _align-point-func = $&$.body.func()
