@@ -1,7 +1,7 @@
 # Mannot
 A package for highlighting and annotating in math blocks in [Typst](https://typst.app/).
 
-A full documentation is [here](/docs/doc.pdf).
+A full documentation is [here](docs/doc.pdf).
 
 ## Example
 ```typst
@@ -15,7 +15,7 @@ mark(1, tag: #<num>) / mark(x + 1, tag: #<den>, color: #blue)
 $
 ```
 
-![Example1](/examples/showcase.svg)
+![Example1](examples/showcase.svg)
 
 ## Usage
 Import and initialize the package `mannot` on the top of your document.
@@ -30,7 +30,7 @@ $
 mark(x)
 $
 ```
-![Usage1](/examples/usage1.svg)
+![Usage1](examples/usage1.svg)
 
 You can also specify a color for the highlighted part:
 ```typst
@@ -39,7 +39,7 @@ mark(3, color: #red) mark(x, color: #blue)
 + mark(integral x dif x, color: #green)
 $
 ```
-![Usage2](/examples/usage2.svg)
+![Usage2](examples/usage2.svg)
 
 To add an annotation to a highlighted part, use the `annot` function.
 You need to specify the tag of the marked content:
@@ -49,7 +49,7 @@ mark(x, tag: #<x>)  // Need # before tags.
 #annot(<x>)[Annotation]
 $
 ```
-![Usage3](/examples/usage3.svg)
+![Usage3](examples/usage3.svg)
 
 You can customize the position of the annotation and the vertical distance from the marked content:
 ```typst
@@ -63,7 +63,7 @@ mark(integral x dif x, tag: #<i>, color: #green)
 #annot(<x>, pos: right, yshift: 1.2em)[Auto arrow.]
 $
 ```
-![Usage4](/examples/usage4.svg)
+![Usage4](examples/usage4.svg)
 
 For convenience, you can define custom mark functions:
 ```typst
@@ -81,4 +81,4 @@ mark(x^2 + 1, tag: #<i2>) dif gmark(x, tag: #<i3>)
 #annot(<i3>, pos: right, yshift: .6em)[Variable]
 $
 ```
-![Usage5](/examples/usage5.svg)
+![Usage5](examples/usage5.svg)
