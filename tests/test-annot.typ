@@ -76,16 +76,3 @@ $
     annot(<i3>, pos: right)[Variable]
   }
 $
-
-
-// #pagebreak()
-// #set page(height: 3em)
-// #show math.equation: set block(breakable: true)
-// $
-//   mark(x, tag: <x>) \
-//   mark(y, tag: <y>) \
-//   mark(z, tag: <z>) \
-//   mark(t, tag: <t>) \
-//
-//   #annot(<x>)[x]
-// $
