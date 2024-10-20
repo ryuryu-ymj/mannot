@@ -125,7 +125,6 @@
   leading-h
 
   _mark-cnt.step()
-  h(0pt)
 
   context {
     set math.equation(numbering: none)
@@ -157,9 +156,9 @@
           min-y = pos.y
         }
       }
-      min-y += .2em // attach space
 
       let size
+      let attach-space = .2em
       if ctx == auto {
         size = measure($ body $)
         let width = end.x - start.x
@@ -171,17 +170,22 @@
             size = measure($ inline(body) $)
           } else if calc.abs(width - size2.width) < .01pt {
             size = measure($ script(body) $)
+            attach-space = measure($ script(#rect(height: attach-space)) $).height
           } else if calc.abs(width - size3.width) < .01pt {
             size = measure($ sscript(body) $)
+            attach-space = measure($ sscript(#rect(height: attach-space)) $).height
           }
         }
       } else if ctx == "inline" {
         size = measure($ inline(body) $)
       } else if ctx == "script" {
         size = measure($ script(body) $)
+        attach-space = measure($ script(#rect(height: attach-space)) $).height
       } else if ctx == "sscript" {
         size = measure($ sscript(body) $)
+        attach-space = measure($ script(#rect(height: attach-space)) $).height
       }
+      min-y += attach-space.to-absolute()
 
       let padding = if type(padding) == none {
         (left: 0pt, right: 0pt, top: 0pt, bottom: 0pt)
