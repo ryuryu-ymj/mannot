@@ -117,6 +117,8 @@
 /// - padding (none, length, dictionary): The space between the marked content and the border of the overlay.
 ///     You can specify `left`, `right`, `top`, `bottom`, `x`, `y`, or a `rest` value.
 /// - ctx (auto, string): The context of the marked content.
+///     Possible values are `"inline"`, `"script"` or `"sscript"`.
+///     If set to `auto`, it is automatically chosen.
 /// -> content
 #let core-mark(body, tag: none, color: black, overlay: none, padding: (:), ctx: auto) = {
   // Extract leading/trailing horizontal spaces from body.
@@ -247,6 +249,9 @@
 /// - radius (relative, dictionary): The corner radius of the highlight rectangle.
 /// - padding (none, length, dictionary): he space between the highlighted content and the border of the highlight.
 ///     You can specify `left`, `right`, `top`, `bottom`, `x`, `y`, or a `rest` value.
+/// - ctx (auto, string): The context of the marked content.
+///     Possible values are `"inline"`, `"script"` or `"sscript"`.
+///     If set to `auto`, it is automatically chosen.
 /// -> content
 #let mark(
   body,
