@@ -77,7 +77,8 @@
     // h(), or v(), in order to avoid broken layout.
     return content
   } else {
-    return [#content#label]
+    // return [#content#label]
+    return math.attach(math.limits(content), t: [#none#label])
   }
 }
 
@@ -149,25 +150,29 @@
       let min-y = start.y
       for e in elems {
         let pos = e.location().position()
+        let hpos = here().position()
+        let dx = pos.x - hpos.x
+        let dy = pos.y - hpos.y
         if min-y > pos.y {
           min-y = pos.y
         }
       }
+      min-y += .2em // attach space
 
       let size
       if ctx == auto {
         size = measure($ body $)
         let width = end.x - start.x
-        let size1 = measure($ inline(#labeled-body) $)
-        let size2 = measure($ script(#labeled-body) $)
-        let size3 = measure($ sscript(#labeled-body) $)
-        if width < size.width - .01pt {
+        if calc.abs(width - size.width) > .01pt {
+          let size1 = measure($ inline(#labeled-body) $)
+          let size2 = measure($ script(#labeled-body) $)
+          let size3 = measure($ sscript(#labeled-body) $)
           if calc.abs(width - size1.width) < .01pt {
-            size = size1
+            size = measure($ inline(body) $)
           } else if calc.abs(width - size2.width) < .01pt {
-            size = size2
+            size = measure($ script(body) $)
           } else if calc.abs(width - size3.width) < .01pt {
-            size = size3
+            size = measure($ sscript(body) $)
           }
         }
       } else if ctx == "inline" {
@@ -206,7 +211,9 @@
         let hpos = here().position()
         let dx = x - hpos.x
         let dy = y - hpos.y
-        place(dx: dx, dy: dy, overlay(width, height, color))
+        box(place(dx: dx, dy: dy, overlay(width, height, color)))
+        // place([#dy])
+        // box(place(dx: -hpos.x, dy: -hpos.y, overlay(width, height, color)))
       }
     }
   }

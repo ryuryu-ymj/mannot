@@ -5,7 +5,7 @@
   #place(line(start: (0%, 0%), end: (0%, 100%), stroke: silver))
   #place(line(start: (0%, 0%), end: (1000%, 0%), stroke: silver))
 ]
-#set page(fill: cell-pat)
+// #set page(fill: cell-pat)
 #set heading(numbering: "1.")
 
 // #show math.equation: set text(20pt)
@@ -62,6 +62,10 @@ $
 = Size / position
 == Block
 $
+  mark(x, padding: #0pt) x_mark(x, padding:#0pt) x_x_mark(x, padding:#0pt)
+$
+
+$
   mark(x y T) \
   mark(x + y) \
   mark(x + integral x dif x) \
@@ -93,8 +97,11 @@ $mark(#{
 = Nesting
 $
   mark(gmark(x) + bmark(y) + z) \
-  boxmark(boxmark(x) + boxmark(integral boxmark(x) dif x) + boxmark(y)) \
 $
+
+// $
+//   boxmark(boxmark(x) + boxmark(integral boxmark(x) dif x) + boxmark(y)) \
+// $
 
 
 = Layout

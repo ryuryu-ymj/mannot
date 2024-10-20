@@ -1,7 +1,7 @@
 #import "/src/mark.typ": mark, mannot-init
 #import "/src/annot.typ": annot
 
-#set page(width: 10cm, height: 24cm, margin: (x: .2cm, y: .2cm))
+#set page(width: 10cm, height: 10cm, margin: (x: .2cm, y: .2cm))
 
 #let rmark = mark.with(color: red)
 #let gmark = mark.with(color: green)
@@ -76,3 +76,16 @@ $
     annot(<i3>, pos: right)[Variable]
   }
 $
+
+
+// #pagebreak()
+// #set page(height: 3em)
+// #show math.equation: set block(breakable: true)
+// $
+//   mark(x, tag: <x>) \
+//   mark(y, tag: <y>) \
+//   mark(z, tag: <z>) \
+//   mark(t, tag: <t>) \
+//
+//   #annot(<x>)[x]
+// $
