@@ -120,7 +120,7 @@
 ///     Possible values are `"inline"`, `"script"` or `"sscript"`.
 ///     If set to `auto`, it is automatically chosen.
 /// -> content
-#let core-mark(body, tag: none, color: black, overlay: none, padding: (:), ctx: auto) = {
+#let core-mark(body, tag: none, color: black, underlay: none, overlay: none, padding: (:), ctx: auto) = {
   // Extract leading/trailing horizontal spaces from body.
   let (body, leading-h) = _remove-leading-h(body)
   let (body, trailing-h) = _remove-trailing-h(body)
@@ -139,6 +139,26 @@
     } else {
       info-lab = label("_mannot-mark-info-" + str(cnt-get))
     }
+
+    sym.wj
+    if underlay != none {
+      context {
+        let infos = query(selector(info-lab).after(here()))
+        if infos.len() > 0 {
+          let info = infos.first().value
+
+          let hpos = here().position()
+          let dx = info.x - hpos.x
+          let dy = info.y - hpos.y
+          let width = info.width
+          let height = info.height
+          let color = info.color
+          box(place(dx: dx, dy: dy, underlay(width, height, color)))
+        }
+      }
+    }
+    sym.wj
+    h(0pt, weak: true)
 
     let start = here().position()
     let labeled-body = _label-each-child(body, loc-lab)
@@ -213,17 +233,18 @@
       [#metadata(info)#info-lab]
 
       // Place `overlay(width, height, color)` in front of the `body`.
-      if overlay != none {
-        let hpos = here().position()
-        let dx = x - hpos.x
-        let dy = y - hpos.y
-        sym.wj
-        box(place(dx: dx, dy: dy, overlay(width, height, color)))
-        sym.wj
-      }
+      // if overlay != none {
+      //   let hpos = here().position()
+      //   let dx = x - hpos.x
+      //   let dy = y - hpos.y
+      //   sym.wj
+      //   box(place(dx: dx, dy: dy, overlay(width, height, color)))
+      //   sym.wj
+      // }
     }
   }
 
+  sym.wj
   trailing-h
 }
 
@@ -267,12 +288,12 @@
     if color == auto {
       color = orange
     }
-    fill = color.transparentize(70%)
+    fill = color.transparentize(60%)
   } else if color == auto {
     color = black
   }
 
-  let overlay(width, height, _) = {
+  let underlay(width, height, _) = {
     if fill == none and stroke == none {
       none
     } else {
@@ -286,5 +307,5 @@
     }
   }
 
-  return core-mark(body, tag: tag, color: color, overlay: overlay, padding: padding, ctx: ctx)
+  return core-mark(body, tag: tag, color: color, underlay: underlay, padding: padding, ctx: ctx)
 }
