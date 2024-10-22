@@ -217,9 +217,9 @@
         let hpos = here().position()
         let dx = x - hpos.x
         let dy = y - hpos.y
+        sym.wj
         box(place(dx: dx, dy: dy, overlay(width, height, color)))
-        // place([#dy])
-        // box(place(dx: -hpos.x, dy: -hpos.y, overlay(width, height, color)))
+        sym.wj
       }
     }
   }
@@ -287,29 +287,4 @@
   }
 
   return core-mark(body, tag: tag, color: color, overlay: overlay, padding: padding, ctx: ctx)
-}
-
-
-/// Setup function.
-///
-/// To start using mannot, you need to initialize mannot using a show rule:
-///
-/// ```typ
-/// #show: mannot-init
-/// ```
-///
-/// This removes unintentional spaces around marked elements within math blocks.
-#let mannot-init(body) = {
-  show math.equation: content => {
-    if content.body.func() == _sequence-func and content.body.children.any(c => c == [ ]) {
-      let children = content.body.children.filter(c => c != [ ])
-      let args = content.fields()
-      args.remove("body")
-      return math.equation(_sequence-func(children), ..args)
-    } else {
-      return content
-    }
-  }
-
-  body
 }

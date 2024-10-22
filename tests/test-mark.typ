@@ -1,4 +1,4 @@
-#import "/src/mark.typ": mark, mannot-init
+#import "/src/mark.typ": mark
 
 // #set page(width: 12cm, height: 16cm, margin: (x: 24pt, y: 24pt))
 #let cell-pat = pattern(size: (20pt, 20pt))[
@@ -15,7 +15,7 @@
 #let bmark(body) = mark(body, color: blue)
 #let boxmark(body) = mark(body, fill: none, stroke: .5pt)
 
-#show: mannot-init
+// #show: mannot-init
 
 = Color
 
@@ -93,6 +93,10 @@ $mark(#{
   $x$
 })$
 
+#lorem(30)
+$mark(x + y + T)$
+#lorem(20)
+
 
 = Nesting
 $
@@ -143,7 +147,16 @@ $
 $
   x y z \
   mark(x y z) \
+  x mark(y) z \
   rmark(x) gmark(y) bmark(z) \
+$
+
+$
+  x #metadata(none) y \
+  x #place(none) y \
+  x #{box(place(none)) + sym.wj} y \
+  x #{sym.wj + box(place(none))} y \
+  x #{sym.wj + box(place(none)) + sym.wj} y \
 $
 
 $

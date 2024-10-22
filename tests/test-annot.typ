@@ -1,4 +1,4 @@
-#import "/src/mark.typ": mark, mannot-init
+#import "/src/mark.typ": mark
 #import "/src/annot.typ": annot
 
 #set page(width: 10cm, height: 10cm, margin: (x: .2cm, y: .2cm))
@@ -7,7 +7,6 @@
 #let gmark = mark.with(color: green)
 #let bmark = mark.with(color: blue)
 
-#show: mannot-init
 
 $
   #v(1em) \
