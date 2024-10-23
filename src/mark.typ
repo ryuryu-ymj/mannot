@@ -3,83 +3,85 @@
 #let _sequence-func = (math.text("x") + math.text("y")).func()
 #let _align-point-func = $&$.body.func()
 
-#let _remove-leading-h(content) = {
-  if content.func() == _sequence-func {
-    let children = content.children
-    if children.len() == 0 {
-      return (none, none)
-    }
-    let rest
-    let remove
-    let leadingCount = 0
-    for c in children {
-      let (crest, cremove) = _remove-leading-h(c)
-      rest = crest
-      remove += cremove
-      if rest != none {
-        break
+#let _remove-leading-h(body) = {
+  if type(body) == content {
+    if body.func() == _sequence-func {
+      let children = body.children
+      if children.len() == 0 {
+        return (none, none)
       }
-      leadingCount += 1
+      let rest
+      let remove
+      let leadingCount = 0
+      for c in children {
+        let (crest, cremove) = _remove-leading-h(c)
+        rest = crest
+        remove += cremove
+        if rest != none {
+          break
+        }
+        leadingCount += 1
+      }
+      children = children.slice(leadingCount)
+      children.first() = rest
+      let rest = _sequence-func(children)
+      return (rest, remove)
+    } else if body.func() == h {
+      return (none, body)
     }
-    children = children.slice(leadingCount)
-    children.first() = rest
-    let rest = _sequence-func(children)
-    return (rest, remove)
-  } else if content.func() == h {
-    return (none, content)
-  } else {
-    return (content, none)
   }
+  return (body, none)
 }
 
-#let _remove-trailing-h(content) = {
-  if content.func() == _sequence-func {
-    let children = content.children
-    if children.len() == 0 {
-      return (none, none)
-    }
-    let rest
-    let remove
-    let trailingCount = 0
-    for c in children.rev() {
-      let (crest, cremove) = _remove-leading-h(c)
-      rest = crest
-      remove += cremove
-      if rest != none {
-        break
+#let _remove-trailing-h(body) = {
+  if type(body) == content {
+    if body.func() == _sequence-func {
+      let children = body.children
+      if children.len() == 0 {
+        return (none, none)
       }
-      trailingCount += 1
+      let rest
+      let remove
+      let trailingCount = 0
+      for c in children.rev() {
+        let (crest, cremove) = _remove-leading-h(c)
+        rest = crest
+        remove += cremove
+        if rest != none {
+          break
+        }
+        trailingCount += 1
+      }
+      children = children.slice(0, children.len() - trailingCount)
+      children.last() = rest
+      let rest = _sequence-func(children)
+      return (rest, remove)
+    } else if body.func() == h {
+      return (none, body)
     }
-    children = children.slice(0, children.len() - trailingCount)
-    children.last() = rest
-    let rest = _sequence-func(children)
-    return (rest, remove)
-  } else if content.func() == h {
-    return (none, content)
-  } else {
-    return (content, none)
   }
+  return (body, none)
 }
 
-#let _label-each-child(content, label) = {
-  if content.func() == math.equation {
-    let body = _label-each-child(content.body, label)
-    return body
-  } else if content.func() == _sequence-func {
-    // If `content` is the sequence of contents,
-    // then put `label` on each child.
-    let children = content.children.filter(c => c != [ ]).map(c => {
-      _label-each-child(c, label)
-    })
-    return content.func()(children)
-  } else if (content.func() == _align-point-func or content.func() == h or content.func() == v) {
-    // Do not put `label` on layout contents such as align-point(),
-    // h(), or v(), in order to avoid broken layout.
-    return content
-  } else {
-    // return [#content#label]
-    return math.attach(math.limits(content), t: [#none#label])
+#let _label-each-child(body, label) = {
+  if type(body) == content {
+    if body.func() == math.equation {
+      let body = _label-each-child(body.body, label)
+      return body
+    } else if body.func() == _sequence-func {
+      // If `content` is the sequence of contents,
+      // then put `label` on each child.
+      let children = body.children.filter(c => c != [ ]).map(c => {
+        _label-each-child(c, label)
+      })
+      return body.func()(children)
+    } else if (body.func() == _align-point-func or body.func() == h or body.func() == v) {
+      // Do not put `label` on layout contents such as align-point(),
+      // h(), or v(), in order to avoid broken layout.
+      return body
+    }
   }
+  return math.attach(math.limits(body), t: [#none#label])
 }
 
 /// Marks a part of a math block with a custom overlay.
@@ -140,8 +142,8 @@
       info-lab = label("_mannot-mark-info-" + str(cnt-get))
     }
 
-    sym.wj
     if underlay != none {
+      sym.wj
       context {
         let infos = query(selector(info-lab).after(here()))
         if infos.len() > 0 {
@@ -157,12 +159,11 @@
         }
       }
     }
-    sym.wj
-    h(0pt, weak: true)
 
     let start = here().position()
     let labeled-body = _label-each-child(body, loc-lab)
     labeled-body
+    labeled-body = sym.wj + labeled-body + sym.wj
 
     context {
       let end = here().position()
@@ -171,9 +172,6 @@
       let min-y = start.y
       for e in elems {
         let pos = e.location().position()
-        let hpos = here().position()
-        let dx = pos.x - hpos.x
-        let dy = pos.y - hpos.y
         if min-y > pos.y {
           min-y = pos.y
         }
@@ -182,9 +180,11 @@
       let size
       let attach-space = .2em
       if ctx == auto {
-        size = measure($ body $)
+        size = measure($ #labeled-body $)
         let width = end.x - start.x
-        if calc.abs(width - size.width) > .01pt {
+        if calc.abs(width - size.width) < .01pt {
+          size = measure($ body $)
+        } else {
           let size1 = measure($ inline(#labeled-body) $)
           let size2 = measure($ script(#labeled-body) $)
           let size3 = measure($ sscript(#labeled-body) $)
