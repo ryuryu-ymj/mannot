@@ -180,11 +180,10 @@
       let size
       let attach-space = .2em
       if ctx == auto {
-        size = measure($ #labeled-body $)
         let width = end.x - start.x
-        if calc.abs(width - size.width) < .01pt {
-          size = measure($ body $)
-        } else {
+        size = measure($ body $)
+        let size0 = measure($ #labeled-body $)
+        if calc.abs(width - size0.width) > .01pt {
           let size1 = measure($ inline(#labeled-body) $)
           let size2 = measure($ script(#labeled-body) $)
           let size3 = measure($ sscript(#labeled-body) $)
@@ -198,6 +197,8 @@
             attach-space = measure($ sscript(#rect(height: attach-space)) $).height
           }
         }
+      } else if ctx == "display" {
+        size = measure($ body $)
       } else if ctx == "inline" {
         size = measure($ inline(body) $)
       } else if ctx == "script" {
