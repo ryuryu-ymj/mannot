@@ -47,20 +47,20 @@
 /// It must be used within the same math block that contains the marked content.
 ///
 /// *Example*
-/// #example(```
-///let myannot(tag, annotation) = {
-///  let overlay(width, height, color) = {
-///    set text(white, .8em)
-///    let annot-block = box(fill: color, inset: .4em, annotation)
-///    place(annot-block, dy: height)
-///  }
-///  return core-annot(tag, overlay)
-///}
+/// #example(```typ
+/// #let myannot(tag, annotation) = {
+///   let overlay(width, height, color) = {
+///     set text(white, .8em)
+///     let annot-block = box(fill: color, inset: .4em, annotation)
+///     place(annot-block, dy: height)
+///   }
+///   return core-annot(tag, overlay)
+/// }
 ///
-///$
-///mark(x, tag: #<e>)
-///#myannot(<e>)[This is x.]
-///$
+/// $
+/// mark(x, tag: #<e>)
+/// #myannot(<e>)[This is x.]
+/// $
 /// ```, preview-inset: 20pt)
 ///
 /// - tag (label): The tag associated with the content you want to annotate.
@@ -89,23 +89,23 @@
 /// This function must be used within the same math block that contains the marked content.
 ///
 /// *Example*
-/// #example(```
-///$
-///mark(x, tag: #<e>)
-///#annot(<e>)[Annotation]
-///$
-/// ```)
+/// ```example
+/// $
+/// mark(x, tag: #<e>)
+/// #annot(<e>)[Annotation]
+/// $
+/// ```
 ///
-/// #example(```
-///$
-///mark(integral x dif x, tag: #<x>, color: #blue)
-///+ mark(y, tag: #<y>, color: #red)
+/// #example(```typ
+/// $
+/// mark(integral x dif x, tag: #<x>, color: #blue)
+/// + mark(y, tag: #<y>, color: #red)
 ///
-///#annot(<x>, pos: left)[Left]
-///#annot(<x>, pos: top + left)[Top left]
-///#annot(<y>, pos: left, yshift: 2em)[Left arrow]
-///#annot(<y>, pos: top + right, yshift: 1em)[Top right arrow]
-///$
+/// #annot(<x>, pos: left)[Left]
+/// #annot(<x>, pos: top + left)[Top left]
+/// #annot(<y>, pos: left, yshift: 2em)[Left arrow]
+/// #annot(<y>, pos: top + right, yshift: 1em)[Top right arrow]
+/// $
 /// ```, preview-inset: 20pt)
 ///
 /// - tag (label): The tag associated with the content you want to annotate.
@@ -151,11 +151,12 @@
       center
     } else {
       pos.x
-    } + if pos.y == none {
-      bottom
-    } else {
-      pos.y
     }
+      + if pos.y == none {
+        bottom
+      } else {
+        pos.y
+      }
   )
   if alignment == auto {
     alignment = pos.x.inv()
@@ -195,11 +196,14 @@
           if not draw-arrow {
             // Place annotation.
 
-            let dx = width / 2 + if pos.x == center {
-              -annot-size.width / 2
-            } else if pos.x == left {
-              -annot-size.width
-            }
+            let dx = (
+              width / 2
+                + if pos.x == center {
+                  -annot-size.width / 2
+                } else if pos.x == left {
+                  -annot-size.width
+                }
+            )
             let dy = if pos.y == bottom {
               height + yshift
             } else {
