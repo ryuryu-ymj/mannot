@@ -40,11 +40,13 @@
 }
 
 
-/// Places a custom annotation to the marked content.
+/// Places a custom annotation on previously marked content within a math block.
 ///
-/// This function creates a custom annotation by placing an overlay on the content
-/// that was previously marked with a specific tag.
-/// It must be used within the same math block that contains the marked content.
+/// This function creates a custom annotation by applying an overlay to content
+/// that was previously marked with a specific tag using `core-mark`.
+/// It must be used within the same math block as the marked content.
+///
+/// Use this function as a foundation for defining custom annotation functions.
 ///
 /// *Example*
 /// #example(```typ
@@ -63,13 +65,19 @@
 /// $
 /// ```, preview-inset: 20pt)
 ///
-/// - tag (label): The tag associated with the content you want to annotate.
-///     This tag must match a previously used tag in a `core-mark` call.
-/// - overlay (function): The function to create a custom annotation.
-///     It takes `width`, `height`, and `color` as arguments,
-///     where `width` and `height` represent the size of the marked content,
-///     and `color` is the base color passed to `core-mark`.
-#let core-annot(tag, overlay) = {
+/// -> content
+#let core-annot(
+  /// The tag associated with the content to annotate.
+  /// This tag must match a tag previously used in a `core-mark` call.
+  /// -> label
+  tag,
+  /// The function to create the custom annotation overlay.
+  /// This function receives the width, height, and color of the marked content (including padding)
+  /// and should return content to be placed *over* the marked content.
+  /// The signature is `overlay(width, height, color)`.
+  /// -> function
+  overlay,
+) = {
   context {
     let info = query(selector(tag).before(here())).last()
     info = info.value
@@ -84,9 +92,10 @@
   }
 }
 
-/// Places an annotation to the marked content.
+
+/// Places an annotation on previously marked content within a math block.
 ///
-/// This function must be used within the same math block that contains the marked content.
+/// This function must be used within the same math block as the marked content.
 ///
 /// *Example*
 /// ```example
@@ -108,32 +117,41 @@
 /// $
 /// ```, preview-inset: 20pt)
 ///
-/// - tag (label): The tag associated with the content you want to annotate.
-///     This tag must match a previously used tag in a `core-mark` call.
-/// - annotation (content): The content of the annotation.
-/// - pos (alignment): The position of the annotation relative to the marked content.
-///     Possible values are (`top` or `bottom`) + (`left`, `center` or `right`).
-/// - yshift (length): The vertical distance between the annotation and the marked content.
-/// - text-props (dictionary): Properties for the annotation text.
-///     If the `fill` field is not specified, it defaults to the color used in the marking.
-/// - par-props (dictionary): Properties for the annotation paragraph.
-/// - alignment (auto, alignment): The alignment of the annotation text within its box.
-/// - show-arrow (auto, bool): Whether to display an arrow connecting the annotation to the marked content.
-///     If set to `auto`, an arrow will be shown when `yshift > .4em`.
-/// - arrow-stroke (auto, none, color, length, dictionary, stroke):
-///     The stroke style for the arrow.
-///     If the `paint` field is not specified, it defaults to the color used in the marking.
-/// - arrow-padding (length): The space between the arrow and the annotation box.
+/// -> content
 #let annot(
+  /// The tag associated with the content to annotate.
+  /// This tag must match a tag previously used in marking.
+  /// -> label
   tag,
+  /// The content of the annotation. -> content
   annotation,
+  /// The position of the annotation relative to the marked content.
+  /// Possible values are (`top` or `bottom`) + (`left`, `center` or `right`).
+  /// -> alignment
   pos: center + bottom,
+  /// The vertical offset between the annotation and the marked content.
+  /// -> length
   yshift: .2em,
+  /// Properties for the annotation text.
+  /// If the `fill` property is not specified, it defaults to the marking's color.
+  /// -> dictionary
   text-props: (size: .6em, bottom-edge: "descender"),
+  /// Properties for the annotation paragraph.
+  /// -> dictionary
   par-props: (leading: .3em),
+  /// The alignment of the annotation text within its box.
+  /// -> auto | alignment
   alignment: auto,
+  /// Whether to display an arrow connecting the annotation to the marked content.
+  /// If set to `auto`, an arrow is shown when `yshift` is greater than `0.4em`.
+  /// -> auto | bool
   show-arrow: auto,
+  /// The stroke style for the arrow.
+  /// If the `paint` property is not specified, it defaults to the marking's color.
+  /// -> auto | none | color | length | dictionary | stroke
   arrow-stroke: .08em,
+  /// The spacing between the arrow and the annotation box.
+  /// -> length
   arrow-padding: .2em,
 ) = {
   assert(

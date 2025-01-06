@@ -216,7 +216,7 @@
             attach-space = measure($ script(#rect(height: attach-space)) $).height
           } else if calc.abs(width - size3.width) < .01pt {
             size = measure($ sscript(body) $)
-            attach-space = .26em
+            attach-space = .25em
             attach-space = measure($ script(#rect(height: attach-space)) $).height
           }
         }
