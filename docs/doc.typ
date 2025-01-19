@@ -27,9 +27,8 @@ A package for marking and annotating in math blocks in Typst.
 
 = Example
 #example-vstack(```typst
-#set text(1.2em)
+#set text(12pt)
 #v(2em)
-
 $
   markul(p_i, tag: #<p>)
   = markrect(
@@ -47,7 +46,7 @@ $
 
 
 = Usage
-Import the package #raw(name) on the top of your document.
+Import the package #raw(name) on the top of your document:
 #let usage-code = "#import \"@preview/" + name + ":" + version + "\": *"
 #raw(block: true, lang: "typst", usage-code)
 

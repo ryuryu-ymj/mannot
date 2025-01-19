@@ -23,9 +23,9 @@ $
 ![Example1](examples/showcase.svg)
 
 ## Usage
-Import the package `mannot` on the top of your document.
+Import the package `mannot` on the top of your document:
 ```typst
-#import "@preview/mannot:0.1.0": *
+#import "@preview/mannot:0.2.0": *
 ```
 
 To define the target of an annotation within a math block,
@@ -81,3 +81,10 @@ $
 #v(2em)
 ```
 ![Usage4](examples/usage4.svg)
+
+
+## Changelogs
+* v0.2.0:
+  - remove the `mannot-init` function;
+  - add marking functions: `markrect`, `markul`, `marktc`.
+* v0.1.0: first release.
