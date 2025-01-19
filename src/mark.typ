@@ -1,3 +1,5 @@
+#import "util.typ": copy-stroke
+
 #let _mark-cnt = counter("_mannot-mark-cnt")
 
 #let _sequence-func = (math.text("x") + math.text("y")).func()
@@ -87,12 +89,12 @@
   return math.attach(math.limits(body), t: pad([#none#label], -1em))
 }
 
-/// Marks a portion of a math block with a custom underlay or overlay.
+/// Marks content within a math block with a custom underlay or overlay.
 ///
 /// This function measures the position and size of the marked content,
 /// applies a custom underlay or overlay, and generates metadata associated with a given tag.
 /// The metadata includes the original content, its position (`x`, `y`), dimensions (`width`, `height`),
-/// and the color used for the marking.
+/// and the color used for the marking. This metadata can be later used for annotations.
 ///
 /// Use this function as a foundation for defining custom marking functions.
 ///
@@ -117,32 +119,35 @@
 #let core-mark(
   /// The content to be marked within a math block. -> content
   body,
-  /// An optional tag to associate with the metadata. -> none | label
+  /// An optional tag to associate with the metadata.
+  /// This tag can be used to query the marked element.
+  /// -> none | label
   tag: none,
   /// The color used for marking. -> color
   color: black,
   /// An optional function to create a custom underlay.
-  /// This function receives the width, height, and color of the marked content (including padding)
-  /// and should return content to be placed *under* the marked content.
+  /// This function receives the marked content's width and height (including padding)
+  /// and marking color, and should return content to be placed *under* the marked content.
   /// The signature is `underlay(width, height, color)`.
   /// -> none | function
   underlay: none,
   /// An optional function to create a custom overlay.
-  /// This function receives the width, height, and color of the marked content (including padding)
-  /// and should return content to be placed *over* the marked content.
+  /// This function receives the marked content's width and height (including padding)
+  /// and marking color, and should return content to be placed *over* the marked content.
   /// The signature is `overlay(width, height, color)`.
   /// -> none | function
   overlay: none,
   /// The spacing between the marked content and the edge of the underlay/overlay.
-  /// This can be specified as a single `length` value which applies to all sides,
-  /// or as a `dictionary` with keys `left`, `right`, `top`, `bottom`, `x`, `y`, or `rest`.
+  /// This can be specified as a single `length` value, which applies to all sides,
+  /// or as a `dictionary` of `length` with keys `left`, `right`, `top`, `bottom`, `x`, `y`, or `rest`.
   /// -> none | length | dictionary
   padding: (:),
-  /// The context of the marked content.
-  /// Possible values are `"inline"`, `"script"` or `"sscript"`.
-  /// If set to `auto`, the context is determined automatically.
+  /// The math size style of the marked content.
+  /// Possible values are `"display"`, `"inline"`, `"script"`, and `"sscript"`.
+  /// This is used for measuring the content's height.
+  /// If set to `auto`, the style is determined automatically based on its width.
   /// -> auto | string
-  ctx: auto,
+  sizestyle: auto,
 ) = {
   // Extract leading/trailing horizontal spaces from body.
   let (body, leading-h) = _remove-leading-h(body)
@@ -201,39 +206,39 @@
 
       let size
       let attach-space = .28em
-      if ctx == auto {
+      if sizestyle == auto {
         let width = end.x - start.x
         size = measure($ body $)
         let size0 = measure($ #labeled-body $)
-        if calc.abs(width - size0.width) > .01pt {
+        if calc.abs(width - size0.width) > .001pt {
           let size1 = measure($ inline(#labeled-body) $)
           let size2 = measure($ script(#labeled-body) $)
           let size3 = measure($ sscript(#labeled-body) $)
-          if calc.abs(width - size1.width) < .01pt {
+          if calc.abs(width - size1.width) < .001pt {
             size = measure($ inline(body) $)
-          } else if calc.abs(width - size2.width) < .01pt {
+          } else if calc.abs(width - size2.width) < .001pt {
             size = measure($ script(body) $)
             attach-space = measure($ script(#rect(height: attach-space)) $).height
-          } else if calc.abs(width - size3.width) < .01pt {
+          } else if calc.abs(width - size3.width) < .001pt {
             size = measure($ sscript(body) $)
             attach-space = .25em
             attach-space = measure($ script(#rect(height: attach-space)) $).height
           }
         }
-      } else if ctx == "display" {
+      } else if sizestyle == "display" {
         size = measure($ body $)
-      } else if ctx == "inline" {
+      } else if sizestyle == "inline" {
         size = measure($ inline(body) $)
-      } else if ctx == "script" {
+      } else if sizestyle == "script" {
         size = measure($ script(body) $)
         attach-space = measure($ script(#rect(height: attach-space)) $).height
-      } else if ctx == "sscript" {
+      } else if sizestyle == "sscript" {
         size = measure($ sscript(body) $)
         attach-space = measure($ script(#rect(height: attach-space)) $).height
       }
       min-y += attach-space.to-absolute()
 
-      let padding = if type(padding) == none {
+      let padding = if padding == none {
         (left: 0pt, right: 0pt, top: 0pt, bottom: 0pt)
       } else if type(padding) == length {
         (left: padding, right: padding, top: padding, bottom: padding)
@@ -272,9 +277,9 @@
 }
 
 
-/// Marks a part of a math block with highlighting.
+/// Marks content within a math block with highlighting.
 ///
-/// Marked content can be annotated with `annot` function.
+/// If you mark content with a tag, you can annotate it using the `annot` function.
 ///
 /// *Example*
 /// ```example
@@ -285,16 +290,16 @@
 #let mark(
   /// The content to be highlighted within a math block. -> content
   body,
-  /// An optional tag used to identify the highlighted content for later annotation.
+  /// An optional tag used to identify the marked content for later annotations.
   /// -> none | label
   tag: none,
-  /// The color used for the highlight.
-  /// If set to `auto` and `fill` is `auto`, `color` will set be set to `orange`.
-  /// Otherwise, it defaults to `black`.
+  /// The color used for the highlight and later annotations.
+  /// If both `color` and `fill` are set to `auto`, `color` defaults to `orange`.
+  /// Otherwise, if only `color` is `auto`, it defaults to `black`.
   /// -> auto | color
   color: auto,
   /// The fill style for the highlight rectangle.
-  /// If set to `auto`, `fill` will be set to `color.transparentize(70%)`.
+  /// If set to `auto`, `fill` will be set to `color.transparentize(60%)`.
   /// -> auto | none | color | gradient | pattern
   fill: auto,
   /// The stroke style for the highlight rectangle.
@@ -302,16 +307,16 @@
   stroke: none,
   /// The corner radius of the highlight rectangle. -> relative | dictionary
   radius: (:),
-  /// The spacing between the marked content and the edge of the underlay/overlay.
+  /// The spacing between the marked content and the edge of the highlight rectangle.
   /// This can be specified as a single `length` value which applies to all sides,
-  /// or as a `dictionary` with keys `left`, `right`, `top`, `bottom`, `x`, `y`, or `rest`.
+  /// or as a `dictionary` of `length` with keys `left`, `right`, `top`, `bottom`, `x`, `y`, or `rest`.
   /// -> none | length | dictionary
   padding: (y: .1em),
-  /// The context of the marked content.
-  /// Possible values are `"inline"`, `"script"` or `"sscript"`.
-  /// If set to `auto`, the context is determined automatically.
+  /// The math size style of the marked content.
+  /// Possible values are `"display"`, `"inline"`, `"script"` and `"sscript"`.
+  /// If set to `auto`, the style is determined automatically.
   /// -> auto | string
-  ctx: auto,
+  sizestyle: auto,
 ) = {
   if fill == auto {
     if color == auto {
@@ -322,10 +327,8 @@
     color = black
   }
 
-  let underlay(width, height, _) = {
-    if fill == none and stroke == none {
-      none
-    } else {
+  let underlay = if fill == none and stroke == none { none } else {
+    (width, height, _) => {
       rect(
         width: width,
         height: height,
@@ -336,5 +339,145 @@
     }
   }
 
-  return core-mark(body, tag: tag, color: color, underlay: underlay, padding: padding, ctx: ctx)
+  return core-mark(body, tag: tag, color: color, underlay: underlay, padding: padding, sizestyle: sizestyle)
+}
+
+
+/// Marks content within a math block with a rectangle.
+///
+/// If you mark content with a tag, you can annotate it using the `annot` function.
+///
+/// *Example*
+/// ```example
+/// $ markrect(x + y) $
+/// ```
+///
+/// -> content
+#let markrect(
+  /// The content to be marked within a math block. -> content
+  body,
+  /// An optional tag used to identify the content for later annotations.
+  /// -> none | label
+  tag: none,
+  /// The color used for the rectangle stroke and later annotations.
+  /// -> color
+  color: black,
+  /// The fill style for the rectangle.
+  /// -> none | color | gradient | pattern
+  fill: none,
+  /// The stroke style for the rectangle.
+  /// If its `paint` is set to `auto`, it will be set to the `color`.
+  /// -> none | length | color | gradient | stroke | pattern | dictionary
+  stroke: .05em,
+  /// The corner radius of the rectangle. -> relative | dictionary
+  radius: (:),
+  /// The spacing between the marked content and the edge of the rectangle.
+  /// This can be specified as a single `length` value which applies to all sides,
+  /// or as a `dictionary` of `length` with keys `left`, `right`, `top`, `bottom`, `x`, `y`, or `rest`.
+  /// -> none | length | dictionary
+  padding: (y: .1em),
+  /// The math size style of the marked content.
+  /// Possible values are `"display"`, `"inline"`, `"script"` and `"sscript"`.
+  /// If set to `auto`, the style is determined automatically.
+  /// -> auto | string
+  sizestyle: auto,
+) = {
+  if stroke != none {
+    stroke = std.stroke(stroke)
+    if stroke.paint == auto {
+      stroke = copy-stroke(stroke, (paint: color))
+    }
+  }
+
+  let underlay = if fill == none and stroke == none { none } else {
+    (width, height, _) => {
+      rect(
+        width: width,
+        height: height,
+        fill: fill,
+        stroke: stroke,
+        radius: radius,
+      )
+    }
+  }
+
+  return core-mark(body, tag: tag, color: color, underlay: underlay, padding: padding, sizestyle: sizestyle)
+}
+
+
+/// Marks content within a math block with an underline.
+///
+/// If you mark content with a tag, you can annotate it using the `annot` function.
+///
+/// *Example*
+/// ```example
+/// $ markul(x + y) $
+/// ```
+///
+/// -> content
+#let markul(
+  /// The content to be underlined within a math block. -> content
+  body,
+  /// An optional tag used to identify the underlined content for later annotations.
+  /// -> none | label
+  tag: none,
+  /// The color used for the underline. -> color
+  color: black,
+  /// The stroke style for the underline.
+  /// -> none | length | color | gradient | stroke | pattern | dictionary
+  stroke: .05em,
+  /// The spacing between the marked content and the underline.
+  /// -> none | length
+  padding: .15em,
+  /// The math size style of the marked content.
+  /// Possible values are `"display"`, `"inline"`, `"script"` or `"sscript"`.
+  /// If set to `auto`, the style is determined automatically.
+  sizestyle: auto,
+) = {
+  if stroke != none {
+    stroke = std.stroke(stroke)
+    if stroke.paint == auto {
+      stroke = copy-stroke(stroke, (paint: color))
+    }
+  }
+  if type(padding) == length {
+    padding = (bottom: padding)
+  }
+
+  let overlay = if stroke == none { none } else {
+    (width, height, _) => {
+      line(start: (0pt, height), end: (width, height), stroke: stroke)
+    }
+  }
+
+  return core-mark(body, tag: tag, color: color, overlay: overlay, padding: padding, sizestyle: sizestyle)
+}
+
+
+/// Marks content within a math block and changes its text color.
+///
+/// If you mark content with a tag, you can annotate it using the `annot` function.
+///
+/// *Example*
+/// ```example
+/// $ marktc(x + y) $
+/// ```
+///
+/// -> content
+#let marktc(
+  /// The content to be underlined within a math block. -> content
+  body,
+  /// An optional tag used to identify the underlined content for later annotations.
+  /// -> none | label
+  tag: none,
+  /// The color used for the underline. -> color
+  color: red,
+  /// The math size style of the marked content.
+  /// Possible values are `"display"`, `"inline"`, `"script"` or `"sscript"`.
+  /// If set to `auto`, the style is determined automatically.
+  sizestyle: auto,
+) = {
+  body = text(fill: color, body)
+
+  return core-mark(body, tag: tag, color: color, padding: .15em, sizestyle: sizestyle)
 }

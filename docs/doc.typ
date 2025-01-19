@@ -1,4 +1,4 @@
-#import "@preview/tidy:0.3.0"
+#import "@preview/tidy:0.4.0"
 #import "@preview/codly:1.0.0": *
 #import "/src/lib.typ": *
 #import "doc-template.typ": *
@@ -7,6 +7,9 @@
 
 #show: codly-init.with()
 #codly(lang-format: none)
+
+#set text(font: "Noto Serif", size: 10pt)
+#show raw.where(block: false): set text(font: "Noto Sans Mono")
 
 #let package-info = toml("/typst.toml")
 #let name = package-info.package.name
@@ -17,66 +20,100 @@
 #text(1.2em, "v" + version)
 
 
-A package for highlighting and annotating in math blocks in Typst.
+A package for marking and annotating in math blocks in Typst.
 
 #outline(depth: 1, indent: auto)
 
-= Usage
-Import and initialize the package #raw(name) on the top of your document.
-#let usage-code = "#import \"@preview/" + name + ":" + version + "\": *\n" + "#show: mannot-init"
-#raw(block: true, lang: "typst", usage-code)
 
-To highlight a part of a math block, use the `mark` function:
-#example("$
-mark(x)
-$")
-
-You can also specify a color for the highlighted part:
-#example("$ // Need # before color names.
-mark(3, color: #red) mark(x, color: #blue)
-+ mark(integral x dif x, color: #green)
-$")
-
-To add an annotation to a highlighted part, use the `annot` function.
-You need to specify the tag of the marked content:
-#example("$
-mark(x, tag: #<x>)  // Need # before tags.
-#annot(<x>)[Annotation]
-$")
-
-You can customize the position of the annotation and the vertical distance from the marked content:
-#example("$
-mark(integral x dif x, tag: #<i>, color: #green)
-+ mark(3, tag: #<3>, color: #red) mark(x, tag: #<x>, color: #blue)
-
-#annot(<i>, pos: left)[Set pos to left.]
-#annot(<i>, pos: top + left)[Top left.]
-#annot(<3>, pos: top, yshift: 1.2em)[Use yshift.]
-#annot(<x>, pos: right, yshift: 1.2em)[Auto arrow.]
-$")
-
-For convenience, you can define custom mark functions:
-#example("#let rmark = mark.with(color: red)
-#let gmark = mark.with(color: green)
-#let bmark = mark.with(color: blue)
+= Example
+#example-vstack(```typst
+#set text(1.2em)
+#v(2em)
 
 $
-integral_rmark(0, tag: #<i0>)^bmark(1, tag: #<i1>)
-mark(x^2 + 1, tag: #<i2>) dif gmark(x, tag: #<i3>)
+  markul(p_i, tag: #<p>)
+  = markrect(
+    exp(- marktc(beta, tag: #<beta>) marktc(E_i, tag: #<E>, color: #green)),
+    tag: #<Boltzmann>, color: #blue,
+  ) / mark(sum_j exp(- beta E_j), tag: #<Z>)
 
-#annot(<i0>)[Begin]
-#annot(<i1>, pos: top)[End]
-#annot(<i2>, pos: top + right)[Integrand]
-#annot(<i3>, pos: right, yshift: .6em)[Variable]
-$")
+  #annot(<p>, pos: left)[Probability of \ state $i$]
+  #annot(<beta>, pos: top + left, yshift: 2em)[Inverse temperature]
+  #annot(<E>, pos: top + right, yshift: 1em)[Energy]
+  #annot(<Boltzmann>, pos: top + left)[Boltzmann factor]
+  #annot(<Z>)[Partition function]
+$
+```)
+
+
+= Usage
+Import the package #raw(name) on the top of your document.
+#let usage-code = "#import \"@preview/" + name + ":" + version + "\": *"
+#raw(block: true, lang: "typst", usage-code)
+
+To define the target of an annotation within a math block,
+use the following marking functions:
+- `mark`: marks the content with highlighting;
+- `markrect`: marks the content with a rectangular box;
+- `markul`: marks the content with an underline;
+- `marktc`: marks the content and changes the text color.
+#example(```typst
+$
+mark(x, tag: #<t1>) + markrect(2y, tag: #<t2>)
++ markul(z+1, tag: #<t3>) + marktc(C, tag: #<t4>)
+$
+```)
+
+You can also use marking functions solely for styling parts of a math block,
+without tags:
+#example(```typst
+$
+mark(x^2 +, color: #blue, radius: #20%)
+f(markul(x^2 + 1, color: #red, stroke: #2pt))
+$
+```)
+
+Once you have marked content with a tag,
+you can annotate it using the `annot` function within the same math block:
+#example(```typst
+$
+mark(x, tag: #<t1>) + markrect(2y, tag: #<t2>)
++ markul(z+1, tag: #<t3>) + marktc(C, tag: #<t4>)
+
+#annot(<t1>)[annotation]
+#annot(<t4>)[another annotation]
+$
+```)
+
+You can customize the position of the annotation and its vertical distance from the marked content,
+using the `pos` and `yshift` parameters of the `annot` function:
+#example(```typst
+#v(3em)
+$
+mark(x, tag: #<t1>) + markrect(2y, tag: #<t2>)
++ markul(z+1, tag: #<t3>) + marktc(C, tag: #<t4>)
+
+#annot(<t1>, pos: left)[Set pos \ to left.]
+#annot(<t2>, pos: top, yshift: 1em)[
+  Set pos to top, and yshift to 1em.
+]
+#annot(<t3>, pos: right, yshift: 1em)[
+  Set pos to right,\ and yshift to 1em.
+]
+#annot(<t4>, pos: top + left, yshift: 3em)[
+  Set pos to top+left,\ and yshift to 3em.
+]
+$
+#v(2em)
+```)
 
 
 = Limitations
 If you mark a inline math element containing linebreaks,
 its layout will be broken:
-#example("
+#example(```typst
 $mark(x + x + x + x + x + x + x + x)$
-")
+```)
 
 
 = API
@@ -88,7 +125,7 @@ $mark(x + x + x + x + x + x + x + x)$
     tidy.parse-module(
       read("/src/mark.typ") + read("/src/annot.typ"),
       scope: (lib: lib),
-      preamble: "import lib: *;",
+      preamble: "import lib: *\n",
     )
   )
   tidy.show-module(docs, show-outline: true, sort-functions: none, style: tidy-style)

@@ -1,2 +1,2 @@
-#import "mark.typ": mark, core-mark
-#import "annot.typ": annot, core-annot
+#import "mark.typ": core-mark, mark, markrect, markul, marktc
+#import "annot.typ": core-annot, annot
