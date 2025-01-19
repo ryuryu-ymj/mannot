@@ -36,42 +36,56 @@ use the following marking functions:
 - `marktc`: marks the content and changes the text color.
 ```typst
 $
-mark(x, tag: #<t1>) + markrect(2y, tag: #<t2>)
-+ markul(z+1, tag: #<t3>) + marktc(C, tag: #<t4>)
+  mark(x, tag: #<t1>) + markrect(2y, tag: #<t2>)
+  + markul(z+1, tag: #<t3>) + marktc(C, tag: #<t4>)
 $
 ```
 ![Usage1](examples/usage1.svg)
+
+You can customize the marking color and other styles:
+```typst
+$
+  mark(x, tag: #<t1>, color: #purple)
+  + markrect(2y, tag: #<t2>, color: #red, padding: #.2em)
+  + markul(z+1, tag: #<t3>, stroke: #.1em)
+  + marktc(C, tag: #<t4>, color: #olive)
+$
+```
+![Usage2](examples/usage2.svg)
 
 You can also use marking functions solely for styling parts of a math block,
 without tags:
 ```typst
 $
-mark(x^2 +, color: #blue, radius: #20%)
-f(markul(x^2 + 1, color: #red, stroke: #2pt))
+  mark(x^2 +, color: #blue, radius: #20%)
+  f(markul(x^2 + 1, color: #red, stroke: #.1em))
 $
 ```
-![Usage2](examples/usage2.svg)
+![Usage3](examples/usage3.svg)
 
 Once you have marked content with a tag,
 you can annotate it using the `annot` function within the same math block:
 ```typst
 $
-mark(x, tag: #<t1>) + markrect(2y, tag: #<t2>)
-+ markul(z+1, tag: #<t3>) + marktc(C, tag: #<t4>)
+  mark(x, tag: #<t1>, color: #purple)
+  + markrect(2y, tag: #<t2>, color: #red, padding: #.2em)
+  + markul(z+1, tag: #<t3>, stroke: #.1em)
+  + marktc(C, tag: #<t4>, color: #olive)
 
-#annot(<t1>)[annotation]
-#annot(<t4>)[another annotation]
+  #annot(<t1>)[annotation]
 $
 ```
-![Usage3](examples/usage3.svg)
+![Usage4](examples/usage4.svg)
 
 You can customize the position of the annotation and its vertical distance from the marked content,
 using the `pos` and `yshift` parameters of the `annot` function:
 ```typst
 #v(3em)
 $
-  mark(x, tag: #<t1>) + markrect(2y, tag: #<t2>)
-  + markul(z+1, tag: #<t3>) + marktc(C, tag: #<t4>)
+  mark(x, tag: #<t1>, color: #purple)
+  + markrect(2y, tag: #<t2>, color: #red, padding: #.2em)
+  + markul(z+1, tag: #<t3>, stroke: #.1em)
+  + marktc(C, tag: #<t4>, color: #olive)
 
   #annot(<t1>, pos: left)[Set pos \ to left.]
   #annot(<t2>, pos: top, yshift: 1em)[Set pos to top, and yshift to 1em.]
@@ -80,11 +94,12 @@ $
 $
 #v(2em)
 ```
-![Usage4](examples/usage4.svg)
+![Usage5](examples/usage5.svg)
 
 
 ## Changelogs
 * v0.2.0:
   - remove the `mannot-init` function;
+  - support placing underlay under the math content when marking;
   - add marking functions: `markrect`, `markul`, `marktc`.
 * v0.1.0: first release.

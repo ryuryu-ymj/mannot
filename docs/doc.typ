@@ -63,6 +63,16 @@ mark(x, tag: #<t1>) + markrect(2y, tag: #<t2>)
 $
 ```)
 
+You can customize the marking color and other styles:
+#example(```typst
+$
+mark(x, tag: #<t1>, color: #purple)
++ markrect(2y, tag: #<t2>, color: #red, padding: #2pt)
++ markul(z+1, tag: #<t3>, stroke: #1pt)
++ marktc(C, tag: #<t4>, color: #olive)
+$
+```)
+
 You can also use marking functions solely for styling parts of a math block,
 without tags:
 #example(```typst
@@ -76,8 +86,10 @@ Once you have marked content with a tag,
 you can annotate it using the `annot` function within the same math block:
 #example(```typst
 $
-mark(x, tag: #<t1>) + markrect(2y, tag: #<t2>)
-+ markul(z+1, tag: #<t3>) + marktc(C, tag: #<t4>)
+mark(x, tag: #<t1>, color: #purple)
++ markrect(2y, tag: #<t2>, color: #red, padding: #2pt)
++ markul(z+1, tag: #<t3>, stroke: #1pt)
++ marktc(C, tag: #<t4>, color: #olive)
 
 #annot(<t1>)[annotation]
 #annot(<t4>)[another annotation]
@@ -89,8 +101,10 @@ using the `pos` and `yshift` parameters of the `annot` function:
 #example(```typst
 #v(3em)
 $
-mark(x, tag: #<t1>) + markrect(2y, tag: #<t2>)
-+ markul(z+1, tag: #<t3>) + marktc(C, tag: #<t4>)
+mark(x, tag: #<t1>, color: #purple)
++ markrect(2y, tag: #<t2>, color: #red, padding: #2pt)
++ markul(z+1, tag: #<t3>, stroke: #1pt)
++ marktc(C, tag: #<t4>, color: #olive)
 
 #annot(<t1>, pos: left)[Set pos \ to left.]
 #annot(<t2>, pos: top, yshift: 1em)[
