@@ -88,7 +88,9 @@
     let width = info.width
     let height = info.height
     let color = info.color
+    sym.wj
     box(place(dx: dx, dy: dy, overlay(width, height, color)))
+    sym.wj
   }
 }
 

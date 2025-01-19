@@ -75,3 +75,20 @@ $
     annot(<i3>, pos: right)[Variable]
   }
 $
+
+#pagebreak()
+
+$
+  x \
+  mark(x, tag: #<x>)
+
+  #annot(<x>)[annotation]
+$
+
+$
+  x + y \
+  mark(x, tag: #<x>)
+  #annot(<x>)[annotation1]
+  + mark(y)
+  #annot(<x>, pos: top)[annotation2]
+$

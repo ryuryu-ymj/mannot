@@ -15,7 +15,7 @@
 #let bmark(body) = mark(body, color: blue)
 #let boxmark(body) = mark(body, fill: none, stroke: .5pt)
 
-// #show: mannot-init
+
 
 = Color
 
@@ -53,6 +53,7 @@ $
 = Padding
 $
   mark(x, padding: #0pt) quad
+  mark(x, padding: #0pt) quad
   mark(x, padding: #(x: 8pt, y: 4pt)) quad
   mark(x, padding: #(left: 4pt, right: 2pt, top: 6pt, bottom: 8pt)) quad
   mark(x, padding: #(right: 0pt, rest: 4pt))
@@ -62,7 +63,15 @@ $
 = Size / position
 == Block
 $
-  mark(x, padding: #0pt) x_mark(x, padding:#0pt) x_x_mark(x, padding:#0pt)
+  mark(x, padding: #0pt)
+  mark(y, padding: #0pt)
+  mark(T, padding: #0pt)
+  mark(text(x, size: #2em), padding: #0pt)
+  mark(text(x, size: #40pt), padding: #0pt)
+  x_mark(x, padding:#0pt)
+  x_x_mark(x, padding:#0pt)
+  x^mark(x, padding:#0pt)
+  x^x^mark(x, padding:#0pt)
 $
 
 $
@@ -100,7 +109,7 @@ $mark(x + y + T)$
 
 = Nesting
 $
-  mark(gmark(x) + bmark(y) + z) \
+  boxmark(mark(gmark(x) + bmark(y)) + z) \
 $
 
 // $
@@ -152,14 +161,6 @@ $
 $
 
 $
-  x #metadata(none) y \
-  x #place(none) y \
-  x #{box(place(none)) + sym.wj} y \
-  x #{sym.wj + box(place(none))} y \
-  x #{sym.wj + box(place(none)) + sym.wj} y \
-$
-
-$
   2 x + 3 y = 4 \
   mark(2 x + 3 y = 4) \
   mark(2) gmark(x) + rmark(3) bmark(y) = mark(4)
@@ -171,6 +172,11 @@ $
   // rmark(x) dif bmark(x) \
   rmark(x) dif bmark(x) \
   rmark(x) gmark(dif) bmark(x) \
+$
+
+$
+  L / T + mark(L) / mark(T) + mark(L / T) \
+  L_1 / T^1 + mark(L_1) / mark(T^1) + mark(L_1 / T^1) \
 $
 
 Align-point:
