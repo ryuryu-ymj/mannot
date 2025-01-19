@@ -107,8 +107,8 @@
 ///
 /// #example(```typ
 /// $
-/// mark(integral x dif x, tag: #<x>, color: #blue)
-/// + mark(y, tag: #<y>, color: #red)
+/// markrect(integral x dif x, tag: #<x>, color: #blue)
+/// + markul(y, tag: #<y>, color: #red)
 ///
 /// #annot(<x>, pos: left)[Left]
 /// #annot(<x>, pos: top + left)[Top left]
