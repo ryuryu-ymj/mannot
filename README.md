@@ -6,17 +6,17 @@ A full documentation is [here](docs/doc.pdf).
 ## Example
 ```typst
 $
-markul(p_i, tag: #<p>)
-= markrect(
-exp(- marktc(beta, tag: #<beta>) marktc(E_i, tag: #<E>, color: #green)),
-tag: #<Boltzmann>, color: #blue,
-) / mark(sum_j exp(- beta E_j), tag: #<Z>)
+  markul(p_i, tag: #<p>)
+  = markrect(
+    exp(- marktc(beta, tag: #<beta>) marktc(E_i, tag: #<E>, color: #green)),
+    tag: #<Boltzmann>, color: #blue,
+  ) / mark(sum_j exp(- beta E_j), tag: #<Z>)
 
-#annot(<p>, pos: left)[Probability of \ state $i$]
-#annot(<beta>, pos: top + left, yshift: 2em)[Inverse temperature]
-#annot(<E>, pos: top + right, yshift: 1em)[Energy]
-#annot(<Boltzmann>, pos: top + left)[Boltzmann factor]
-#annot(<Z>)[Partition function]
+  #annot(<p>, pos: left)[Probability of \ state $i$]
+  #annot(<beta>, pos: top + left, yshift: 2em)[Inverse temperature]
+  #annot(<E>, pos: top + right, yshift: 1em)[Energy]
+  #annot(<Boltzmann>, pos: top + left)[Boltzmann factor]
+  #annot(<Z>)[Partition function]
 $
 ```
 
