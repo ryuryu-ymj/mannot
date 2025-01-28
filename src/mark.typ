@@ -146,12 +146,6 @@
   /// or as a `dictionary` of `length` with keys `left`, `right`, `top`, `bottom`, `x`, `y`, or `rest`.
   /// -> none | length | dictionary
   padding: (:),
-  /// The math size style of the marked content.
-  /// Possible values are `"display"`, `"inline"`, `"script"`, and `"sscript"`.
-  /// This is used for measuring the content's height.
-  /// If set to `auto`, the style is determined automatically based on its width.
-  /// -> auto | string
-  sizestyle: auto,
 ) = {
   // Extract leading/trailing horizontal spaces from body.
   let (body, leading-h) = _remove-leading-h(body)
@@ -161,8 +155,6 @@
   _mark-cnt.step()
 
   context {
-    set math.equation(numbering: none) // for measuring size
-
     let cnt-get = _mark-cnt.get().first()
     let y-lab = label("_mannot-mark-y-" + str(cnt-get))
     let dy-lab = label("_mannot-mark-dy-" + str(cnt-get))
@@ -293,11 +285,6 @@
   /// or as a `dictionary` of `length` with keys `left`, `right`, `top`, `bottom`, `x`, `y`, or `rest`.
   /// -> none | length | dictionary
   padding: (y: .1em),
-  /// The math size style of the marked content.
-  /// Possible values are `"display"`, `"inline"`, `"script"` and `"sscript"`.
-  /// If set to `auto`, the style is determined automatically.
-  /// -> auto | string
-  sizestyle: auto,
 ) = {
   if fill == auto {
     if color == auto {
@@ -320,7 +307,7 @@
     }
   }
 
-  return core-mark(body, tag: tag, color: color, underlay: underlay, padding: padding, sizestyle: sizestyle)
+  return core-mark(body, tag: tag, color: color, underlay: underlay, padding: padding)
 }
 
 
@@ -357,11 +344,6 @@
   /// or as a `dictionary` of `length` with keys `left`, `right`, `top`, `bottom`, `x`, `y`, or `rest`.
   /// -> none | length | dictionary
   padding: (y: .1em),
-  /// The math size style of the marked content.
-  /// Possible values are `"display"`, `"inline"`, `"script"` and `"sscript"`.
-  /// If set to `auto`, the style is determined automatically.
-  /// -> auto | string
-  sizestyle: auto,
 ) = {
   if stroke != none {
     stroke = std.stroke(stroke)
@@ -382,7 +364,7 @@
     }
   }
 
-  return core-mark(body, tag: tag, color: color, underlay: underlay, padding: padding, sizestyle: sizestyle)
+  return core-mark(body, tag: tag, color: color, underlay: underlay, padding: padding)
 }
 
 
@@ -410,10 +392,6 @@
   /// The spacing between the marked content and the underline.
   /// -> none | length
   padding: .15em,
-  /// The math size style of the marked content.
-  /// Possible values are `"display"`, `"inline"`, `"script"` or `"sscript"`.
-  /// If set to `auto`, the style is determined automatically.
-  sizestyle: auto,
 ) = {
   if stroke != none {
     stroke = std.stroke(stroke)
@@ -431,7 +409,7 @@
     }
   }
 
-  return core-mark(body, tag: tag, color: color, overlay: overlay, padding: padding, sizestyle: sizestyle)
+  return core-mark(body, tag: tag, color: color, overlay: overlay, padding: padding)
 }
 
 
@@ -453,12 +431,8 @@
   tag: none,
   /// The color used for the underline. -> color
   color: red,
-  /// The math size style of the marked content.
-  /// Possible values are `"display"`, `"inline"`, `"script"` or `"sscript"`.
-  /// If set to `auto`, the style is determined automatically.
-  sizestyle: auto,
 ) = {
   body = text(fill: color, body)
 
-  return core-mark(body, tag: tag, color: color, padding: .15em, sizestyle: sizestyle)
+  return core-mark(body, tag: tag, color: color, padding: .15em)
 }
