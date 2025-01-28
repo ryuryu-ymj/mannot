@@ -1,4 +1,8 @@
 # Mannot
+<a href="https://typst.app/universe/package/mannot">
+    <img src="https://img.shields.io/badge/dynamic/xml?url=https%3A%2F%2Ftypst.app%2Funiverse%2Fpackage%2Fmannot&query=%2Fhtml%2Fbody%2Fdiv%2Fmain%2Fdiv%5B2%5D%2Faside%2Fsection%5B2%5D%2Fdl%2Fdd%5B3%5D&logo=typst&label=Universe&color=%23239DAE" />
+</a>
+
 A package for marking and annotating in math blocks in [Typst](https://typst.app/).
 
 A full documentation is [here](docs/doc.pdf).
@@ -25,7 +29,7 @@ $
 ## Usage
 Import the package `mannot` on the top of your document:
 ```typst
-#import "@preview/mannot:0.2.0": *
+#import "@preview/mannot:0.2.1": *
 ```
 
 To define the target of an annotation within a math block,
