@@ -103,6 +103,8 @@ $
 
 
 ## Changelogs
+* v0.2.1:
+  - fix underlay/overlay layout in marking functions when setting other math font
 * v0.2.0:
   - remove the `mannot-init` function;
   - support placing underlay under the math content when marking;
