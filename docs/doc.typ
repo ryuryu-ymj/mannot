@@ -8,8 +8,8 @@
 #show: codly-init.with()
 #codly(lang-format: none)
 
-#set text(font: "Noto Serif", size: 10pt)
-#show raw.where(block: false): set text(font: "Noto Sans Mono")
+// #set text(font: "Noto Serif", size: 10pt)
+// #show raw.where(block: false): set text(font: "Noto Sans Mono")
 
 #let package-info = toml("/typst.toml")
 #let name = package-info.package.name

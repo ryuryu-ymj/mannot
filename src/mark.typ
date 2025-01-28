@@ -86,7 +86,7 @@
       return body
     }
   }
-  return math.attach(math.limits(body), t: pad([#none#label], -1em))
+  return math.attach(math.limits(body), t: pad([#none#label], -1em), b: pad([#none#label], -1em))
 }
 
 /// Marks content within a math block with a custom underlay or overlay.
@@ -107,12 +107,16 @@
 ///   return core-mark(body, tag: tag, color: red, overlay: overlay, padding: (y: .1em))
 /// }
 ///
-/// $ mymark(x, tag: #<e>) $
+/// $
+///   mymark(x, tag: #<e>)
 ///
-/// #context {
-///   let info = query(<e>).last()
-///   repr(info.value)
-/// }
+///   #context {
+///     let info = query(<e>).last()
+///     sym.wj
+///     box(place(repr(info.value), dx: -4em))
+///   }
+/// $
+/// #v(10em)
 /// ```
 ///
 /// -> content
@@ -157,10 +161,11 @@
   _mark-cnt.step()
 
   context {
-    set math.equation(numbering: none)
+    set math.equation(numbering: none) // for measuring size
 
     let cnt-get = _mark-cnt.get().first()
-    let loc-lab = label("_mannot-mark-loc-" + str(cnt-get))
+    let y-lab = label("_mannot-mark-y-" + str(cnt-get))
+    let dy-lab = label("_mannot-mark-dy-" + str(cnt-get))
     let info-lab
     if type(tag) == label {
       info-lab = tag
@@ -188,59 +193,34 @@
     }
 
     let start = here().position()
-    let labeled-body = _label-each-child(body, loc-lab)
+    let labeled-body = _label-each-child(body, y-lab)
+    sym.wj
     labeled-body
-    labeled-body = sym.wj + labeled-body + sym.wj // for measuring size
+    sym.wj
+    math.attach(
+      math.display(math.limits([#none#dy-lab])),
+      t: pad(-1em, [#none#dy-lab]),
+      b: pad(-1em, [#none#dy-lab]),
+    )
+
 
     context {
       let end = here().position()
-      let elems = query(loc-lab)
 
-      let min-y = start.y
-      for e in elems {
-        let pos = e.location().position()
-        if min-y > pos.y {
-          min-y = pos.y
-        }
-      }
+      let ys = query(y-lab).map(e => e.location().position().y)
+      let min-y = calc.min(..ys)
+      let max-y = calc.max(..ys)
 
-      let size
-      let attach-space = .28em
-      if sizestyle == auto {
-        let width = end.x - start.x
-        size = measure($ body $)
-        let size0 = measure($ #labeled-body $)
-        if calc.abs(width - size0.width) > .001pt {
-          let size1 = measure($ inline(#labeled-body) $)
-          let size2 = measure($ script(#labeled-body) $)
-          let size3 = measure($ sscript(#labeled-body) $)
-          if calc.abs(width - size1.width) < .001pt {
-            size = measure($ inline(body) $)
-          } else if calc.abs(width - size2.width) < .001pt {
-            size = measure($ script(body) $)
-            attach-space = measure($ script(#rect(height: attach-space)) $).height
-          } else if calc.abs(width - size3.width) < .001pt {
-            size = measure($ sscript(body) $)
-            attach-space = .25em
-            attach-space = measure($ script(#rect(height: attach-space)) $).height
-          }
-        }
-      } else if sizestyle == "display" {
-        size = measure($ body $)
-      } else if sizestyle == "inline" {
-        size = measure($ inline(body) $)
-      } else if sizestyle == "script" {
-        size = measure($ script(body) $)
-        attach-space = measure($ script(#rect(height: attach-space)) $).height
-      } else if sizestyle == "sscript" {
-        size = measure($ sscript(body) $)
-        attach-space = measure($ script(#rect(height: attach-space)) $).height
-      }
-      min-y += attach-space.to-absolute()
+      let dys = query(dy-lab).map(e => e.location().position().y)
+      let top-dy = dys.at(0) - dys.at(1)
+      let top = min-y + top-dy
+      let bottom-dy = dys.at(0) - dys.at(2)
+      let bottom = max-y + bottom-dy
 
       let padding = if padding == none {
         (left: 0pt, right: 0pt, top: 0pt, bottom: 0pt)
       } else if type(padding) == length {
+        let padding = padding.to-absolute()
         (left: padding, right: padding, top: padding, bottom: padding)
       } else if type(padding) == dictionary {
         let rest = padding.at("rest", default: 0pt).to-absolute()
@@ -254,11 +234,12 @@
       }
 
       let x = start.x - padding.left
-      let y = min-y - padding.top
+      let y = top - padding.top
       let width = end.x + padding.right - x
-      let height = size.height + padding.top + padding.bottom
+      let height = bottom - top + padding.top + padding.bottom
 
       let info = (body: body, x: x, y: y, width: width, height: height, color: color)
+      sym.wj
       [#metadata(info)#info-lab]
 
       // Place `overlay(width, height, color)` over the `body`.

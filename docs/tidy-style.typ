@@ -41,7 +41,7 @@
     align: horizon,
     gutter: col-spacing,
     {
-      // set text(0.7em)
+      set text(0.9em)
       raw(displayed-code, lang: lang, block: true)
     },
     rect(

@@ -10,7 +10,7 @@
     align: center + horizon,
     gutter: 5pt,
     {
-      // set text(0.9em)
+      set text(0.9em)
       // raw(block: true, lang: "typst", source)
       source
     },
@@ -24,5 +24,8 @@
 
 #let example-vstack(source) = {
   eval(usage + source.text, mode: "markup")
-  source
+  {
+    set text(0.9em)
+    source
+  }
 }
