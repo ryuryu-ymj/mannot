@@ -7,7 +7,9 @@
 
 #let _remove-leading-h(body) = {
   if type(body) == content {
-    if body.func() == _sequence-func {
+    if body.func() == math.equation {
+      return _remove-leading-h(body.body)
+    } else if body.func() == _sequence-func {
       let children = body.children
       if children.len() == 0 {
         return (none, none)
@@ -16,6 +18,10 @@
       let remove
       let leadingCount = 0
       for c in children {
+        if c == [ ] {
+          leadingCount += 1
+          continue
+        }
         let (crest, cremove) = _remove-leading-h(c)
         rest = crest
         remove += cremove
@@ -37,7 +43,9 @@
 
 #let _remove-trailing-h(body) = {
   if type(body) == content {
-    if body.func() == _sequence-func {
+    if body.func() == math.equation {
+      return _remove-trailing-h(body.body)
+    } else if body.func() == _sequence-func {
       let children = body.children
       if children.len() == 0 {
         return (none, none)
@@ -46,6 +54,10 @@
       let remove
       let trailingCount = 0
       for c in children.rev() {
+        if c == [ ] {
+          trailingCount += 1
+          continue
+        }
         let (crest, cremove) = _remove-leading-h(c)
         rest = crest
         remove += cremove
