@@ -1,8 +1,7 @@
 #import "util.typ": copy-stroke
 
-#let _mark-cnt = counter("_mannot-mark-cnt")
 
-#let _sequence-func = (math.text("x") + math.text("y")).func()
+#let _sequence-func = ([x] + [y]).func()
 #let _align-point-func = $&$.body.func()
 
 #let _remove-leading-h(body) = {
@@ -85,21 +84,19 @@
     } else if body.func() == _sequence-func {
       // If `content` is the sequence of contents,
       // then put `label` on each child.
-      let children = body
-        .children
-        .filter(c => c != [ ])
-        .map(c => {
-          _label-each-child(c, label)
-        })
+      let children = body.children.map(c => {
+        _label-each-child(c, label)
+      })
       return body.func()(children)
-    } else if (body.func() == _align-point-func or body.func() == h or body.func() == v) {
-      // Do not put `label` on layout contents such as align-point(),
+    } else if body == [ ] or body.func() == _align-point-func or body.func() == h or body.func() == v {
+      // Do not put `label` on layout contents such as [ ], align-point(),
       // h(), or v(), in order to avoid broken layout.
       return body
     }
   }
   return math.attach(math.limits(body), t: pad([#none#label], -1em), b: pad([#none#label], -1em))
 }
+
 
 /// Marks content within a math block with a custom underlay or overlay.
 ///
@@ -164,26 +161,30 @@
   let (body, trailing-h) = _remove-trailing-h(body)
   leading-h
 
-  _mark-cnt.step()
-
   context {
-    let cnt-get = _mark-cnt.get().first()
-    let y-lab = label("_mannot-mark-y-" + str(cnt-get))
-    let dy-lab = label("_mannot-mark-dy-" + str(cnt-get))
-    let info-lab
-    if type(tag) == label {
-      info-lab = tag
+    let y-lab = label("_mannot-mark-y")
+    let dy-lab = label("_mannot-mark-dy")
+    let info-lab = if type(tag) == label {
+      tag
     } else {
-      info-lab = label("_mannot-mark-info-" + str(cnt-get))
+      label("_mannot-mark-info")
     }
+    let begin-loc = here()
 
     // Place `underlay(width, height, color)` under the `body`.
     if underlay != none {
       sym.wj
       context {
-        let infos = query(selector(info-lab).after(here()))
-        if infos.len() > 0 {
-          let info = infos.first().value
+        let elems = query(selector(info-lab).after(begin-loc))
+        if elems.len() > 0 {
+          let info
+          for e in elems {
+            info = e.value
+            // Find the corresponding info if nesting.
+            if info.begin-loc == begin-loc {
+              break
+            }
+          }
 
           let hpos = here().position()
           let dx = info.x - hpos.x
@@ -196,7 +197,6 @@
       }
     }
 
-    let start = here().position()
     let labeled-body = _label-each-child(body, y-lab)
     sym.wj
     labeled-body
@@ -207,18 +207,17 @@
       b: pad(-1em, [#none#dy-lab]),
     )
 
-
     context {
-      let end = here().position()
+      let end-loc = here()
 
-      let ys = query(y-lab).map(e => e.location().position().y)
-      let min-y = calc.min(..ys)
-      let max-y = calc.max(..ys)
+      let y-array = query(selector(y-lab).after(begin-loc).before(end-loc)).map(e => e.location().position().y)
+      let min-y = calc.min(..y-array)
+      let max-y = calc.max(..y-array)
 
-      let dys = query(dy-lab).map(e => e.location().position().y)
-      let top-dy = dys.at(0) - dys.at(1)
+      let dy-array = query(selector(dy-lab).after(begin-loc).before(end-loc)).map(e => e.location().position().y)
+      let top-dy = dy-array.at(0) - dy-array.at(1)
       let top = min-y + top-dy
-      let bottom-dy = dys.at(0) - dys.at(2)
+      let bottom-dy = dy-array.at(0) - dy-array.at(2)
       let bottom = max-y + bottom-dy
 
       let padding = if padding == none {
@@ -237,12 +236,12 @@
         (left: left, right: right, top: top, bottom: bottom)
       }
 
-      let x = start.x - padding.left
+      let x = begin-loc.position().x - padding.left
       let y = top - padding.top
-      let width = end.x + padding.right - x
+      let width = end-loc.position().x + padding.right - x
       let height = bottom - top + padding.top + padding.bottom
 
-      let info = (body: body, x: x, y: y, width: width, height: height, color: color)
+      let info = (body: body, x: x, y: y, width: width, height: height, color: color, begin-loc: begin-loc)
       sym.wj
       [#metadata(info)#info-lab]
 

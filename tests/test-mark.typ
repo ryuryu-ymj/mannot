@@ -5,7 +5,7 @@
   #place(line(start: (0%, 0%), end: (0%, 100%), stroke: silver))
   #place(line(start: (0%, 0%), end: (1000%, 0%), stroke: silver))
 ]
-#set page(fill: cell-pat)
+// #set page(fill: cell-pat)
 #set heading(numbering: "1.")
 
 // #show math.equation: set text(20pt)
@@ -109,7 +109,10 @@ $mark(x + y + T)$
 
 = Nesting
 $
+  boxmark(mark(x) + y) \
+  boxmark(x + mark(y)) \
   boxmark(mark(gmark(x) + bmark(y)) + z) \
+  boxmark(boxmark(mark(gmark(x) + bmark(y)) + z) + t) \
 $
 
 // $
