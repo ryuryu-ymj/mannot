@@ -122,10 +122,10 @@
 ///   #context {
 ///     let info = query(<e>).last()
 ///     sym.wj
-///     box(place(repr(info.value), dx: -4em))
+///     box(place(repr(info.value), dx: -5em))
 ///   }
 /// $
-/// #v(10em)
+/// #v(11em)
 /// ```
 ///
 /// -> content
