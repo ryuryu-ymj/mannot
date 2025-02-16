@@ -122,8 +122,7 @@ $
 
 
 = Limitations
-If you mark a inline math element containing linebreaks,
-its layout will be broken:
+Marking multi-line inline math content is not supported.
 #example(```typst
 $mark(x + x + x + x + x + x + x + x)$
 ```)

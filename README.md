@@ -29,7 +29,7 @@ $
 ## Usage
 Import the package `mannot` on the top of your document:
 ```typst
-#import "@preview/mannot:0.2.1": *
+#import "@preview/mannot:0.2.2": *
 ```
 
 To define the target of an annotation within a math block,
@@ -103,10 +103,12 @@ $
 
 
 ## Changelogs
+* v0.2.2:
+  - Improve performance (remove counters).
 * v0.2.1:
-  - fix underlay/overlay layout in marking functions when setting other math font
+  - Fix underlay/overlay layout in marking functions when setting other math fonts.
 * v0.2.0:
-  - remove the `mannot-init` function;
-  - support placing underlay under the math content when marking;
-  - add marking functions: `markrect`, `markul`, `marktc`.
-* v0.1.0: first release.
+  - Remove the `mannot-init` function.
+  - Support placing underlay under the math content when marking.
+  - Add marking functions: `markrect`, `markul`, `marktc`.
+* v0.1.0: First release.
