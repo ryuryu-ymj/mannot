@@ -1,5 +1,5 @@
-#import "@preview/tidy:0.4.0"
-#import "@preview/codly:1.0.0": *
+#import "@preview/tidy:0.4.2"
+#import "@preview/codly:1.2.0": *
 #import "/src/lib.typ": *
 #import "doc-template.typ": *
 
