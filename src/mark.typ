@@ -192,6 +192,7 @@
           let width = info.width
           let height = info.height
           let color = info.color
+          set text(dir: ltr)
           box(place(dx: dx, dy: dy, underlay(width, height, color)))
         }
       }
@@ -251,6 +252,7 @@
         let dx = x - hpos.x
         let dy = y - hpos.y
         sym.wj
+        set text(dir: ltr)
         box(place(dx: dx, dy: dy, overlay(width, height, color)))
       }
     }

@@ -1,12 +1,18 @@
 #import "util.typ": copy-stroke
 
-#let _place-path-arrow(
+#let _place-arrow(
   stroke: 1pt,
   tail-length: 5pt,
   tail-angle: 30deg,
   ..vertices,
 ) = {
-  place(path(stroke: stroke, ..vertices))
+  place(
+    curve(
+      stroke: stroke,
+      curve.move(vertices.at(0)),
+      ..vertices.pos().slice(1).map(v => curve.line(v)),
+    ),
+  )
 
   let stroke = copy-stroke(stroke, (dash: "solid"))
 
@@ -35,7 +41,7 @@
     let t2x = p1x + p12x * cos + p12y * sin
     let t2y = p1y - p12x * sin + p12y * cos
 
-    place(path(stroke: stroke, (t1x, t1y), (p1x, p1y), (t2x, t2y)))
+    place(curve(stroke: stroke, curve.move((t1x, t1y)), curve.line((p1x, p1y)), curve.line((t2x, t2y))))
   }
 }
 
@@ -89,6 +95,7 @@
     let height = info.height
     let color = info.color
     sym.wj
+    set text(dir: ltr)
     box(place(dx: dx, dy: dy, overlay(width, height, color)))
     sym.wj
   }
@@ -267,9 +274,9 @@
             if arrow-stroke.thickness > 0pt {
               // Place the arrow.
               if pos.x == center {
-                _place-path-arrow(stroke: arrow-stroke, tail-length: .3em, (p2x, p2y), (p3x, p3y))
+                _place-arrow(stroke: arrow-stroke, tail-length: .3em, (p2x, p2y), (p3x, p3y))
               } else {
-                _place-path-arrow(stroke: arrow-stroke, tail-length: .3em, (p1x, p1y), (p2x, p2y), (p3x, p3y))
+                _place-arrow(stroke: arrow-stroke, tail-length: .3em, (p1x, p1y), (p2x, p2y), (p3x, p3y))
               }
             }
 
