@@ -29,7 +29,7 @@ $
 ## Usage
 Import the package `mannot` on the top of your document:
 ```typst
-#import "@preview/mannot:0.2.2": *
+#import "@preview/mannot:0.2.3": *
 ```
 
 To define the target of an annotation within a math block,
@@ -103,6 +103,9 @@ $
 
 
 ## Changelogs
+* v0.2.3:
+  - Support RTL documents.
+  - Replace deprecated `path` functions with `curve`.
 * v0.2.2:
   - Improve performance (remove counters).
 * v0.2.1:
