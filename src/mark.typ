@@ -102,7 +102,7 @@
 ///
 /// This function measures the position and size of the marked content,
 /// applies a custom underlay or overlay, and generates metadata associated with a given tag.
-/// The metadata includes the original content, its position (`x`, `y`), dimensions (`width`, `height`),
+/// The metadata includes the content's position (`x`, `y`), dimensions (`width`, `height`),
 /// and the color used for the marking. This metadata can be later used for annotations.
 ///
 /// Use this function as a foundation for defining custom marking functions.
@@ -192,12 +192,12 @@
           let width = info.width
           let height = info.height
           let color = info.color
-          set text(dir: ltr)
-          box(place(dx: dx, dy: dy, underlay(width, height, color)))
+          box(place(dx: dx, dy: dy, float: false, left + top, underlay(width, height, color)))
         }
       }
     }
 
+    // Put the labeled body for measuring its position and size.
     let labeled-body = _label-each-child(body, y-lab)
     sym.wj
     labeled-body
@@ -208,6 +208,7 @@
       b: pad(-1em, [#none#dy-lab]),
     )
 
+    // Measure the position and size, expose metadata and place the overlay.
     context {
       let end-loc = here()
 
@@ -217,9 +218,9 @@
 
       let dy-array = query(selector(dy-lab).after(begin-loc).before(end-loc)).map(e => e.location().position().y)
       let top-dy = dy-array.at(0) - dy-array.at(1)
-      let top = min-y + top-dy
+      let top-y = min-y + top-dy
       let bottom-dy = dy-array.at(0) - dy-array.at(2)
-      let bottom = max-y + bottom-dy
+      let bottom-y = max-y + bottom-dy
 
       let padding = if padding == none {
         (left: 0pt, right: 0pt, top: 0pt, bottom: 0pt)
@@ -238,11 +239,12 @@
       }
 
       let x = begin-loc.position().x - padding.left
-      let y = top - padding.top
+      let y = top-y - padding.top
       let width = end-loc.position().x + padding.right - x
-      let height = bottom - top + padding.top + padding.bottom
+      let height = bottom-y - top-y + padding.top + padding.bottom
 
-      let info = (body: body, x: x, y: y, width: width, height: height, color: color, begin-loc: begin-loc)
+      // Expose the metadata.
+      let info = (body: body, x: x, y: y, width: width, height: height, color: color, tag: tag, begin-loc: begin-loc)
       sym.wj
       [#metadata(info)#info-lab]
 
@@ -252,8 +254,7 @@
         let dx = x - hpos.x
         let dy = y - hpos.y
         sym.wj
-        set text(dir: ltr)
-        box(place(dx: dx, dy: dy, overlay(width, height, color)))
+        box(place(dx: dx, dy: dy, float: false, left + top, overlay(width, height, color)))
       }
     }
   }
@@ -263,13 +264,30 @@
 }
 
 
+
+#let marknd(
+  /// The content to be highlighted within a math block. -> content
+  body,
+  /// The tag used to identify the marked content for later annotations.
+  /// -> label
+  tag,
+  /// The spacing between the marked content and the edge of the highlight rectangle.
+  /// This can be specified as a single `length` value which applies to all sides,
+  /// or as a `dictionary` of `length` with keys `left`, `right`, `top`, `bottom`, `x`, `y`, or `rest`.
+  /// -> none | length | dictionary
+  padding: (y: .1em),
+) = {
+  return core-mark(body, tag: tag, padding: padding)
+}
+
+
 /// Marks content within a math block with highlighting.
 ///
 /// If you mark content with a tag, you can annotate it using the `annot` function.
 ///
 /// *Example*
 /// ```example
-/// $ mark(x) $
+/// $ markhl(x) $
 /// ```
 ///
 /// -> content
@@ -361,7 +379,7 @@
   if stroke != none {
     stroke = std.stroke(stroke)
     if stroke.paint == auto {
-      stroke = copy-stroke(stroke, (paint: color))
+      stroke = copy-stroke(stroke, paint: color)
     }
   }
 
@@ -444,8 +462,13 @@
   tag: none,
   /// The color used for the underline. -> color
   color: red,
+  /// The spacing between the marked content and the edge of the highlight rectangle.
+  /// This can be specified as a single `length` value which applies to all sides,
+  /// or as a `dictionary` of `length` with keys `left`, `right`, `top`, `bottom`, `x`, `y`, or `rest`.
+  /// -> none | length | dictionary
+  padding: (y: .1em),
 ) = {
   body = text(fill: color, body)
 
-  return core-mark(body, tag: tag, color: color, padding: .15em)
+  return core-mark(body, tag: tag, color: color, padding: padding)
 }

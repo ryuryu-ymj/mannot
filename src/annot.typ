@@ -1,48 +1,51 @@
 #import "util.typ": copy-stroke
 
-#let _place-arrow(
-  stroke: 1pt,
-  tail-length: 5pt,
-  tail-angle: 30deg,
-  ..vertices,
-) = {
-  place(
-    curve(
-      stroke: stroke,
-      curve.move(vertices.at(0)),
-      ..vertices.pos().slice(1).map(v => curve.line(v)),
-    ),
-  )
+#import "@preview/cetz:0.3.4"
+#import "@preview/tiptoe:0.3.0"
 
-  let stroke = copy-stroke(stroke, (dash: "solid"))
 
-  context {
-    let vertices = vertices.pos()
-    let tail-length = tail-length.to-absolute()
-
-    let p1 = vertices.last()
-    let p1x = p1.at(0).to-absolute()
-    let p1y = p1.at(1).to-absolute()
-    let p2 = vertices.at(vertices.len() - 2)
-    let p2x = p2.at(0).to-absolute()
-    let p2y = p2.at(1).to-absolute()
-
-    let p12x = p2x - p1x
-    let p12y = p2y - p1y
-    let p12len = 1pt * calc.sqrt(p12x.pt() * p12x.pt() + p12y.pt() * p12y.pt())
-    p12x = p12x / p12len * tail-length
-    p12y = p12y / p12len * tail-length
-
-    let angle = 30deg
-    let sin = calc.sin(angle)
-    let cos = calc.cos(angle)
-    let t1x = p1x + p12x * cos - p12y * sin
-    let t1y = p1y + p12x * sin + p12y * cos
-    let t2x = p1x + p12x * cos + p12y * sin
-    let t2y = p1y - p12x * sin + p12y * cos
-
-    place(curve(stroke: stroke, curve.move((t1x, t1y)), curve.line((p1x, p1y)), curve.line((t2x, t2y))))
+#let _coerce-anchor(anchor) = {
+  assert(type(anchor) == alignment, message: "`anchor` must be `alignment`")
+  if anchor.x == none {
+    anchor += center
   }
+  if anchor.y == none {
+    anchor += horizon
+  }
+  return anchor
+}
+
+#let _coerce-pos(pos) = {
+  if type(pos) == alignment {
+    pos = _coerce-anchor(pos)
+    pos = if pos.y == horizon {
+      (pos, pos.inv())
+    } else {
+      (pos.y + center, pos.inv())
+    }
+  } else if type(pos) == array {
+    assert(pos.len() == 2, message: "`pos` must be `anchor` or `(anchor, anchor)`")
+    pos = (_coerce-anchor(pos.at(0)), _coerce-anchor(pos.at(1)))
+  } else {
+    panic("`pos` must be alignment or array")
+  }
+
+  return pos
+}
+
+#let _coerce-connect(connect) = {
+  if type(connect) == array {
+    assert(connect.len() == 2, message: "`connect` must be `(anchor, anchor)` or \"elbow\"")
+
+    connect = (
+      _coerce-anchor(connect.at(0)),
+      _coerce-anchor(connect.at(1)),
+    )
+  } else if connect != "elbow" {
+    panic("`connect` must be `(anchor, anchor)` or \"elbow\"")
+  }
+
+  return connect
 }
 
 
@@ -57,10 +60,7 @@
 /// *Example*
 /// #example(```typ
 /// #let myannot(tag, annotation) = {
-///   let overlay(width, height, color) = {
-///     set text(white, .8em)
-///     let annot-block = box(fill: color, inset: .4em, annotation)
-///     place(annot-block, dy: height)
+///   let overlay(markers) = {
 ///   }
 ///   return core-annot(tag, overlay)
 /// }
@@ -75,7 +75,7 @@
 #let core-annot(
   /// The tag associated with the content to annotate.
   /// This tag must match a tag previously used in a `core-mark` call.
-  /// -> label
+  /// -> label | array
   tag,
   /// The function to create the custom annotation overlay.
   /// This function receives the width, height, and color of the marked content (including padding)
@@ -84,19 +84,16 @@
   /// -> function
   overlay,
 ) = {
+  if type(tag) == label {
+    tag = (tag,)
+  }
+
+  sym.wj
   context {
-    let info = query(selector(tag).before(here())).last()
-    info = info.value
+    let markers = tag.map(tag => query(selector(tag).before(here())).last().value)
 
     let hpos = here().position()
-    let dx = info.x - hpos.x
-    let dy = info.y - hpos.y
-    let width = info.width
-    let height = info.height
-    let color = info.color
-    sym.wj
-    set text(dir: ltr)
-    box(place(dx: dx, dy: dy, overlay(width, height, color)))
+    box(place(dx: -hpos.x, dy: -hpos.y, float: false, left + top, overlay(markers)))
     sym.wj
   }
 }
@@ -117,190 +114,320 @@
 /// #example(```typ
 /// $
 /// markrect(integral x dif x, tag: #<x>, color: #blue)
-/// + markul(y, tag: #<y>, color: #red)
 ///
 /// #annot(<x>, pos: left)[Left]
 /// #annot(<x>, pos: top + left)[Top left]
-/// #annot(<y>, pos: left, yshift: 2em)[Left arrow]
-/// #annot(<y>, pos: top + right, yshift: 1em)[Top right arrow]
 /// $
 /// ```, preview-inset: 20pt)
 ///
 /// -> content
 #let annot(
-  /// The tag associated with the content to annotate.
-  /// This tag must match a tag previously used in marking.
-  /// -> label
+  /// The tag associated with the content to annotate, or array of tags.
+  /// -> label | array
   tag,
   /// The content of the annotation. -> content
   annotation,
   /// The position of the annotation relative to the marked content.
-  /// Possible values are (`top` or `bottom`) + (`left`, `center` or `right`).
-  /// -> alignment
-  pos: center + bottom,
-  /// The vertical offset between the annotation and the marked content.
-  /// -> length
-  yshift: .2em,
+  /// -> alignment | (alignment, alignment)
+  pos: bottom,
+  /// Horizontal offset. -> auto | length
+  dx: auto,
+  /// Vertical offset. -> auto | length
+  dy: auto,
+  /// Leader line.
+  /// -> none | auto | length | color | gradient | stroke | tiling | dictionary
+  leader: auto,
+  /// -> length | dictionary
+  annot-padding: (x: .08em, y: .16em),
+  annot-alignment: auto,
   /// Properties for the annotation text.
   /// If the `fill` property is not specified, it defaults to the marking's color.
   /// -> dictionary
-  text-props: (size: .6em, bottom-edge: "descender"),
+  annot-text-props: (size: .7em),
   /// Properties for the annotation paragraph.
   /// -> dictionary
-  par-props: (leading: .3em),
-  /// The alignment of the annotation text within its box.
-  /// -> auto | alignment
-  alignment: auto,
-  /// Whether to display an arrow connecting the annotation to the marked content.
-  /// If set to `auto`, an arrow is shown when `yshift` is greater than `0.4em`.
-  /// -> auto | bool
-  show-arrow: auto,
-  /// The stroke style for the arrow.
-  /// If the `paint` property is not specified, it defaults to the marking's color.
-  /// -> auto | none | color | length | dictionary | stroke
-  arrow-stroke: .08em,
-  /// The spacing between the arrow and the annotation box.
-  /// -> length
-  arrow-padding: .2em,
+  annot-par-props: (leading: .4em),
 ) = {
-  assert(
-    pos.x == left or pos.x == center or pos.x == right or pos.x == none,
-    message: "The field `x` of the argument `alignment` of the function
-        `annot` must be `left`, `center`, `right` or `none`.",
-  )
-  assert(
-    pos.y == top or pos.y == bottom or pos.y == none,
-    message: "The field `y` of the argument `alignment` of the function
-        `annot` must be `top`, `bottom` or `none`.",
-  )
-  let pos = (
-    if pos.x == none {
-      center
+  pos = _coerce-pos(pos)
+
+  if dx == auto {
+    dx = if pos.at(0).x == left and pos.at(1).x == right {
+      -.2em
+    } else if pos.at(0).x == right and pos.at(1).x == left {
+      .2em
     } else {
-      pos.x
+      0em
     }
-      + if pos.y == none {
-        bottom
-      } else {
-        pos.y
-      }
-  )
-  if alignment == auto {
-    alignment = pos.x.inv()
+  }
+  if dy == auto {
+    dy = if pos.at(0).y == top and pos.at(1).y == bottom {
+      -.2em
+    } else if pos.at(0).y == bottom and pos.at(1).y == top {
+      .2em
+    } else {
+      0em
+    }
   }
 
+  annotation = {
+    show: pad.with(..annot-padding)
+    set par(..annot-par-props)
+    text(..annot-text-props, annotation)
+  }
 
   context {
-    let text-props = text-props
-    let annot-tsize = text-props.remove("size", default: 1em).to-absolute()
-    set text(size: annot-tsize)
+    let dx = dx.to-absolute()
+    let dy = dy.to-absolute()
+    let annot-size = measure(annotation)
+    let aw = annot-size.width
+    let ah = annot-size.height
+
+    let leader-style = if leader == none or leader == auto {
+      (:)
+    } else if type(leader) in (length, color, gradient, stroke, tiling) {
+      (stroke: leader)
+    } else if type(leader) == dictionary {
+      leader
+    }
+    leader-style = (
+      stroke: stroke(leader-style.at("stroke", default: .05em).to-absolute()),
+      tip: leader-style.at("tip", default: none),
+      toe: leader-style.at("tip", default: tiptoe.straight.with(length: 600%)),
+      connect: _coerce-connect(leader-style.at("connect", default: (center + horizon, center + horizon))),
+    )
+
+    let overlay(infos) = {
+      let x = infos.first().x
+      let y = infos.first().y
+      let w = infos.first().width
+      let h = infos.first().height
+      let c = infos.first().color
+
+      let leader-style = leader-style
+      if leader-style.stroke.paint == auto {
+        leader-style.stroke = copy-stroke(leader-style.stroke, paint: c)
+      }
+
+      let ax = if pos.at(0).x == left { x } else if pos.at(0).x == right { x + w } else { x + w / 2 }
+      ax -= if pos.at(1).x == left { 0pt } else if pos.at(1).x == right { aw } else { aw / 2 }
+      ax += dx
+
+      let ay = if pos.at(0).y == top { y } else if pos.at(0).y == bottom { y + h } else { y + h / 2 }
+      ay -= if pos.at(1).y == top { 0pt } else if pos.at(1).y == bottom { ah } else { ah / 2 }
+      ay += dy
+
+      let annot-text-fill = annot-text-props.at("fill", default: c)
+      let annot-alignment = if ax + aw / 2 < x + w / 2 { right } else { left }
+      let annotation = {
+        set align(annot-alignment)
+        set text(annot-text-fill)
+        annotation
+      }
+
+      place(dx: ax, dy: ay, float: false, left + top, annotation)
+
+      if leader != none {
+        for info in infos {
+          let x = info.x
+          let y = info.y
+          let w = info.width
+          let h = info.height
+
+          if type(leader-style.connect) == array {
+            let c0x = if leader-style.connect.at(0).x == left {
+              x
+            } else if leader-style.connect.at(0).x == right {
+              x + w
+            } else {
+              x + w / 2
+            }
+            let c0y = if leader-style.connect.at(0).y == top {
+              y
+            } else if leader-style.connect.at(0).y == bottom {
+              y + h
+            } else {
+              y + h / 2
+            }
+            let c1x = if leader-style.connect.at(1).x == left {
+              ax
+            } else if leader-style.connect.at(1).x == right {
+              ax + aw
+            } else {
+              ax + aw / 2
+            }
+            let c1y = if leader-style.connect.at(1).y == top {
+              ay
+            } else if leader-style.connect.at(1).y == bottom {
+              ay + ah
+            } else {
+              ay + ah / 2
+            }
+            let cdx = c1x - c0x
+            let cdy = c1y - c0y
+
+            let l0x = c0x
+            let l0y = c0y
+            let l1x = c1x
+            let l1y = c1y
+
+            if leader-style.connect.at(0) == center + horizon {
+              if calc.abs(cdx.pt()) * h < calc.abs(cdy.pt()) * w {
+                if cdy > 0pt {
+                  l0x = c0x + h / 2 / cdy * cdx
+                  l0y = y + h
+                } else {
+                  l0x = c0x - h / 2 / cdy * cdx
+                  l0y = y
+                }
+              } else {
+                if cdx > 0pt {
+                  l0x = x + w
+                  l0y = c0y + w / 2 / cdx * cdy
+                } else {
+                  l0x = x
+                  l0y = c0y - w / 2 / cdx * cdy
+                }
+              }
+            }
+
+            if leader-style.connect.at(1) == center + horizon {
+              if calc.abs(cdx.pt()) * ah < calc.abs(cdy.pt()) * aw {
+                if cdy > 0pt {
+                  l1x = c1x - ah / 2 / cdy * cdx
+                  l1y = ay
+                } else {
+                  l1x = c1x + ah / 2 / cdy * cdx
+                  l1y = ay + ah
+                }
+              } else {
+                if cdx > 0pt {
+                  l1x = ax
+                  l1y = c1y - aw / 2 / cdx * cdy
+                } else {
+                  l1x = ax + aw
+                  l1y = c1y + aw / 2 / cdx * cdy
+                }
+              }
+            }
+
+            if leader == auto {
+              let leader-len = calc.norm((l1x - l0x).pt(), (l1y - l0y).pt())
+              if leader-len <= .4em.to-absolute().pt() {
+                continue
+              }
+            }
+
+            {
+              set place(left + top, float: false) // For RTL document.
+              tiptoe.curve(
+                stroke: leader-style.stroke,
+                tip: leader-style.tip,
+                toe: leader-style.toe,
+                curve.move((l0x, l0y)),
+                curve.line((l1x, l1y)),
+              )
+            }
+          } else {
+            let corner = .2em.to-absolute()
+            let components = if ax > x + corner or ax + aw < x + w - corner {
+              if ax + aw / 2 < x + w / 2 {
+                if ay + ah < y or ay + ah > y + h {
+                  let l0x = calc.max(x + corner, ax + aw)
+                  let l0y = if ay + ah < y { y } else if y + h < ay + ah { y + h }
+                  (
+                    curve.move((l0x, l0y)),
+                    curve.line((l0x, ay + ah)),
+                    curve.line((ax, ay + ah)),
+                  )
+                } else {
+                  (
+                    curve.move((x, ay + ah)),
+                    curve.line((ax, ay + ah)),
+                  )
+                }
+              } else {
+                if ay + ah < y or ay + ah > y + h {
+                  let l0x = calc.min(x + w - corner, ax)
+                  let l0y = if ay + ah < y { y } else if y + h < ay + ah { y + h }
+                  (
+                    curve.move((l0x, l0y)),
+                    curve.line((l0x, ay + ah)),
+                    curve.line((ax + aw, ay + ah)),
+                  )
+                } else {
+                  (
+                    curve.move((x + w, ay + ah)),
+                    curve.line((ax + aw, ay + ah)),
+                  )
+                }
+              }
+            } else {
+              if ay > y + h {
+                (
+                  curve.move((x + w / 2, y + h)),
+                  curve.line((x + w / 2, ay)),
+                )
+              } else {
+                (
+                  curve.move((x + w / 2, y)),
+                  curve.line((x + w / 2, ay + ah)),
+                )
+              }
+            }
+
+            {
+              set place(left + top, float: false) // For RTL document.
+              tiptoe.curve(
+                stroke: leader-style.stroke,
+                tip: leader-style.tip,
+                toe: leader-style.toe,
+                ..components,
+              )
+            }
+          }
+        }
+      }
+    }
+
+    return core-annot(tag, overlay)
+  }
+}
+
+
+#let annot-cetz(
+  ..tags,
+  drawable,
+) = {
+  context {
+    let infos = tags
+      .pos()
+      .map(tag => {
+        let info = query(selector(tag).before(here())).last().value
+        info.insert("tag", tag)
+        return info
+      })
+    let origin = infos.first()
+    let preamble = infos
+      .map(info => {
+        cetz.draw.rect(
+          (info.x - origin.x, -(info.y - origin.y)),
+          (info.x + info.width - origin.x, -(info.y + info.height - origin.y)),
+          name: str(info.tag),
+          stroke: none,
+          fill: none,
+        )
+      })
+      .sum()
+    let loc-lab = <_mannot-annot-cetz-loc>
+    let loc-lab-content = cetz.draw.content((0, 0), [#none#loc-lab])
+
+    sym.wj
+    box(place(hide(cetz.canvas(loc-lab-content + preamble + drawable))))
 
     context {
-      let annot-content = {
-        show: par.with(..par-props)
-        show: align.with(alignment)
-        text(..text-props, annotation)
-      }
-      let annot-size = measure(annot-content)
-
-      let overlay(width, height, color) = text(
-        size: annot-tsize,
-        {
-          let annot-content = text(annot-content)
-          if text-props.at("fill", default: auto) == auto {
-            annot-content = text(color, annot-content)
-          }
-
-          let draw-arrow = show-arrow
-          if draw-arrow == auto {
-            draw-arrow = if yshift > .4em {
-              true
-            } else {
-              false
-            }
-          }
-
-          if not draw-arrow {
-            // Place annotation.
-
-            let dx = (
-              width / 2
-                + if pos.x == center {
-                  -annot-size.width / 2
-                } else if pos.x == left {
-                  -annot-size.width
-                }
-            )
-            let dy = if pos.y == bottom {
-              height + yshift
-            } else {
-              -annot-size.height - yshift
-            }
-
-            place(annot-content, dx: dx, dy: dy)
-          } else {
-            // Place arrow and annotation.
-
-            let arrow-stroke = stroke(arrow-stroke)
-            if arrow-stroke.paint == auto {
-              arrow-stroke = copy-stroke(arrow-stroke, (paint: color))
-            }
-
-            let p3x = width / 2
-            let p3y = if pos.y == bottom {
-              height + arrow-stroke.thickness
-            } else {
-              -arrow-stroke.thickness
-            }
-
-            let p2x = p3x
-            let p2y = if pos.y == bottom {
-              if pos.x == center {
-                p3y + yshift
-              } else {
-                p3y + annot-size.height + arrow-padding * 2 + yshift
-              }
-            } else {
-              p3y - yshift
-            }
-
-            let p1x = if pos.x == right {
-              p2x + annot-size.width + arrow-padding
-            } else if pos.x == left {
-              p2x - annot-size.width - arrow-padding
-            }
-            let p1y = p2y
-
-            if arrow-stroke.thickness > 0pt {
-              // Place the arrow.
-              if pos.x == center {
-                _place-arrow(stroke: arrow-stroke, tail-length: .3em, (p2x, p2y), (p3x, p3y))
-              } else {
-                _place-arrow(stroke: arrow-stroke, tail-length: .3em, (p1x, p1y), (p2x, p2y), (p3x, p3y))
-              }
-            }
-
-            // Place the annotation.
-            if pos.x == right {
-              place(annot-content, dx: p2x + arrow-padding, dy: p2y - annot-size.height - arrow-padding)
-            } else if pos.x == left {
-              place(
-                annot-content,
-                dx: p2x - annot-size.width - arrow-padding,
-                dy: p2y - annot-size.height - arrow-padding,
-              )
-            } else {
-              if pos.y == bottom {
-                place(annot-content, dx: p2x - annot-size.width / 2, dy: p2y + arrow-padding)
-              } else {
-                place(annot-content, dx: p2x - annot-size.width / 2, dy: p2y - annot-size.height - arrow-padding)
-              }
-            }
-          }
-        },
-      )
-
-      return core-annot(tag, overlay)
+      let cpos = query(selector(loc-lab).before(here())).last().location().position()
+      sym.wj
+      box(place(dx: origin.x - cpos.x, dy: origin.y - cpos.y, cetz.canvas(preamble + drawable)))
     }
   }
 }

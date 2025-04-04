@@ -1,4 +1,4 @@
-#let copy-stroke(_stroke, args) = {
+#let copy-stroke(_stroke, ..args) = {
   let s = stroke(_stroke)
   return stroke((
     paint: args.at("paint", default: s.paint),
