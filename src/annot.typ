@@ -60,7 +60,10 @@
 /// *Example*
 /// #example(```typ
 /// #let myannot(tag, annotation) = {
+///   let a = rect(annotation)
 ///   let overlay(markers) = {
+///     let m = markers.first()
+///     place(dx: m.x, dy: m.y + m.height, a)
 ///   }
 ///   return core-annot(tag, overlay)
 /// }
@@ -101,23 +104,24 @@
 
 /// Places an annotation on previously marked content within a math block.
 ///
-/// This function must be used within the same math block as the marked content.
 ///
 /// *Example*
 /// ```example
 /// $
-/// mark(x, tag: #<e>)
+/// markhl(x, tag: #<e>)
 /// #annot(<e>)[Annotation]
 /// $
+/// #v(1em)
 /// ```
 ///
 /// #example(```typ
 /// $
 /// markrect(integral x dif x, tag: #<x>, color: #blue)
 ///
-/// #annot(<x>, pos: left)[Left]
-/// #annot(<x>, pos: top + left)[Top left]
+/// #annot(<x>, pos: left, dx: -1em)[Annotation.]
+/// #annot(<x>, pos: bottom + right, dy: 1em)[Another annotation.]
 /// $
+/// #v(1em)
 /// ```, preview-inset: 20pt)
 ///
 /// -> content
@@ -394,18 +398,38 @@
 }
 
 
+/// Places an cetz canvas on previously marked content within a math block.
+///
+///
+/// *Example*
+/// ```example
+/// #import "@preview/cetz:0.3.4"
+///
+/// $
+///   mark(x, tag: #<0>)
+///   + mark(y, tag: #<1>)
+///
+///   #annot-cetz((<0>, <1>), {
+///     import cetz.draw: *
+///     content((1, -.6), [Annotation], anchor: "north", name: "a")
+///     set-style(stroke: .7pt, mark: (start: "straight", scale: 0.6))
+///     line("0", "a")
+///     line("1", "a")
+///   })
+/// $
+/// #v(1em)
+/// ```
+///
+/// -> content
 #let annot-cetz(
-  ..tags,
+  /// The tag associated with the content to annotate, or array of tags.
+  /// -> label | array
+  tag,
+  /// A code block given to cetz canvas.
+  /// -> array
   drawable,
 ) = {
-  context {
-    let infos = tags
-      .pos()
-      .map(tag => {
-        let info = query(selector(tag).before(here())).last().value
-        info.insert("tag", tag)
-        return info
-      })
+  let overlay(infos) = {
     let origin = infos.first()
     let preamble = infos
       .map(info => {
@@ -421,13 +445,13 @@
     let loc-lab = <_mannot-annot-cetz-loc>
     let loc-lab-content = cetz.draw.content((0, 0), [#none#loc-lab])
 
-    sym.wj
-    box(place(hide(cetz.canvas(loc-lab-content + preamble + drawable))))
+    place(hide(cetz.canvas(loc-lab-content + preamble + drawable)))
 
     context {
       let cpos = query(selector(loc-lab).before(here())).last().location().position()
-      sym.wj
-      box(place(dx: origin.x - cpos.x, dy: origin.y - cpos.y, cetz.canvas(preamble + drawable)))
+      place(dx: origin.x - cpos.x, dy: origin.y - cpos.y, cetz.canvas(preamble + drawable))
     }
   }
+
+  core-annot(tag, overlay)
 }

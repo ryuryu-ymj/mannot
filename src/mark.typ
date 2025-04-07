@@ -125,7 +125,7 @@
 ///     box(place(repr(info.value), dx: -5em))
 ///   }
 /// $
-/// #v(11em)
+/// #v(12em)
 /// ```
 ///
 /// -> content
@@ -264,20 +264,39 @@
 }
 
 
-
-#let marknd(
-  /// The content to be highlighted within a math block. -> content
+/// Marks content within a math block.
+///
+/// If you mark content with a tag, you can annotate it using the `annot` function.
+///
+/// *Example*
+/// ```example
+/// $ mark(x, color: #red) $
+/// ```
+///
+/// -> content
+#let mark(
+  /// The content to be underlined within a math block. -> content
   body,
-  /// The tag used to identify the marked content for later annotations.
-  /// -> label
-  tag,
+  /// An optional tag used to identify the underlined content for later annotations.
+  /// -> none | label
+  tag: none,
+  /// The text fill color. -> color
+  color: auto,
   /// The spacing between the marked content and the edge of the highlight rectangle.
   /// This can be specified as a single `length` value which applies to all sides,
   /// or as a `dictionary` of `length` with keys `left`, `right`, `top`, `bottom`, `x`, `y`, or `rest`.
   /// -> none | length | dictionary
   padding: (y: .1em),
 ) = {
-  return core-mark(body, tag: tag, padding: padding)
+  if color != auto {
+    body = text(fill: color, body)
+    return core-mark(body, tag: tag, color: color, padding: padding)
+  } else {
+    return context {
+      let color = text.fill
+      core-mark(body, tag: tag, color: color, padding: padding)
+    }
+  }
 }
 
 
@@ -291,7 +310,7 @@
 /// ```
 ///
 /// -> content
-#let mark(
+#let markhl(
   /// The content to be highlighted within a math block. -> content
   body,
   /// An optional tag used to identify the marked content for later annotations.
@@ -367,7 +386,7 @@
   /// The stroke style for the rectangle.
   /// If its `paint` is set to `auto`, it will be set to the `color`.
   /// -> none | length | color | gradient | stroke | pattern | dictionary
-  stroke: .05em,
+  stroke: .048em,
   /// The corner radius of the rectangle. -> relative | dictionary
   radius: (:),
   /// The spacing between the marked content and the edge of the rectangle.
@@ -380,6 +399,9 @@
     stroke = std.stroke(stroke)
     if stroke.paint == auto {
       stroke = copy-stroke(stroke, paint: color)
+    }
+    if stroke.thickness == auto {
+      stroke = copy-stroke(stroke, thickness: .048em)
     }
   }
 
@@ -419,15 +441,18 @@
   color: black,
   /// The stroke style for the underline.
   /// -> none | length | color | gradient | stroke | pattern | dictionary
-  stroke: .05em,
+  stroke: .048em,
   /// The spacing between the marked content and the underline.
   /// -> none | length
-  padding: .15em,
+  padding: .144em,
 ) = {
   if stroke != none {
     stroke = std.stroke(stroke)
     if stroke.paint == auto {
-      stroke = copy-stroke(stroke, (paint: color))
+      stroke = copy-stroke(stroke, paint: color)
+    }
+    if stroke.thickness == auto {
+      stroke = copy-stroke(stroke, thickness: .048em)
     }
   }
   if type(padding) == length {
@@ -441,34 +466,4 @@
   }
 
   return core-mark(body, tag: tag, color: color, overlay: overlay, padding: padding)
-}
-
-
-/// Marks content within a math block and changes its text color.
-///
-/// If you mark content with a tag, you can annotate it using the `annot` function.
-///
-/// *Example*
-/// ```example
-/// $ marktc(x + y) $
-/// ```
-///
-/// -> content
-#let marktc(
-  /// The content to be underlined within a math block. -> content
-  body,
-  /// An optional tag used to identify the underlined content for later annotations.
-  /// -> none | label
-  tag: none,
-  /// The color used for the underline. -> color
-  color: red,
-  /// The spacing between the marked content and the edge of the highlight rectangle.
-  /// This can be specified as a single `length` value which applies to all sides,
-  /// or as a `dictionary` of `length` with keys `left`, `right`, `top`, `bottom`, `x`, `y`, or `rest`.
-  /// -> none | length | dictionary
-  padding: (y: .1em),
-) = {
-  body = text(fill: color, body)
-
-  return core-mark(body, tag: tag, color: color, padding: padding)
 }
