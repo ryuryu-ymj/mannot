@@ -144,26 +144,24 @@
   /// The vertical displacement of the annotation.
   /// -> auto | length
   dy: auto,
-  /// How to draw a leader line connecting the marked content and the annotation.
-  /// This can be:
-  /// - `none` to disable a leader line
-  /// - Any kind of stroke for a leader line
-  /// - A dictionary can contain the following keys:
-  ///   - *stroke*: How to stroke the leader line. (Default: `.05em`)
-  ///   - *tip*: The end mark of the leader line.
-  ///     See #link("https://typst.app/universe/package/tiptoe")[tiptoe].
-  ///     (Default: `none`)
-  ///   - *toe*: The start mark of the leader line.
-  ///     See #link("https://typst.app/universe/package/tiptoe")[tiptoe].
-  ///     (Default: `tiptoe.straight.with(length: 600%)`)
-  ///   - *connect*: How to connect the leader line. This can be:
-  ///     - A pair of alignments describing the start anchor of the marked content
-  ///       and the end anchor of the annotation.
-  ///     - "elbow" for an elbow-shaped leader line
-  ///     (Default: `(center + horizon, center + horizon)`)
-  /// -> none | auto | length | color | gradient | stroke | tiling | dictionary
+  /// Whether to draw a leader line from the marked content to the annotation.
+  /// If set to `auto`, it depends on the distance between the marked content and the annotation.
+  /// -> auto | bool
   leader: auto,
-  /// How much to pad the annotation box.
+  /// How to stroke the leader line.
+  leader-stroke: .05em,
+  /// How to end the leader line.
+  /// See #link("https://typst.app/universe/package/tiptoe")[tiptoe].
+  leader-tip: none,
+  /// How to start the leader line.
+  /// See #link("https://typst.app/universe/package/tiptoe")[tiptoe].
+  leader-toe: tiptoe.straight.with(length: 600%),
+  /// How to connect the leader line. This can be:
+  /// - A pair of alignments describing the start anchor of the marked content
+  ///   and the end anchor of the annotation.
+  /// - "elbow" for an elbow-shaped leader line
+  leader-connect: (center + horizon, center + horizon),
+  /// How much to pad the annotation content.
   /// -> length | dictionary
   annot-inset: (x: .08em, y: .16em),
   /// How to align the annotation text.
@@ -198,6 +196,10 @@
     }
   }
 
+  if type(annot-inset) != dictionary {
+    annot-inset = (annot-inset,)
+  }
+
   annotation = {
     show: pad.with(..annot-inset)
     set par(..annot-par-props)
@@ -211,20 +213,6 @@
     let aw = annot-size.width
     let ah = annot-size.height
 
-    let leader-style = if leader == none or leader == auto {
-      (:)
-    } else if type(leader) in (length, color, gradient, stroke, tiling) {
-      (stroke: leader)
-    } else if type(leader) == dictionary {
-      leader
-    }
-    leader-style = (
-      stroke: stroke(leader-style.at("stroke", default: .05em).to-absolute()),
-      tip: leader-style.at("tip", default: none),
-      toe: leader-style.at("tip", default: tiptoe.straight.with(length: 600%)),
-      connect: _coerce-connect(leader-style.at("connect", default: (center + horizon, center + horizon))),
-    )
-
     let overlay(markers) = {
       let x = markers.first().x
       let y = markers.first().y
@@ -232,9 +220,9 @@
       let h = markers.first().height
       let c = markers.first().color
 
-      let leader-style = leader-style
-      if leader-style.stroke.paint == auto {
-        leader-style.stroke = copy-stroke(leader-style.stroke, paint: c)
+      let leader-stroke = stroke(leader-stroke)
+      if leader-stroke.paint == auto {
+        leader-stroke = copy-stroke(leader-stroke, paint: c)
       }
 
       let ax = if pos.at(0).x == left { x } else if pos.at(0).x == right { x + w } else { x + w / 2 }
@@ -246,7 +234,11 @@
       ay += dy
 
       let annot-text-fill = annot-text-props.at("fill", default: c)
-      let annot-alignment = if ax + aw / 2 < x + w / 2 { right } else { left }
+      let annot-alignment = if annot-alignment == auto {
+        if ax + aw / 2 < x + w / 2 { right } else { left }
+      } else {
+        annot-alignment
+      }
       let annotation = {
         set align(annot-alignment)
         set text(annot-text-fill)
@@ -255,38 +247,50 @@
 
       place(dx: ax, dy: ay, float: false, left + top, annotation)
 
-      if leader != none {
+      if leader != false {
         for info in markers {
           let x = info.x
           let y = info.y
           let w = info.width
           let h = info.height
 
-          if type(leader-style.connect) == array {
-            let c0x = if leader-style.connect.at(0).x == left {
+          if leader == auto {
+            let dst = calc.max(
+              ax - x - w,
+              x - ax - aw,
+              ay - y - h,
+              y - ay - ah,
+            )
+            if dst <= .3em.to-absolute() {
+              continue
+            }
+          }
+
+          if type(leader-connect) == array {
+            let c0x = if leader-connect.at(0).x == left {
               x
-            } else if leader-style.connect.at(0).x == right {
+            } else if leader-connect.at(0).x == right {
               x + w
             } else {
               x + w / 2
             }
-            let c0y = if leader-style.connect.at(0).y == top {
+            let c0y = if leader-connect.at(0).y == top {
               y
-            } else if leader-style.connect.at(0).y == bottom {
+            } else if leader-connect.at(0).y == bottom {
               y + h
             } else {
               y + h / 2
             }
-            let c1x = if leader-style.connect.at(1).x == left {
+            let c1x = if leader-connect.at(1).x == left {
               ax
-            } else if leader-style.connect.at(1).x == right {
+            } else if leader-connect.at(1).x == right {
               ax + aw
             } else {
               ax + aw / 2
             }
-            let c1y = if leader-style.connect.at(1).y == top {
+            let c1y = if leader-connect.at(1).y == top {
               ay
-            } else if leader-style.connect.at(1).y == bottom {
+            } else if leader-connect.at(1).y == bottom {
               ay + ah
             } else {
               ay + ah / 2
@@ -299,7 +303,7 @@
             let l1x = c1x
             let l1y = c1y
 
-            if leader-style.connect.at(0) == center + horizon {
+            if leader-connect.at(0) == center + horizon {
               if calc.abs(cdx.pt()) * h < calc.abs(cdy.pt()) * w {
                 if cdy > 0pt {
                   l0x = c0x + h / 2 / cdy * cdx
@@ -319,7 +323,7 @@
               }
             }
 
-            if leader-style.connect.at(1) == center + horizon {
+            if leader-connect.at(1) == center + horizon {
               if calc.abs(cdx.pt()) * ah < calc.abs(cdy.pt()) * aw {
                 if cdy > 0pt {
                   l1x = c1x - ah / 2 / cdy * cdx
@@ -339,19 +343,19 @@
               }
             }
 
-            if leader == auto {
-              let leader-len = calc.norm((l1x - l0x).pt(), (l1y - l0y).pt())
-              if leader-len <= .4em.to-absolute().pt() {
-                continue
-              }
-            }
+            // if leader == auto {
+            //   let leader-len = calc.norm((l1x - l0x).pt(), (l1y - l0y).pt())
+            //   if leader-len <= .4em.to-absolute().pt() {
+            //     continue
+            //   }
+            // }
 
             {
               set place(left + top, float: false) // For RTL document.
               tiptoe.curve(
-                stroke: leader-style.stroke,
-                tip: leader-style.tip,
-                toe: leader-style.toe,
+                stroke: leader-stroke,
+                tip: leader-tip,
+                toe: leader-toe,
                 curve.move((l0x, l0y)),
                 curve.line((l1x, l1y)),
               )
@@ -407,9 +411,9 @@
             {
               set place(left + top, float: false) // For RTL document.
               tiptoe.curve(
-                stroke: leader-style.stroke,
-                tip: leader-style.tip,
-                toe: leader-style.toe,
+                stroke: leader-stroke,
+                tip: leader-tip,
+                toe: leader-toe,
                 ..components,
               )
             }

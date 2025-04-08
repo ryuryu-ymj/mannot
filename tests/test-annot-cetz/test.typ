@@ -6,7 +6,7 @@ $
   mark(x, tag: #<0>)
   + mark(y, tag: #<1>)
 
-  #annot-cetz((<0>, <1>), {
+  #annot-cetz((<0>, <1>), cetz, {
     import cetz.draw: *
 
     content((1, -.6), [Annotation], anchor: "north", name: "a")

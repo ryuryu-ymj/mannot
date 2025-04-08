@@ -8,19 +8,19 @@ $
   #core-mark($x$, overlay: (w, h, c) => rect(width: w, height: h, stroke: c), color: blue)
 $
 
-== Padding
+== Outset
 $
-  #core-mark($x$, underlay: (w, h, c) => rect(width: w, height: h, fill: c), color: red, padding: none)
-  + #core-mark($x$, underlay: (w, h, c) => rect(width: w, height: h, fill: c), color: red, padding: .2em)
-  + #core-mark($x$, underlay: (w, h, c) => rect(width: w, height: h, fill: c), color: red, padding: (x: .1em, y: 4pt))
-  + #core-mark($x$, underlay: (w, h, c) => rect(width: w, height: h, fill: c), color: red, padding: (left: .1em, top: 4pt, rest: 8pt))
+  #core-mark($x$, underlay: (w, h, c) => rect(width: w, height: h, fill: c), color: red, outset: none)
+  + #core-mark($x$, underlay: (w, h, c) => rect(width: w, height: h, fill: c), color: red, outset: .2em)
+  + #core-mark($x$, underlay: (w, h, c) => rect(width: w, height: h, fill: c), color: red, outset: (x: .1em, y: 4pt))
+  + #core-mark($x$, underlay: (w, h, c) => rect(width: w, height: h, fill: c), color: red, outset: (left: .1em, top: 4pt, rest: 8pt))
 $
 
 == Tag
 $
   #core-mark($x$, tag: <tag1>, underlay: (w, h, c) => rect(width: w, height: h))
 
-  #core-mark($x$, tag: <tag1>, color: red, padding: 1pt, underlay: (w, h, c) => rect(width: w, height: h, fill: c))
+  #core-mark($x$, tag: <tag1>, color: red, outset: 1pt, underlay: (w, h, c) => rect(width: w, height: h, fill: c))
 $
 #context {
   query(<tag1>)

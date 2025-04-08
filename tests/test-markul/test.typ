@@ -12,11 +12,21 @@ $
   markul(x, color: #red)
 $
 
+#[
+  #set text(red)
+
+  $
+    underline(x)
+    markul(x)
+    markul(x, stroke: #(dash: "dotted"))
+  $
+]
+
 $
   markul(x, stroke: #(1pt + blue))
   markul(x, stroke: #(paint: green, dash: "dotted"))
 $
 
 $
-  markul(x, padding: #.3em)
+  markul(x, outset: #(bottom: .3em))
 $
