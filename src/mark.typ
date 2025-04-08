@@ -113,7 +113,7 @@
 ///   let overlay(width, height, color) = {
 ///     rect(width: width, height: height, stroke: color)
 ///   }
-///   return core-mark(body, tag: tag, color: red, overlay: overlay, padding: (y: .1em))
+///   return core-mark(body, tag: tag, color: red, overlay: overlay, outset: (y: .1em))
 /// }
 ///
 /// $
@@ -136,25 +136,27 @@
   /// This tag can be used to query the marked element.
   /// -> none | label
   tag: none,
-  /// The color used for marking. -> color
-  color: black,
+  /// The color used for marking underlay/overlay and later annotations.
+  /// If set to `auto`, it defaults to the text fill color.
+  /// -> auto | color
+  color: auto,
   /// An optional function to create a custom underlay.
-  /// This function receives the marked content's width and height (including padding)
+  /// This function receives the marked content's width and height (including outset)
   /// and marking color, and should return content to be placed *under* the marked content.
   /// The signature is `underlay(width, height, color)`.
   /// -> none | function
   underlay: none,
   /// An optional function to create a custom overlay.
-  /// This function receives the marked content's width and height (including padding)
+  /// This function receives the marked content's width and height (including outset)
   /// and marking color, and should return content to be placed *over* the marked content.
   /// The signature is `overlay(width, height, color)`.
   /// -> none | function
   overlay: none,
-  /// The spacing between the marked content and the edge of the underlay/overlay.
+  /// How much to expand the marking box size without affecting the layout.
   /// This can be specified as a single `length` value, which applies to all sides,
   /// or as a `dictionary` of `length` with keys `left`, `right`, `top`, `bottom`, `x`, `y`, or `rest`.
   /// -> none | length | dictionary
-  padding: (:),
+  outset: (:),
 ) = {
   // Extract leading/trailing horizontal spaces from body.
   let (body, leading-h) = _remove-leading-h(body)
@@ -169,6 +171,12 @@
     } else {
       label("_mannot-mark-info")
     }
+
+    let color = color
+    if color == auto {
+      color = text.fill
+    }
+
     let begin-loc = here()
 
     // Place `underlay(width, height, color)` under the `body`.
@@ -222,26 +230,26 @@
       let bottom-dy = dy-array.at(0) - dy-array.at(2)
       let bottom-y = max-y + bottom-dy
 
-      let padding = if padding == none {
+      let outset = if outset == none {
         (left: 0pt, right: 0pt, top: 0pt, bottom: 0pt)
-      } else if type(padding) == length {
-        let padding = padding.to-absolute()
-        (left: padding, right: padding, top: padding, bottom: padding)
-      } else if type(padding) == dictionary {
-        let rest = padding.at("rest", default: 0pt).to-absolute()
-        let x = padding.at("x", default: rest).to-absolute()
-        let left = padding.at("left", default: x).to-absolute()
-        let right = padding.at("right", default: x).to-absolute()
-        let y = padding.at("y", default: rest).to-absolute()
-        let top = padding.at("top", default: y).to-absolute()
-        let bottom = padding.at("bottom", default: y).to-absolute()
+      } else if type(outset) == length {
+        let outset = outset.to-absolute()
+        (left: outset, right: outset, top: outset, bottom: outset)
+      } else if type(outset) == dictionary {
+        let rest = outset.at("rest", default: 0pt).to-absolute()
+        let x = outset.at("x", default: rest).to-absolute()
+        let left = outset.at("left", default: x).to-absolute()
+        let right = outset.at("right", default: x).to-absolute()
+        let y = outset.at("y", default: rest).to-absolute()
+        let top = outset.at("top", default: y).to-absolute()
+        let bottom = outset.at("bottom", default: y).to-absolute()
         (left: left, right: right, top: top, bottom: bottom)
       }
 
-      let x = begin-loc.position().x - padding.left
-      let y = top-y - padding.top
-      let width = end-loc.position().x + padding.right - x
-      let height = bottom-y - top-y + padding.top + padding.bottom
+      let x = begin-loc.position().x - outset.left
+      let y = top-y - outset.top
+      let width = end-loc.position().x + outset.right - x
+      let height = bottom-y - top-y + outset.top + outset.bottom
 
       // Expose the metadata.
       let info = (body: body, x: x, y: y, width: width, height: height, color: color, tag: tag, begin-loc: begin-loc)
@@ -264,9 +272,11 @@
 }
 
 
-/// Marks content within a math block.
+/// Marks an annotation target within a math block.
 ///
 /// If you mark content with a tag, you can annotate it using the `annot` function.
+///
+/// If the `color` argument is provided, it will change the color of the marked text.
 ///
 /// *Example*
 /// ```example
@@ -275,32 +285,34 @@
 ///
 /// -> content
 #let mark(
-  /// The content to be underlined within a math block. -> content
+  /// The content to be marked within a math block. -> content
   body,
-  /// An optional tag used to identify the underlined content for later annotations.
+  /// An optional tag used to identify the marked content for later annotations.
   /// -> none | label
   tag: none,
-  /// The text fill color. -> color
+  /// An optional color for the text and later annotations.
+  /// If set to `auto`, it defaults to the text fill color.
+  /// -> auto | color
   color: auto,
-  /// The spacing between the marked content and the edge of the highlight rectangle.
+  /// How much to expand the marking box size without affecting the layout.
   /// This can be specified as a single `length` value which applies to all sides,
   /// or as a `dictionary` of `length` with keys `left`, `right`, `top`, `bottom`, `x`, `y`, or `rest`.
   /// -> none | length | dictionary
-  padding: (y: .1em),
+  outset: (y: .1em),
 ) = {
   if color != auto {
     body = text(fill: color, body)
-    return core-mark(body, tag: tag, color: color, padding: padding)
+    return core-mark(body, tag: tag, color: color, outset: outset)
   } else {
     return context {
       let color = text.fill
-      core-mark(body, tag: tag, color: color, padding: padding)
+      core-mark(body, tag: tag, color: color, outset: outset)
     }
   }
 }
 
 
-/// Marks content within a math block with highlighting.
+/// Marks and highlights content within a math block.
 ///
 /// If you mark content with a tag, you can annotate it using the `annot` function.
 ///
@@ -318,31 +330,30 @@
   tag: none,
   /// The color used for the highlight and later annotations.
   /// If both `color` and `fill` are set to `auto`, `color` defaults to `orange`.
-  /// Otherwise, if only `color` is `auto`, it defaults to `black`.
+  /// Otherwise, if only `color` is `auto`, it defaults to the text fill color.
   /// -> auto | color
   color: auto,
-  /// The fill style for the highlight rectangle.
+  /// How to fill the highlight rectangle.
   /// If set to `auto`, `fill` will be set to `color.transparentize(60%)`.
   /// -> auto | none | color | gradient | pattern
   fill: auto,
-  /// The stroke style for the highlight rectangle.
+  /// How to stroke the highlight rectangle.
   /// -> none | auto | length | color | gradient | stroke | pattern | dictionary
   stroke: none,
-  /// The corner radius of the highlight rectangle. -> relative | dictionary
+  /// How much to round the highlight rectangle's corner.
+  /// -> relative | dictionary
   radius: (:),
-  /// The spacing between the marked content and the edge of the highlight rectangle.
+  /// How much to expand the highlight box size without affecting the layout.
   /// This can be specified as a single `length` value which applies to all sides,
   /// or as a `dictionary` of `length` with keys `left`, `right`, `top`, `bottom`, `x`, `y`, or `rest`.
   /// -> none | length | dictionary
-  padding: (y: .1em),
+  outset: (y: .1em),
 ) = {
   if fill == auto {
     if color == auto {
       color = orange
     }
     fill = color.transparentize(60%)
-  } else if color == auto {
-    color = black
   }
 
   let underlay = if fill == none and stroke == none { none } else {
@@ -357,11 +368,11 @@
     }
   }
 
-  return core-mark(body, tag: tag, color: color, underlay: underlay, padding: padding)
+  return core-mark(body, tag: tag, color: color, underlay: underlay, outset: outset)
 }
 
 
-/// Marks content within a math block with a rectangle.
+/// Marks and boxes around content within a math block.
 ///
 /// If you mark content with a tag, you can annotate it using the `annot` function.
 ///
@@ -372,41 +383,41 @@
 ///
 /// -> content
 #let markrect(
-  /// The content to be marked within a math block. -> content
+  /// The content to be boxed around within a math block. -> content
   body,
   /// An optional tag used to identify the content for later annotations.
   /// -> none | label
   tag: none,
-  /// The color used for the rectangle stroke and later annotations.
+  /// The color used for the rectangle's stroke and later annotations.
+  /// If set to `auto`, it defaults to the text fill color.
   /// -> color
-  color: black,
-  /// The fill style for the rectangle.
+  color: auto,
+  /// How to fill the rectangle.
   /// -> none | color | gradient | pattern
   fill: none,
-  /// The stroke style for the rectangle.
+  /// How to stroke the rectangle.
   /// If its `paint` is set to `auto`, it will be set to the `color`.
   /// -> none | length | color | gradient | stroke | pattern | dictionary
   stroke: .048em,
-  /// The corner radius of the rectangle. -> relative | dictionary
+  /// How much to round the highlight rectangle's corner.
+  /// -> relative | dictionary
   radius: (:),
-  /// The spacing between the marked content and the edge of the rectangle.
+  /// How much to expand the rectangle size without affecting the layout.
   /// This can be specified as a single `length` value which applies to all sides,
   /// or as a `dictionary` of `length` with keys `left`, `right`, `top`, `bottom`, `x`, `y`, or `rest`.
   /// -> none | length | dictionary
-  padding: (y: .1em),
+  outset: (y: .1em),
 ) = {
-  if stroke != none {
-    stroke = std.stroke(stroke)
-    if stroke.paint == auto {
-      stroke = copy-stroke(stroke, paint: color)
-    }
-    if stroke.thickness == auto {
-      stroke = copy-stroke(stroke, thickness: .048em)
-    }
-  }
-
   let underlay = if fill == none and stroke == none { none } else {
-    (width, height, _) => {
+    (width, height, color) => {
+      let stroke = std.stroke(stroke)
+      if stroke.paint == auto {
+        stroke = copy-stroke(stroke, paint: color)
+      }
+      if stroke.thickness == auto {
+        stroke = copy-stroke(stroke, thickness: .048em)
+      }
+
       rect(
         width: width,
         height: height,
@@ -417,11 +428,11 @@
     }
   }
 
-  return core-mark(body, tag: tag, color: color, underlay: underlay, padding: padding)
+  return core-mark(body, tag: tag, color: color, underlay: underlay, outset: outset)
 }
 
 
-/// Marks content within a math block with an underline.
+/// Marks and underlines content within a math block.
 ///
 /// If you mark content with a tag, you can annotate it using the `annot` function.
 ///
@@ -434,36 +445,35 @@
 #let markul(
   /// The content to be underlined within a math block. -> content
   body,
-  /// An optional tag used to identify the underlined content for later annotations.
+  /// An optional tag used to identify the content for later annotations.
   /// -> none | label
   tag: none,
-  /// The color used for the underline. -> color
-  color: black,
-  /// The stroke style for the underline.
+  /// The color used for the underline and later annotations.
+  /// If set to `auto`, it defaults to the text fill color.
+  /// -> auto | color
+  color: auto,
+  /// How to stroke the underline.
   /// -> none | length | color | gradient | stroke | pattern | dictionary
   stroke: .048em,
-  /// The spacing between the marked content and the underline.
-  /// -> none | length
-  padding: .144em,
+  /// How much to expand the marking box size without affecting the layout.
+  /// This can be specified as a single `length` value which applies to all sides,
+  /// or as a `dictionary` of `length` with keys `left`, `right`, `top`, `bottom`, `x`, `y`, or `rest`.
+  /// -> none | length | dictionary
+  outset: (y: .144em),
 ) = {
-  if stroke != none {
-    stroke = std.stroke(stroke)
-    if stroke.paint == auto {
-      stroke = copy-stroke(stroke, paint: color)
-    }
-    if stroke.thickness == auto {
-      stroke = copy-stroke(stroke, thickness: .048em)
-    }
-  }
-  if type(padding) == length {
-    padding = (bottom: padding)
-  }
-
   let overlay = if stroke == none { none } else {
-    (width, height, _) => {
+    (width, height, color) => {
+      let stroke = std.stroke(stroke)
+      if stroke.paint == auto {
+        stroke = copy-stroke(stroke, paint: color)
+      }
+      if stroke.thickness == auto {
+        stroke = copy-stroke(stroke, thickness: .048em)
+      }
+
       line(start: (0pt, height), end: (width, height), stroke: stroke)
     }
   }
 
-  return core-mark(body, tag: tag, color: color, overlay: overlay, padding: padding)
+  return core-mark(body, tag: tag, color: color, overlay: overlay, outset: outset)
 }

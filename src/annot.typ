@@ -1,6 +1,5 @@
 #import "util.typ": copy-stroke
 
-#import "@preview/cetz:0.3.4"
 #import "@preview/tiptoe:0.3.0"
 
 
@@ -49,11 +48,10 @@
 }
 
 
-/// Places a custom annotation on previously marked content within a math block.
+/// Places a custom annotation on content (or contents) within a math block that was previously marked.
 ///
-/// This function creates a custom annotation by applying an overlay to content
-/// that was previously marked with a specific tag using `core-mark`.
-/// It must be used within the same math block as the marked content.
+/// This function generates a custom annotation by applying an overlay based on
+/// metadata associated with content marked with a specific tag using a marking function.
 ///
 /// Use this function as a foundation for defining custom annotation functions.
 ///
@@ -76,14 +74,13 @@
 ///
 /// -> content
 #let core-annot(
-  /// The tag associated with the content to annotate.
-  /// This tag must match a tag previously used in a `core-mark` call.
+  /// The tag (or an array of tags) associated with the content to annotate.
+  /// This tag must match the tag previously used in a marking function.
   /// -> label | array
   tag,
   /// The function to create the custom annotation overlay.
-  /// This function receives the width, height, and color of the marked content (including padding)
-  /// and should return content to be placed *over* the marked content.
-  /// The signature is `overlay(width, height, color)`.
+  /// This function receives a list of metadata for the marked contents,
+  /// and should return content to be placed relative to the top-left corner of the page.
   /// -> function
   overlay,
 ) = {
@@ -102,47 +99,75 @@
 }
 
 
-/// Places an annotation on previously marked content within a math block.
-///
+/// Places an annotation on content (or contents) within a math block that was previously marked.
 ///
 /// *Example*
 /// ```example
+/// #v(2em)
 /// $
 /// markhl(x, tag: #<e>)
 /// #annot(<e>)[Annotation]
+/// #annot(<e>, pos: top + right, dy: -1em)[Another annotation]
 /// $
 /// #v(1em)
 /// ```
 ///
 /// #example(```typ
 /// $
-/// markrect(integral x dif x, tag: #<x>, color: #blue)
+/// markrect(integral x dif x, tag: #<0>, color: #blue)
+/// + markul(x, tag: #<1>, color: #blue)
 ///
-/// #annot(<x>, pos: left, dx: -1em)[Annotation.]
-/// #annot(<x>, pos: bottom + right, dy: 1em)[Another annotation.]
+/// #annot((<0>, <1>), pos: top, dx: 4em)[Multi]
+/// #annot((<0>, <1>), pos: bottom + left, dx: -1em, dy: 1em, leader: (connect: "elbow"))[Elbow]
 /// $
 /// #v(1em)
 /// ```, preview-inset: 20pt)
 ///
 /// -> content
 #let annot(
-  /// The tag associated with the content to annotate, or array of tags.
+  /// The tag (or an array of tags) associated with the content to annotate.
+  /// This tag must match the tag previously used in a marking function.
   /// -> label | array
   tag,
-  /// The content of the annotation. -> content
+  /// Content of the annotation. -> content
   annotation,
-  /// The position of the annotation relative to the marked content.
+  /// Where to place the annotation relative to the marked content.
+  /// This can be:
+  /// - A single alignment for the relative position to the marked content.
+  /// - A pair of alignments. The first one describes the anchor of the marked content,
+  ///   and the second is the anchor of the annotation.
   /// -> alignment | (alignment, alignment)
   pos: bottom,
-  /// Horizontal offset. -> auto | length
+  /// The horizontal displacement of the annotation.
+  /// -> auto | length
   dx: auto,
-  /// Vertical offset. -> auto | length
+  /// The vertical displacement of the annotation.
+  /// -> auto | length
   dy: auto,
-  /// Leader line.
+  /// How to draw a leader line connecting the marked content and the annotation.
+  /// This can be:
+  /// - `none` to disable a leader line
+  /// - Any kind of stroke for a leader line
+  /// - A dictionary can contain the following keys:
+  ///   - *stroke*: How to stroke the leader line. (Default: `.05em`)
+  ///   - *tip*: The end mark of the leader line.
+  ///     See #link("https://typst.app/universe/package/tiptoe")[tiptoe].
+  ///     (Default: `none`)
+  ///   - *toe*: The start mark of the leader line.
+  ///     See #link("https://typst.app/universe/package/tiptoe")[tiptoe].
+  ///     (Default: `tiptoe.straight.with(length: 600%)`)
+  ///   - *connect*: How to connect the leader line. This can be:
+  ///     - A pair of alignments describing the start anchor of the marked content
+  ///       and the end anchor of the annotation.
+  ///     - "elbow" for an elbow-shaped leader line
+  ///     (Default: `(center + horizon, center + horizon)`)
   /// -> none | auto | length | color | gradient | stroke | tiling | dictionary
   leader: auto,
+  /// How much to pad the annotation box.
   /// -> length | dictionary
-  annot-padding: (x: .08em, y: .16em),
+  annot-inset: (x: .08em, y: .16em),
+  /// How to align the annotation text.
+  /// -> auto | alignment
   annot-alignment: auto,
   /// Properties for the annotation text.
   /// If the `fill` property is not specified, it defaults to the marking's color.
@@ -174,7 +199,7 @@
   }
 
   annotation = {
-    show: pad.with(..annot-padding)
+    show: pad.with(..annot-inset)
     set par(..annot-par-props)
     text(..annot-text-props, annotation)
   }
@@ -200,12 +225,12 @@
       connect: _coerce-connect(leader-style.at("connect", default: (center + horizon, center + horizon))),
     )
 
-    let overlay(infos) = {
-      let x = infos.first().x
-      let y = infos.first().y
-      let w = infos.first().width
-      let h = infos.first().height
-      let c = infos.first().color
+    let overlay(markers) = {
+      let x = markers.first().x
+      let y = markers.first().y
+      let w = markers.first().width
+      let h = markers.first().height
+      let c = markers.first().color
 
       let leader-style = leader-style
       if leader-style.stroke.paint == auto {
@@ -231,7 +256,7 @@
       place(dx: ax, dy: ay, float: false, left + top, annotation)
 
       if leader != none {
-        for info in infos {
+        for info in markers {
           let x = info.x
           let y = info.y
           let w = info.width
@@ -398,20 +423,22 @@
 }
 
 
-/// Places an cetz canvas on previously marked content within a math block.
+/// Places a CeTZ canvas annotation on content (or contecnts) within a math block that was previously marked.
 ///
+/// Within the CeTZ canvas code block, you can refer to the position of the marked content
+/// using an anchor with the same name as the tag.
+/// For multiple tags, you'll have multiple corresponding anchors.
 ///
 /// *Example*
 /// ```example
 /// #import "@preview/cetz:0.3.4"
 ///
 /// $
-///   mark(x, tag: #<0>)
-///   + mark(y, tag: #<1>)
+///   mark(x, tag: #<0>) + mark(y, tag: #<1>)
 ///
-///   #annot-cetz((<0>, <1>), {
+///   #annot-cetz((<0>, <1>), cetz, {
 ///     import cetz.draw: *
-///     content((1, -.6), [Annotation], anchor: "north", name: "a")
+///     content((0, -.6), [Annotation], anchor: "north-west", name: "a")
 ///     set-style(stroke: .7pt, mark: (start: "straight", scale: 0.6))
 ///     line("0", "a")
 ///     line("1", "a")
@@ -422,16 +449,20 @@
 ///
 /// -> content
 #let annot-cetz(
-  /// The tag associated with the content to annotate, or array of tags.
+  /// The tag (or an array of tags) associated with the content to annotate.
+  /// This tag must match the tag previously used in a marking function.
   /// -> label | array
   tag,
-  /// A code block given to cetz canvas.
+  /// A CeTZ module.
+  /// -> module
+  cetz,
+  /// A code block containing CeTZ drawing commands.
   /// -> array
   drawable,
 ) = {
-  let overlay(infos) = {
-    let origin = infos.first()
-    let preamble = infos
+  let overlay(markers) = {
+    let origin = markers.first()
+    let preamble = markers
       .map(info => {
         cetz.draw.rect(
           (info.x - origin.x, -(info.y - origin.y)),
