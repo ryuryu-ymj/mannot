@@ -67,6 +67,53 @@ $
 ```
 ![Example3](examples/showcase3.svg)
 
+### Customized Markings and Annotations
+```typst
+#import "@preview/cetz:0.3.4"
+
+#set page(width: auto, height: auto, margin: (x: 4cm, top: 2cm, bottom: 1cm), fill: white)
+#set text(24pt)
+
+#let markhl = markhl.with(stroke: 1pt)
+
+$
+  markhl(1 mark(., tag: #<sep>) 23, tag: #<mantissa>, color: #red)
+  mark(
+    mark(times, tag: #<prd>)
+    mark(10, tag: #<base>)^mark(4, tag: #<exp>),
+    tag: #<pow>,
+  )
+$
+
+#{
+  let annot = annot.with(leader-tip: tiptoe.triangle, leader-toe: none)
+  annot(<mantissa>, pos: left, dx: -.5em, dy: -1em, annot-text-props: (size: .9em))[mantissa]
+
+  let annot = annot.with(leader-stroke: .03em, leader-tip: none, leader-toe: none)
+  annot(<sep>, pos: bottom + left, dx: -.5em)[decimal \ separator]
+  annot(<prd>, pos: top, dx: -1em, dy: -1.2em)[product]
+  annot(<base>, pos: top, dy: -1em)[base]
+  annot(<exp>, pos: top + right, dx: 1em)[exponent]
+
+  annot-cetz(
+    <pow>,
+    cetz,
+    {
+      import cetz.draw: *
+      cetz.decorations.flat-brace(
+        "pow.south-west",
+        "pow.south-east",
+        flip: true,
+        name: "brace",
+        stroke: blue,
+      )
+      content("brace.south", anchor: "north", text(blue, .9em)[power])
+    },
+  )
+}
+```
+![Example2](examples/showcase2.svg)
+
 
 ## Usage
 Import the package `mannot` on the top of your document:
@@ -174,6 +221,45 @@ You can customize its appearance using the following annot arguments:
   - "elbow" to create an elbow-shaped leader line.
 
   ![Usage of leader-connect](examples/usage-leader-connect.svg)
+
+
+### Multi Annotations
+You can also annotate multiple marked elements simultaneously
+by passing an array of their tags to the `annot` function.
+```typst
+$
+  mark(x, tag: #<1>, color: #green)
+  + markhl(f(x), tag: #<2>, color: #purple, stroke: #1pt, radius: #10%)
+  + markrect(e^x, tag: #<3>, color: #red, fill: #blue, outset: #.2em)
+  + markul(x + 1, tag: #<4>, color: #gray, stroke: #2pt)
+
+  #annot((<1>, <2>), dy: 1em)[Annotation]
+  #annot((<3>, <2>, <4>), pos: top, dy: -1em, leader-connect: "elbow")[Another annotation]
+$
+```
+![Usage5](examples/usage5.svg)
+
+### Annotations using CeTZ
+To create annotations using the CeTZ canvas, use the `annot-cetz` function.
+This allows you to embed a CeTZ canvas directly onto previously marked content.
+Within the CeTZ canvas code block,
+you can reference the position and dimensions of the marked content using an anchor with the same name as its tag.
+For elements marked with multiple tags, corresponding anchors will be available.
+```typst
+#import "@preview/cetz:0.3.4"
+
+$
+  mark(x, tag: #<x>) + mark(y, tag: #<y>)
+
+  #annot-cetz((<x>, <y>), cetz, {
+    import cetz.draw: *
+    content((0, -1), [CeTZ], anchor: "north-west", name: "a")
+    line("x", "a") // You can refer the marked content.
+    line("y", "a")
+  })
+$
+```
+![Usage of annot-cetz](examples/usage-annot-cetz.svg)
 
 
 ## Tips

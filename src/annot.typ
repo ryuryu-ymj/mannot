@@ -118,7 +118,7 @@
 /// + markul(x, tag: #<1>, color: #blue)
 ///
 /// #annot((<0>, <1>), pos: top, dx: 4em)[Multi]
-/// #annot((<0>, <1>), pos: bottom + left, dx: -1em, dy: 1em, leader: (connect: "elbow"))[Elbow]
+/// #annot((<0>, <1>), pos: bottom + left, dx: -1em, dy: 1em, leader-connect: "elbow")[Elbow]
 /// $
 /// #v(1em)
 /// ```, preview-inset: 20pt)
