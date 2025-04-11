@@ -1,6 +1,6 @@
 [package]
 name = "mannot"
-version = "0.2.3"
+version = "0.3.0"
 entrypoint = "src/lib.typ"
 authors = ["ryuryu-ymj"]
 license = "MIT"

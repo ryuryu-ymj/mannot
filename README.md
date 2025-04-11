@@ -273,10 +273,11 @@ For example, to always use elbow-shaped leader lines for annotations:
 
 ## Changelog
 * v0.3.0:
-  - Renamed some markign functions for clarity:
+  - Renamed some marking functions for clarity:
     - `mark` is now `markhl` (for highlight).
     - `marktc` is now `mark` (for text color change).
   - Added direct leader line functionality to the `annot` function.
+  - Added support for multi element annotations.
   - Introduced support for annotations using CeTZ canvas.
 * v0.2.3:
   - Added support for RTL documents.
