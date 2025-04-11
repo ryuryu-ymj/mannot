@@ -1,4 +1,4 @@
-#import "util.typ": copy-stroke
+#import "util.typ": default-stroke, copy-stroke
 
 #import "@preview/tiptoe:0.3.0"
 
@@ -149,7 +149,9 @@
   /// -> auto | bool
   leader: auto,
   /// How to stroke the leader line.
-  leader-stroke: .05em,
+  /// If its `paint` is set to `auto`, it will be set to the marking color.
+  /// If its `thickness` is set to `auto`, it defaults to `.048em`.
+  leader-stroke: .048em,
   /// How to end the leader line.
   /// See #link("https://typst.app/universe/package/tiptoe")[tiptoe].
   leader-tip: none,
@@ -220,10 +222,8 @@
       let h = markers.first().height
       let c = markers.first().color
 
-      let leader-stroke = stroke(leader-stroke)
-      if leader-stroke.paint == auto {
-        leader-stroke = copy-stroke(leader-stroke, paint: c)
-      }
+      let leader-stroke = default-stroke(leader-stroke, paint: c, thickness: .048em)
+      leader-stroke = copy-stroke(leader-stroke, thickness: leader-stroke.thickness.to-absolute())
 
       let ax = if pos.at(0).x == left { x } else if pos.at(0).x == right { x + w } else { x + w / 2 }
       ax -= if pos.at(1).x == left { 0pt } else if pos.at(1).x == right { aw } else { aw / 2 }
@@ -240,6 +240,7 @@
         annot-alignment
       }
       let annotation = {
+        show: box.with(width: aw, height: ah)
         set align(annot-alignment)
         set text(annot-text-fill)
         annotation

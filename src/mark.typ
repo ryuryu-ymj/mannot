@@ -1,4 +1,4 @@
-#import "util.typ": copy-stroke
+#import "util.typ": default-stroke
 
 
 #let _sequence-func = ([x] + [y]).func()
@@ -338,6 +338,8 @@
   /// -> auto | none | color | gradient | pattern
   fill: auto,
   /// How to stroke the highlight rectangle.
+  /// If its `paint` is set to `auto`, it will be set to the `color`.
+  /// If its `thickness` is set to `auto`, it defaults to `.048em`.
   /// -> none | auto | length | color | gradient | stroke | pattern | dictionary
   stroke: none,
   /// How much to round the highlight rectangle's corner.
@@ -354,6 +356,9 @@
       color = orange
     }
     fill = color.transparentize(60%)
+  }
+  if stroke != none {
+    stroke = default-stroke(stroke, paint: color, thickness: .048em)
   }
 
   let underlay = if fill == none and stroke == none { none } else {
@@ -397,6 +402,7 @@
   fill: none,
   /// How to stroke the rectangle.
   /// If its `paint` is set to `auto`, it will be set to the `color`.
+  /// If its `thickness` is set to `auto`, it defaults to `.048em`.
   /// -> none | length | color | gradient | stroke | pattern | dictionary
   stroke: .048em,
   /// How much to round the highlight rectangle's corner.
@@ -410,12 +416,9 @@
 ) = {
   let underlay = if fill == none and stroke == none { none } else {
     (width, height, color) => {
-      let stroke = std.stroke(stroke)
-      if stroke.paint == auto {
-        stroke = copy-stroke(stroke, paint: color)
-      }
-      if stroke.thickness == auto {
-        stroke = copy-stroke(stroke, thickness: .048em)
+      let stroke = stroke
+      if stroke != none {
+        stroke = default-stroke(stroke, paint: color, thickness: .048em)
       }
 
       rect(
@@ -453,22 +456,21 @@
   /// -> auto | color
   color: auto,
   /// How to stroke the underline.
+  /// If its `paint` is set to `auto`, it will be set to the `color`.
+  /// If its `thickness` is set to `auto`, it defaults to `.048em`.
   /// -> none | length | color | gradient | stroke | pattern | dictionary
   stroke: .048em,
   /// How much to expand the marking box size without affecting the layout.
   /// This can be specified as a single `length` value which applies to all sides,
   /// or as a `dictionary` of `length` with keys `left`, `right`, `top`, `bottom`, `x`, `y`, or `rest`.
   /// -> none | length | dictionary
-  outset: (y: .144em),
+  outset: (top: .1em, bottom: .144em),
 ) = {
   let overlay = if stroke == none { none } else {
     (width, height, color) => {
-      let stroke = std.stroke(stroke)
-      if stroke.paint == auto {
-        stroke = copy-stroke(stroke, paint: color)
-      }
-      if stroke.thickness == auto {
-        stroke = copy-stroke(stroke, thickness: .048em)
+      let stroke = stroke
+      if stroke != none {
+        stroke = default-stroke(stroke, paint: color, thickness: .048em)
       }
 
       line(start: (0pt, height), end: (width, height), stroke: stroke)
