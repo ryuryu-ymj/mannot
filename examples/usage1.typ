@@ -5,6 +5,5 @@
 
 
 $
-  mark(x, tag: #<t1>) + markrect(2y, tag: #<t2>)
-  + markul(z+1, tag: #<t3>) + marktc(C, tag: #<t4>)
+  mark(x, color: #red) + markhl(f(x)) + markrect(e^x) + markul(x + 1)
 $

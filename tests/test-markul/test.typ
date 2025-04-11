@@ -1,5 +1,4 @@
 #import "/src/mark.typ": markul
-#import "/src/util.typ": copy-stroke
 
 $
   underline(x)
@@ -10,15 +9,23 @@ $
 
 $
   markul(x, color: #red)
+  markul(x, stroke: #1pt)
+  markul(x, color: #red, stroke: #1pt)
+  markul(x, color: #red, stroke: #blue)
+  markul(x, color: #red, stroke: #(blue + 1pt))
 $
 
 #[
-  #set text(red)
+  #set text(green)
 
   $
     underline(x)
     markul(x)
-    markul(x, stroke: #(dash: "dotted"))
+    markul(x, color: #red)
+    markul(x, stroke: #1pt)
+    markul(x, color: #red, stroke: #1pt)
+    markul(x, color: #red, stroke: #blue)
+    markul(x, color: #red, stroke: #(blue + 1pt))
   $
 ]
 
@@ -29,4 +36,5 @@ $
 
 $
   markul(x, outset: #(bottom: .3em))
+  + markul(x, outset: #.3em)
 $

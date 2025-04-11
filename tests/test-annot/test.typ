@@ -1,30 +1,43 @@
-#import "/src/mark.typ": markhl
-#import "/src/annot.typ": annot
+#import "/src/mark.typ": markhl, markrect
+#import "/src/annot.typ": annot, tiptoe
 
-#import "@preview/tiptoe:0.3.0"
-
-#set text(24pt)
+// #import "@preview/tiptoe:0.3.0"
 
 
-$
-  markhl(integral f(x) + 1 dif x, tag: #<0>)
+#{
+  let lab(body) = rect(stroke: silver, body)
+  let annot = annot.with(annot-inset: 0pt)
 
-  #annot(<0>)[b]
-  #annot(<0>, pos: left)[l]
-  #annot(<0>, pos: right)[r]
-  #annot(<0>, pos: top)[t]
-  #annot(<0>, pos: top + left)[tl]
-  #annot(<0>, pos: top + right)[tr]
-  #annot(<0>, pos: bottom + left)[bl]
-  #annot(<0>, pos: bottom + right)[br]
-  #annot(<0>, pos: (bottom + left, top + right))[bltr]
-  #annot(<0>, pos: (bottom + left, top + left))[bltl]
-  #annot(<0>, pos: (bottom + left, bottom + right))[blbr]
-  #annot(<0>, pos: (top + left, top + right))[tltr]
-  #annot(<0>, pos: (top + left, bottom + left))[tlbl]
-  #annot(<0>, pos: (top + left, bottom + right))[tlbr]
-$
-#v(2em)
+  grid(
+    columns: 3,
+    inset: (bottom: 4em),
+    gutter: (8em, 16em),
+    $
+      markrect(integral x dif x, tag: #<1>, color: #red)
+
+    #annot(<1>, pos: top, lab[top])
+    #annot(<1>, pos: left, lab[left])
+    #annot(<1>, pos: bottom, lab[bottom])
+    #annot(<1>, pos: right, lab[right])
+    $,
+    $
+      markrect(integral x dif x, tag: #<1>, color: #red)
+
+    #annot(<1>, pos: top + left, lab[top + left])
+    #annot(<1>, pos: top + right, lab[top + right])
+    #annot(<1>, pos: bottom + left, lab[bottom + left])
+    #annot(<1>, pos: bottom + right, lab[bottom + right])
+    $,
+    $
+      markrect(integral x dif x, tag: #<1>, color: #red)
+
+    #annot(<1>, pos: (top + left, bottom + right), lab[(top + left, bottom + right)])
+    #annot(<1>, pos: (top + left, top + right), lab[(top + left, top + right)])
+    #annot(<1>, pos: (top + left, bottom + left), lab[(top + left, bottom + left)])
+    #annot(<1>, pos: (top + left, top + left), lab[(top + left, top + left)])
+    $,
+  )
+}
 
 $
   markhl(integral x dif x, tag: #<0>)

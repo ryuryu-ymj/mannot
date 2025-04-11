@@ -5,8 +5,8 @@
 
 
 $
-  mark(x, tag: #<t1>, color: #purple)
-  + markrect(2y, tag: #<t2>, color: #red, padding: #.2em)
-  + markul(z+1, tag: #<t3>, stroke: #.1em)
-  + marktc(C, tag: #<t4>, color: #olive)
+  mark(x, color: #green)
+  + markhl(f(x), color: #purple, stroke: #1pt, radius: #10%)
+  + markrect(e^x, color: #red, fill: #blue, outset: #.2em)
+  + markul(x + 1, color: #gray, stroke: #2pt)
 $

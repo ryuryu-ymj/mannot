@@ -7,13 +7,21 @@ $
 
 $
   markrect(x, color: #red)
+  + markrect(x, stroke: #1pt)
+  + markrect(x, color: #red, stroke: #1pt)
+  + markrect(x, color: #red, stroke: #blue)
+  + markrect(x, color: #red, stroke: #(blue + 1pt))
 $
 
 #[
-  #set text(red)
-
+  #set text(green)
   $
     markrect(x)
+    + markrect(x, color: #red)
+    + markrect(x, stroke: #1pt)
+    + markrect(x, color: #red, stroke: #1pt)
+    + markrect(x, stroke: #blue)
+    + markrect(x, color: #red, stroke: #(blue + 1pt))
   $
 ]
 
