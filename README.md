@@ -49,7 +49,7 @@ $
 $
   ( rmark(a x, tag: #<ax>) + bmark(b, tag: #<b>) )
   ( rmark(c x, tag: #<cx>) + bmark(d, tag: #<d>) )
-  = rmark(a c x^2) + pmark((a d + b c) x) bmark(b d)
+  = rmark(a c x^2) + pmark((a d + b c) x) + bmark(b d)
 $
 
 #annot-cetz(
