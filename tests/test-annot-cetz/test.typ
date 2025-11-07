@@ -4,8 +4,16 @@
 
 $
   mark(x, tag: #<0>)
-  + mark(y, tag: #<1>)
+  #annot-cetz(<0>, cetz, {
+    import cetz.draw: *
 
+    rect("0.north-west", "0.south-east")
+  })
+$
+
+$
+  mark(x, tag: #<0>)
+  + mark(y, tag: #<1>)
   #annot-cetz((<0>, <1>), cetz, {
     import cetz.draw: *
 

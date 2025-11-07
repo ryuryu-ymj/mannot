@@ -19,7 +19,6 @@ $
 == Tag
 $
   #core-mark($x$, tag: <tag1>, underlay: (w, h, c) => rect(width: w, height: h))
-
   #core-mark($x$, tag: <tag1>, color: red, outset: 1pt, underlay: (w, h, c) => rect(width: w, height: h, fill: c))
 $
 #context {
@@ -102,8 +101,8 @@ $
   // Align
   $
     mark(x &+ 2y &+ 3z &= 4) \
-    mark(x) &+ mark(2y &&=) 4 \
-    mark(x &&+ 3z) &= mark(4) \
+                     mark(x) & + mark(2y &&=) 4 \
+              mark(x &&+ 3z) & = mark(4) \
   $
 
   $
@@ -111,6 +110,11 @@ $
     mark(3!)
     mark(3)!
     3mark(!)
+  $
+
+  $
+    mark(mark(x) + mark(y)) +
+    mark(mark(mark(x) + mark(y)) + mark(z))
   $
 }
 

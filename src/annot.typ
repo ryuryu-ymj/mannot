@@ -1,4 +1,4 @@
-#import "util.typ": default-stroke, copy-stroke
+#import "util.typ": copy-stroke, default-stroke
 
 #import "@preview/tiptoe:0.3.0"
 
@@ -88,13 +88,16 @@
     tag = (tag,)
   }
 
-  sym.wj
   context {
     let markers = tag.map(tag => query(selector(tag).before(here())).last().value)
-
     let hpos = here().position()
-    box(place(dx: -hpos.x, dy: -hpos.y, float: false, left + top, overlay(markers)))
-    sym.wj
+    math.attach(box(place(
+      dx: -hpos.x,
+      dy: -hpos.y,
+      float: false,
+      left + top,
+      overlay(markers),
+    )))
   }
 }
 

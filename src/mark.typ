@@ -200,7 +200,13 @@
           let width = info.width
           let height = info.height
           let color = info.color
-          box(place(dx: dx, dy: dy, float: false, left + top, underlay(width, height, color)))
+          math.attach(box(place(
+            dx: dx,
+            dy: dy,
+            float: false,
+            left + top,
+            underlay(width, height, color),
+          )))
         }
       }
     }
@@ -211,7 +217,7 @@
     labeled-body
     sym.wj
     math.attach(
-      math.display(math.limits([#none#dy-lab])),
+      math.limits([#none#dy-lab]),
       t: pad(-1em, [#none#dy-lab]),
       b: pad(-1em, [#none#dy-lab]),
     )
@@ -226,9 +232,14 @@
 
       let dy-array = query(selector(dy-lab).after(begin-loc).before(end-loc)).map(e => e.location().position().y)
       let top-dy = dy-array.at(0) - dy-array.at(1)
-      let top-y = min-y + top-dy
       let bottom-dy = dy-array.at(0) - dy-array.at(2)
+      // let place-dy = dy-array.at(0) - dy-array.at(3)
+      // let place-dy = 0pt
+      let top-y = min-y + top-dy
       let bottom-y = max-y + bottom-dy
+
+      let left-x = begin-loc.position().x
+      let right-x = query(selector(dy-lab).after(begin-loc).before(end-loc)).last().location().position().x
 
       let outset = if outset == none {
         (left: 0pt, right: 0pt, top: 0pt, bottom: 0pt)
@@ -246,9 +257,9 @@
         (left: left, right: right, top: top, bottom: bottom)
       }
 
-      let x = begin-loc.position().x - outset.left
+      let x = left-x - outset.left
       let y = top-y - outset.top
-      let width = end-loc.position().x + outset.right - x
+      let width = right-x + outset.right - x
       let height = bottom-y - top-y + outset.top + outset.bottom
 
       // Expose the metadata.
@@ -262,7 +273,13 @@
         let dx = x - hpos.x
         let dy = y - hpos.y
         sym.wj
-        box(place(dx: dx, dy: dy, float: false, left + top, overlay(width, height, color)))
+        math.attach(box(place(
+          dx: dx,
+          dy: dy,
+          float: false,
+          left + top,
+          overlay(width, height, color),
+        )))
       }
     }
   }
