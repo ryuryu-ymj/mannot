@@ -10,16 +10,22 @@ doc:
     typst compile docs/doc.typ --root ./
 
 tests:
-    for f in tests/*.typ; \
-    do \
-        echo "Compile $f."; \
-        typst compile "$f" --root ./; \
-    done
+    tt run --use-system-fonts
 
 test file:
-    typst compile {{file}} --root ./
+    tt run --use-system-fonts {{file}}
 
-example:
+# tests:
+#     for f in tests/*.typ; \
+#     do \
+#         echo "Compile $f."; \
+#         typst compile "$f" --root ./; \
+#     done
+
+# test file:
+#     typst compile {{file}} --root ./
+
+examples:
     for f in examples/*.typ; \
     do \
         echo "Compile $f."; \

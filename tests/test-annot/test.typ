@@ -4,6 +4,13 @@
 // #import "@preview/tiptoe:0.3.0"
 
 
+$
+  markhl(x, tag: #<x>)
+  #annot(<x>, rect(fill: red))
+$
+#annot(<x>, rect())
+#v(3em)
+
 #{
   let lab(body) = rect(stroke: silver, body)
   let annot = annot.with(annot-inset: 0pt)
