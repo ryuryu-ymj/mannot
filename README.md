@@ -15,7 +15,22 @@ For comprehensive documentation, please refer to [manual](docs/doc.pdf).
 
 
 ## Examples
-### Marking and Annotating Math Content
+### Simple Example
+```typst
+$
+  markhl(x) + markhl(y, color: #blue, tag: #<tag1>)
+
+  #annot(<tag1>)[Annotation]
+$
+```
+
+![Simple example image](examples/sample1.svg)
+
+### More Complex Example
+![Example1](examples/showcase1.svg)
+
+<details> <summary> Source code </summary>
+
 ```typst
 #set page(width: auto, height: auto, margin: (left: 4cm, top: 2cm, rest: 1cm), fill: white)
 #set text(24pt)
@@ -33,9 +48,14 @@ $
   #annot(<Z>)[Partition function]
 $
 ```
-![Example1](examples/showcase1.svg)
+
+</details>
 
 ### Annotations using CeTZ
+![Example3](examples/showcase3.svg)
+
+<details> <summary> Source code </summary>
+
 ```typst
 #import "@preview/cetz:0.3.4"
 
@@ -65,9 +85,15 @@ $
   },
 )
 ```
-![Example3](examples/showcase3.svg)
+
+</details>
+
 
 ### Customized Markings and Annotations
+![Example2](examples/showcase2.svg)
+
+<details> <summary> Source code </summary>
+
 ```typst
 #import "@preview/cetz:0.3.4"
 
@@ -112,7 +138,8 @@ $
   )
 }
 ```
-![Example2](examples/showcase2.svg)
+
+</details>
 
 
 ## Usage
@@ -146,7 +173,7 @@ $
 ![Usage2](examples/usage2.svg)
 
 ### Annotations
-If you marked content with a tag,
+After marking content with a tag,
 you can later annotate it using the `annot` function:
 ```typst
 $
@@ -165,13 +192,13 @@ Markings and annotations do not affect the layout,
 so you might sometimes need to manually insert spacing before and after the equations to achieve the desired visual appearance:
 ```typst
 Text text text text text:
-#v(1em)
+#v(1em)  // <- Spacing
 $
   mark(x, tag: #<1>, color: #green)
   #annot(<1>, pos: top + right)[Annotation]
   #annot(<1>, dy: 1em)[Annotation]
 $
-#v(2em)
+#v(2em)  // <- Spacing
 text text text text text.
 ```
 ![Usage4](examples/usage4.svg)
@@ -186,18 +213,18 @@ The `annot` function offers the following arguments to control annotation placem
 
   ![Usage of pos](examples/usage-pos.svg)
 
-* `dx`, `dy`: the horizontal and vertical displacement of the annotation's anchor
+* `dx`, `dy`: The horizontal and vertical displacement of the annotation's anchor
   from the marked content's anchor.
 
   ![Usage of dx, dy](examples/usage-dxdy.svg)
 
 #### Annotation Leader Line
 When the annotation is far from the marked content, a leader line is drawn by default.
-You can customize its appearance using the following annot arguments:
+You can customize its appearance using the following `annot` arguments:
 * `leader`: Whether to draw a leader line. Set to `auto` to enable automatic drawing based on distance.
-* `leader-stroke`: How to stroke the leader line e.g. `1pt + red`.
+* `leader-stroke`: How to stroke the leader line e.g., `1pt + red`.
 * `leader-tip`, `leader-toe`: Define the end and start markers of the leader line.
-  Leader lines are drawn by package [tiptoe](https://typst.app/universe/package/tiptoe/0.3.0).
+  Leader lines are drawn by the [tiptoe](https://typst.app/universe/package/tiptoe/0.3.0) package.
   You can specify markers or `none`:
   ```typst
   $
@@ -207,7 +234,7 @@ You can customize its appearance using the following annot arguments:
       <1>, pos: bottom + right, dy: 1em,
       leader-tip: tiptoe.circle,
       leader-toe: tiptoe.stealth.with(length: 1000%),
-    )[annotaiton]
+    )[annotaition]
   $
   ```
 
@@ -223,7 +250,7 @@ You can customize its appearance using the following annot arguments:
   ![Usage of leader-connect](examples/usage-leader-connect.svg)
 
 
-### Multi Annotations
+### Annotating Multiple Elements
 You can also annotate multiple marked elements simultaneously
 by passing an array of their tags to the `annot` function.
 ```typst
@@ -272,12 +299,14 @@ For example, to always use elbow-shaped leader lines for annotations:
 
 
 ## Changelog
+* v0.3.1:
+  - Added support for Typst v0.14.
 * v0.3.0:
   - Renamed some marking functions for clarity:
     - `mark` is now `markhl` (for highlight).
     - `marktc` is now `mark` (for text color change).
   - Added direct leader line functionality to the `annot` function.
-  - Added support for multi element annotations.
+  - Added support for multi-element annotations.
   - Introduced support for annotations using CeTZ canvas.
 * v0.2.3:
   - Added support for RTL documents.

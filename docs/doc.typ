@@ -1,5 +1,5 @@
 #import "@preview/tidy:0.4.2"
-#import "@preview/codly:1.2.0": *
+#import "@preview/codly:1.3.0": *
 #import "/src/lib.typ": *
 #import "doc-template.typ": *
 
@@ -123,27 +123,24 @@ The `annot` function offers the following arguments to control annotation placem
       gutter: (6em, 14em),
       $
         markrect(integral x dif x, tag: #<1>, color: #red)
-
-    #annot(<1>, pos: top, lab[top])
-    #annot(<1>, pos: left, lab[left])
-    #annot(<1>, pos: bottom, lab[bottom])
-    #annot(<1>, pos: right, lab[right])
+        #annot(<1>, pos: top, lab[top])
+        #annot(<1>, pos: left, lab[left])
+        #annot(<1>, pos: bottom, lab[bottom])
+        #annot(<1>, pos: right, lab[right])
       $,
       $
         markrect(integral x dif x, tag: #<1>, color: #red)
-
-    #annot(<1>, pos: top + left, lab[top + left])
-    #annot(<1>, pos: top + right, lab[top + right])
-    #annot(<1>, pos: bottom + left, lab[bottom + left])
-    #annot(<1>, pos: bottom + right, lab[bottom + right])
+        #annot(<1>, pos: top + left, lab[top + left])
+        #annot(<1>, pos: top + right, lab[top + right])
+        #annot(<1>, pos: bottom + left, lab[bottom + left])
+        #annot(<1>, pos: bottom + right, lab[bottom + right])
       $,
       $
         markrect(integral x dif x, tag: #<1>, color: #red)
-
-    #annot(<1>, pos: (top + left, bottom + right), lab[(top + left, bottom + right)])
-    #annot(<1>, pos: (top + left, top + right), lab[(top + left, top + right)])
-    #annot(<1>, pos: (top + left, bottom + left), lab[(top + left, bottom + left)])
-    #annot(<1>, pos: (top + left, top + left), lab[(top + left, top + left)])
+        #annot(<1>, pos: (top + left, bottom + right), lab[(top + left, bottom + right)])
+        #annot(<1>, pos: (top + left, top + right), lab[(top + left, top + right)])
+        #annot(<1>, pos: (top + left, bottom + left), lab[(top + left, bottom + left)])
+        #annot(<1>, pos: (top + left, top + left), lab[(top + left, top + left)])
       $,
     )
   ]
