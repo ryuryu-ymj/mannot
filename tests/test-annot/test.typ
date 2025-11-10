@@ -1,8 +1,6 @@
 #import "/src/mark.typ": markhl, markrect
 #import "/src/annot.typ": annot, tiptoe
 
-// #import "@preview/tiptoe:0.3.0"
-
 
 $
   markhl(x, tag: #<x>)

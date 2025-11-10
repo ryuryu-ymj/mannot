@@ -1,6 +1,6 @@
 #import "/src/mark.typ": mark
 #import "/src/annot.typ": annot-cetz
-#import "@preview/cetz:0.3.4"
+#import "@preview/cetz:0.4.2"
 
 $
   mark(x, tag: #<0>)
