@@ -157,6 +157,9 @@
   /// or as a `dictionary` of `length` with keys `left`, `right`, `top`, `bottom`, `x`, `y`, or `rest`.
   /// -> none | length | dictionary
   outset: (:),
+  /// Whether to render visual markers for debugging purposes.
+  /// -> bool
+  debug: false,
 ) = {
   // Extract leading/trailing horizontal spaces from body.
   let (body, leading-h) = _remove-leading-h(body)
@@ -226,6 +229,24 @@
     context {
       let end-loc = here()
 
+      // Debug
+      if debug {
+        let hpos = here().position()
+        let dx = begin-loc.position().x - hpos.x
+        let dy = begin-loc.position().y - hpos.y
+        place(circle(radius: .5pt, stroke: none, fill: red), dx: dx, dy: dy)
+        for pos in query(selector(y-lab).after(begin-loc).before(end-loc)).map(e => e.location().position()) {
+          let dx = pos.x - hpos.x
+          let dy = pos.y - hpos.y
+          place(circle(radius: .5pt, stroke: none, fill: green), dx: dx, dy: dy)
+        }
+        for pos in query(selector(dy-lab).after(begin-loc).before(end-loc)).map(e => e.location().position()) {
+          let dx = pos.x - hpos.x
+          let dy = pos.y - hpos.y
+          place(circle(radius: .5pt, stroke: none, fill: blue), dx: dx, dy: dy)
+        }
+      }
+
       let y-array = query(selector(y-lab).after(begin-loc).before(end-loc)).map(e => e.location().position().y)
       let min-y = calc.min(..y-array)
       let max-y = calc.max(..y-array)
@@ -239,7 +260,7 @@
       let bottom-y = max-y + bottom-dy
 
       let left-x = begin-loc.position().x
-      let right-x = query(selector(dy-lab).after(begin-loc).before(end-loc)).last().location().position().x
+      let right-x = query(selector(dy-lab).after(begin-loc).before(end-loc)).first().location().position().x
 
       let outset = if outset == none {
         (left: 0pt, right: 0pt, top: 0pt, bottom: 0pt)

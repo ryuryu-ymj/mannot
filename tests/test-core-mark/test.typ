@@ -25,98 +25,113 @@ $
   query(<tag1>)
 }
 
+= Debug
+#{
+  let mark = core-mark.with(debug: true)
+  table(
+    columns: 2,
+    [inline], [block],
+    $mark(x + y)$, $ mark(x + y) $,
+  )
+}
 
 = Underlay/overlay size/position
-#for mark in (
-  body => core-mark(
-    body,
-    underlay: (w, h, c) => {
-      rect(width: w, height: h, stroke: 1pt + green)
-    },
-  ),
-  body => core-mark(
-    body,
-    overlay: (w, h, c) => {
-      rect(width: w, height: h, stroke: 1pt + blue)
-    },
-  ),
-  body => core-mark(
-    body,
-    underlay: (w, h, c) => {
-      rect(width: w, height: h, fill: green)
-    },
-    overlay: (w, h, c) => {
-      rect(width: w, height: h, stroke: 1pt + blue)
-    },
-  ),
-) {
-  $
-    mark(x) mark(y) mark(T) mark(beta) mark(Pi)
-  $
+#table(
+  columns: 3,
+  [underlay], [overlay], [underlay & overlay],
+  ..(
+    body => core-mark(
+      body,
+      underlay: (w, h, c) => {
+        rect(width: w, height: h, stroke: 1pt + green)
+      },
+    ),
+    body => core-mark(
+      body,
+      overlay: (w, h, c) => {
+        rect(width: w, height: h, stroke: 1pt + blue)
+      },
+    ),
+    body => core-mark(
+      body,
+      underlay: (w, h, c) => {
+        rect(width: w, height: h, fill: green)
+      },
+      overlay: (w, h, c) => {
+        rect(width: w, height: h, stroke: 1pt + blue)
+      },
+    ),
+  ).map(mark => {
+    $mark(x) mark(y) mark(T) mark(beta) mark(Pi)$
 
-  $
-    y / T
-    mark(y) / mark(T)
-    y_y / T^T
-    mark(y_y) / mark(T^T)
-  $
+    $
+      mark(x) mark(y) mark(T) mark(beta) mark(Pi)
+    $
 
-  $ mark(x + y)_mark(x + y)_mark(x + y) $
-  $ mark(x + y)^mark(x + y)^mark(x + y) $
+    $
+      y / T
+      mark(y) / mark(T)
+      y_y / T^T
+      mark(y_y) / mark(T^T)
+    $
 
-  $
-    attach(limits(x), t: t, b: b, tr: t + r, br: b + r, tl: t + l, bl: b + l)
-    attach(limits(mark(x)), t: mark(t), b: mark(b), tr: mark(t + r), br: mark(b + r), tl: mark(t + l), bl: mark(b + l))
-  $
+    $ mark(x + y)_mark(x + y)_mark(x + y) $
+    $ mark(x + y)^mark(x + y)^mark(x + y) $
 
-  $
-    mark(integral x dif x)
-    mark(integral) mark(x) mark(dif) mark(x)
-  $
+    $
+      attach(limits(x), t: t, b: b, tr: t + r, br: b + r, tl: t + l, bl: b + l)
+      attach(limits(mark(x)), t: mark(t), b: mark(b), tr: mark(t + r), br: mark(b + r), tl: mark(t + l), bl: mark(b + l))
+    $
 
-  $
-    inline(mark(integral x dif x))
-    script(mark(integral x dif x))
-    sscript(mark(integral x dif x))
-  $
+    $
+      mark(integral x dif x)
+      mark(integral) mark(x) mark(dif) mark(x)
+    $
 
-  $ x y z $
-  $ mark(x y z) $
-  $ x mark(y) z $
+    $
+      inline(mark(integral x dif x))
+      script(mark(integral x dif x))
+      sscript(mark(integral x dif x))
+    $
 
-  // Spacing
-  $ x #h(1em)#h(2em) #[#h(1em)] y #[#h(1em)] #h(1em)#h(2em) z $
-  $ mark(x) mark(#h(1em)#h(2em) #[#h(1em)] y #[#h(1em)] #h(1em)#h(2em)) mark(z) $
-  let difx = $dif x$
-  $ x mark(difx) $
+    $ x y z $
+    $ mark(x y z) $
+    $ x mark(y) z $
 
-  $ x + y - z $
-  $ mark(x + y - z) $
-  $ x + mark(y) - z $
-  $ mark(x) + mark(y) - mark(z) $
-  $ x mark(+) y mark(-) z $
-  $ mark(x) mark(+) mark(y) mark(-) mark(z) $
-  $ mark(x +) mark(y) mark(- z) $
+    // Spacing
+    $ x #h(1em)#h(2em) #[#h(1em)] y #[#h(1em)] #h(1em)#h(2em) z $
+    $ mark(x) mark(#h(1em)#h(2em) #[#h(1em)] y #[#h(1em)] #h(1em)#h(2em)) mark(z) $
+    let difx = $dif x$
+    $ x mark(difx) $
 
-  // Align
-  $
-    mark(x &+ 2y &+ 3z &= 4) \
-                     mark(x) & + mark(2y &&=) 4 \
-              mark(x &&+ 3z) & = mark(4) \
-  $
+    $ x + y - z $
+    $ mark(x + y - z) $
+    $ x + mark(y) - z $
+    $ mark(x) + mark(y) - mark(z) $
+    $ x mark(+) y mark(-) z $
+    $ mark(x) mark(+) mark(y) mark(-) mark(z) $
+    $ mark(x +) mark(y) mark(- z) $
 
-  $
-    3!
-    mark(3!)
-    mark(3)!
-    3mark(!)
-  $
+    // Align
+    $
+      mark(x &+ 2y &+ 3z &= 4) \
+                       mark(x) & + mark(2y &&=) 4 \
+                mark(x &&+ 3z) & = mark(4) \
+    $
 
-  $
-    mark(mark(x) + mark(y)) +
-    mark(mark(mark(x) + mark(y)) + mark(z))
-  $
-}
+    $
+      3!
+      mark(3!)
+      mark(3)!
+      3mark(!)
+    $
+
+    $
+      mark(mark(x) + mark(y)) +
+      mark(mark(mark(x) + mark(y)) + mark(z))
+    $
+  }),
+)
 
 
 == Different fonts
