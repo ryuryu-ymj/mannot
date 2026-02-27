@@ -11,5 +11,5 @@ $
     pos: bottom + right, dy: 1em,
     leader-tip: tiptoe.circle,
     leader-toe: tiptoe.stealth.with(length: 1000%),
-  )[annotaiton]
+  )[annotaton]
 $

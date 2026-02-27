@@ -1,6 +1,6 @@
 #import "util.typ": copy-stroke, default-stroke
 
-#import "@preview/tiptoe:0.3.2"
+#import "@preview/tiptoe:0.4.0"
 
 
 #let _coerce-anchor(anchor) = {

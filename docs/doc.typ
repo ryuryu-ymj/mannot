@@ -1,5 +1,6 @@
 #import "@preview/tidy:0.4.3"
 #import "@preview/codly:1.3.0": *
+#import "@preview/note-me:0.6.0": *
 #import "/src/lib.typ": *
 #import "doc-template.typ": *
 
@@ -90,17 +91,23 @@ $
 $
 ```)
 
+#caution[
+  The `annot` function must be called within the same math block as the marked content.
+  Using it outside the math block triggers unnecessary layout updates,
+  which may result in a layout non-convergence error.
+]
+
 Markings and annotations do not affect the layout,
 so you might sometimes need to manually insert spacing before and after the equations to achieve the desired visual appearance:
 #example(```typst
 Text text text text text:
-#v(1em)
+#v(1em)  // <- Manual spacing.
 $
   mark(x, tag: #<1>, color: #green)
   #annot(<1>, pos: top + right)[Annotation]
   #annot(<1>, dy: 1em)[Annotation]
 $
-#v(2em)
+#v(2em)  // <- Manual spacing.
 text text text text text.
 ```)
 

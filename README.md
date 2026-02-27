@@ -5,7 +5,7 @@
 
 A [Typst](https://typst.app/) package for marking and annotating elements within math blocks.
 
-For comprehensive documentation, please refer to [manual](docs/doc.pdf).
+For comprehensive documentation, please refer to the [manual](docs/doc.pdf).
 
 
 ## Features
@@ -143,9 +143,9 @@ $
 
 
 ## Usage
-Import the package `mannot` on the top of your document:
+Import the package `mannot` at the top of your document:
 ```typst
-#import "@preview/mannot:0.3.1": *
+#import "@preview/mannot:0.3.2": *
 ```
 
 ### Marking
@@ -188,6 +188,11 @@ $
 ```
 ![Usage3](examples/usage3.svg)
 
+> [!CAUTION]
+> The `annot` function must be called within the same math block as the marked content.
+> Using it outside the math block triggers unnecessary layout updates,
+> which may result in a layout non-convergence error.
+
 Markings and annotations do not affect the layout,
 so you might sometimes need to manually insert spacing before and after the equations to achieve the desired visual appearance:
 ```typst
@@ -224,7 +229,7 @@ You can customize its appearance using the following `annot` arguments:
 * `leader`: Whether to draw a leader line. Set to `auto` to enable automatic drawing based on distance.
 * `leader-stroke`: How to stroke the leader line e.g., `1pt + red`.
 * `leader-tip`, `leader-toe`: Define the end and start markers of the leader line.
-  Leader lines are drawn by the [tiptoe](https://typst.app/universe/package/tiptoe/0.3.0) package.
+  Leader lines are drawn by the [tiptoe](https://typst.app/universe/package/tiptoe) package.
   You can specify markers or `none`:
   ```typst
   $
@@ -234,13 +239,13 @@ You can customize its appearance using the following `annot` arguments:
       <1>, pos: bottom + right, dy: 1em,
       leader-tip: tiptoe.circle,
       leader-toe: tiptoe.stealth.with(length: 1000%),
-    )[annotaition]
+    )[annotation]
   $
   ```
 
   ![Usage of leader-tiptoe](examples/usage-leader-tiptoe.svg)
 
-  For more options, see the [tiptoe page](https://typst.app/universe/package/tiptoe/0.3.0).
+  For more options, see the [tiptoe page](https://typst.app/universe/package/tiptoe).
 
 * `leader-connect`: How the leader line connects to the marked content and the annotation.
   This can be:
@@ -299,12 +304,14 @@ For example, to always use elbow-shaped leader lines for annotations:
 
 
 ## Changelog
+* v0.3.2:
+  - Fixed layout issues in marking inline math content.
 * v0.3.1:
   - Added support for Typst v0.14.
 * v0.3.0:
   - Renamed some marking functions for clarity:
-    - `mark` is now `markhl` (for highlight).
-    - `marktc` is now `mark` (for text color change).
+    - `mark` is now `markhl` (for highlighting).
+    - `marktc` is now `mark` (for changing text color).
   - Added direct leader line functionality to the `annot` function.
   - Added support for multi-element annotations.
   - Introduced support for annotations using CeTZ canvas.
@@ -318,5 +325,5 @@ For example, to always use elbow-shaped leader lines for annotations:
 * v0.2.0:
   - Removed the `mannot-init` function.
   - Introduced support for placing underlays beneath math content during marking.
-  - Added new marking functions: markrect, markul, marktc.
+  - Added new marking functions: `markrect`, `markul` and `marktc`.
 * v0.1.0: Initial release.
