@@ -91,6 +91,7 @@
   context {
     let markers = tag.map(tag => query(selector(tag).before(here())).last().value)
     let hpos = here().position()
+    sym.wj
     math.attach(box(place(
       dx: -hpos.x,
       dy: -hpos.y,
@@ -481,15 +482,7 @@
         )
       })
       .sum()
-    let loc-lab = <_mannot-annot-cetz-loc>
-    let loc-lab-content = cetz.draw.content((0, 0), [#none#loc-lab])
-
-    place(hide(cetz.canvas(loc-lab-content + preamble + drawable)))
-
-    context {
-      let cpos = query(selector(loc-lab).before(here())).last().location().position()
-      place(dx: origin.x - cpos.x, dy: origin.y - cpos.y, cetz.canvas(preamble + drawable))
-    }
+    place(dx: origin.x, dy: origin.y, cetz.canvas(preamble + drawable))
   }
 
   core-annot(tag, overlay)
