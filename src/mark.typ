@@ -168,6 +168,7 @@
 
   context {
     let y-lab = label("_mannot-mark-y")
+    let x-lab = label("_mannot-mark-end")
     let dy-lab = label("_mannot-mark-dy")
     let info-lab = if type(tag) == label {
       tag
@@ -216,11 +217,12 @@
 
     // Put the labeled body for measuring its position and size.
     let labeled-body = _label-each-child(body, y-lab)
+    math.attach([#none#x-lab])
     sym.wj
     labeled-body
     sym.wj
     math.attach(
-      math.limits([#none#dy-lab]),
+      math.limits([#none#x-lab]),
       t: pad(-1em, [#none#dy-lab]),
       b: pad(-1em, [#none#dy-lab]),
     )
@@ -240,10 +242,15 @@
           let dy = pos.y - hpos.y
           place(circle(radius: .5pt, stroke: none, fill: green), dx: dx, dy: dy)
         }
-        for pos in query(selector(dy-lab).after(begin-loc).before(end-loc)).map(e => e.location().position()) {
+        for pos in query(selector(x-lab).after(begin-loc).before(end-loc)).map(e => e.location().position()) {
           let dx = pos.x - hpos.x
           let dy = pos.y - hpos.y
           place(circle(radius: .5pt, stroke: none, fill: blue), dx: dx, dy: dy)
+        }
+        for pos in query(selector(dy-lab).after(begin-loc).before(end-loc)).map(e => e.location().position()) {
+          let dx = pos.x - hpos.x
+          let dy = pos.y - hpos.y
+          place(circle(radius: .5pt, stroke: none, fill: olive), dx: dx, dy: dy)
         }
       }
 
@@ -251,16 +258,16 @@
       let min-y = calc.min(..y-array)
       let max-y = calc.max(..y-array)
 
+      let end-y = query(selector(x-lab).after(begin-loc).before(end-loc)).last().location().position().y
       let dy-array = query(selector(dy-lab).after(begin-loc).before(end-loc)).map(e => e.location().position().y)
-      let top-dy = dy-array.at(0) - dy-array.at(1)
-      let bottom-dy = dy-array.at(0) - dy-array.at(2)
-      // let place-dy = dy-array.at(0) - dy-array.at(3)
-      // let place-dy = 0pt
+      let top-dy = end-y - dy-array.at(0)
+      let bottom-dy = end-y - dy-array.at(1)
       let top-y = min-y + top-dy
       let bottom-y = max-y + bottom-dy
 
-      let left-x = begin-loc.position().x
-      let right-x = query(selector(dy-lab).after(begin-loc).before(end-loc)).first().location().position().x
+      let x-array = query(selector(x-lab).after(begin-loc).before(end-loc)).map(e => e.location().position().x)
+      let left-x = x-array.first()
+      let right-x = x-array.last()
 
       let outset = if outset == none {
         (left: 0pt, right: 0pt, top: 0pt, bottom: 0pt)

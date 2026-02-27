@@ -36,24 +36,29 @@ $
 }
 
 = Underlay/overlay size/position
+#let debug = false
 #table(
   columns: 3,
   [underlay], [overlay], [underlay & overlay],
   ..(
+    // body => body,
     body => core-mark(
       body,
+      debug: debug,
       underlay: (w, h, c) => {
         rect(width: w, height: h, stroke: 1pt + green)
       },
     ),
     body => core-mark(
       body,
+      debug: debug,
       overlay: (w, h, c) => {
         rect(width: w, height: h, stroke: 1pt + blue)
       },
     ),
     body => core-mark(
       body,
+      debug: debug,
       underlay: (w, h, c) => {
         rect(width: w, height: h, fill: green)
       },
