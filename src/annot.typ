@@ -482,7 +482,16 @@
         )
       })
       .sum()
-    place(dx: origin.x, dy: origin.y, cetz.canvas(preamble + drawable))
+
+    let loc-lab = <_mannot-annot-cetz-loc>
+    let loc-lab-content = cetz.draw.content((0, 0), [#none#loc-lab])
+
+    place(hide(cetz.canvas(loc-lab-content + preamble + drawable)))
+
+    context {
+      let loc-pos = query(selector(loc-lab).before(here())).last().location().position()
+      place(dx: origin.x - loc-pos.x, dy: origin.y - loc-pos.y, cetz.canvas(preamble + drawable))
+    }
   }
 
   core-annot(tag, overlay)

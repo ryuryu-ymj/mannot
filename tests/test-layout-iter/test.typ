@@ -8,9 +8,7 @@
 #show: layout-limiter.with(max-iterations: 3)
 
 $
-  markhl(x)
-  markul(y)
-  markrect(z)
+  markhl(x) markul(y) markrect(z)
 $
 
 $
@@ -20,17 +18,4 @@ $
 $
   markhl(x, tag: #<t>)
   #annot(<t>)[Annotation.]
-$
-
-$
-  mark(x, tag: #<0>)
-  + mark(y, tag: #<1>)
-  #annot-cetz((<0>, <1>), cetz, {
-    import cetz.draw: *
-
-    content((1, -.6), [Annotation], anchor: "north", name: "a")
-    set-style(stroke: .7pt, mark: (start: "straight", scale: 0.6))
-    line("0", "a")
-    line("1", "a")
-  })
 $
