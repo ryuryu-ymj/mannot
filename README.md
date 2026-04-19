@@ -304,6 +304,8 @@ For example, to always use elbow-shaped leader lines for annotations:
 
 
 ## Changelog
+* v0.3.3:
+  - Fixed layout issues when marking contents starting with unary operators.
 * v0.3.2:
   - Fixed layout issues in marking inline math content.
 * v0.3.1:
