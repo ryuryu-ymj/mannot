@@ -1,4 +1,5 @@
 #import "/src/mark.typ": core-mark
+// #import "@preview/mannot:0.3.2": core-mark
 
 
 = API
@@ -36,7 +37,7 @@ $
 }
 
 = Underlay/overlay size/position
-#let debug = false
+#let debug = true
 #table(
   columns: 3,
   [underlay], [overlay], [underlay & overlay],
@@ -109,6 +110,10 @@ $
     let difx = $dif x$
     $ x mark(difx) $
 
+
+    $ -x $
+    $ mark(-x) $
+
     $ x + y - z $
     $ mark(x + y - z) $
     $ x + mark(y) - z $
@@ -135,6 +140,11 @@ $
       mark(mark(x) + mark(y)) +
       mark(mark(mark(x) + mark(y)) + mark(z))
     $
+
+    $
+      x mark(mark(+) y) mark(mark(+))
+      mark(x mark(+)) y
+    $
   }),
 )
 
@@ -158,7 +168,7 @@ $
 }
 
 #{
-  for font in ("New Computer Modern Math", "STIX Two Math", "DejaVu Math TeX Gyre", "Libertinus Math") {
+  for font in ("New Computer Modern Math", "STIX Two Math", "Libertinus Math") {
     show math.equation: set text(font: font)
     list(font)
     $

@@ -91,14 +91,17 @@
   context {
     let markers = tag.map(tag => query(selector(tag).before(here())).last().value)
     let hpos = here().position()
-    sym.wj
-    math.attach(box(place(
-      dx: -hpos.x,
-      dy: -hpos.y,
-      float: false,
-      left + top,
-      overlay(markers),
-    )))
+    // sym.wj
+    math.equation(
+      place(
+        dx: -hpos.x,
+        dy: -hpos.y,
+        float: false,
+        left + top,
+        overlay(markers),
+      ),
+      block: false,
+    )
   }
 }
 
@@ -483,14 +486,21 @@
       })
       .sum()
 
-    let loc-lab = <_mannot-annot-cetz-loc>
-    let loc-lab-content = cetz.draw.content((0, 0), [#none#loc-lab])
+    let ref-lab = <_mannot-annot-cetz-ref>
+    let ref-lab-content = cetz.draw.content((0, 0), [#none#ref-lab])
+    place([#none#ref-lab])
 
-    place(hide(cetz.canvas(loc-lab-content + preamble + drawable)))
+    place(hide(cetz.canvas(ref-lab-content + preamble + drawable)))
 
     context {
-      let loc-pos = query(selector(loc-lab).before(here())).last().location().position()
-      place(dx: origin.x - loc-pos.x, dy: origin.y - loc-pos.y, cetz.canvas(preamble + drawable))
+      let ref-pos-array = query(selector(ref-lab).before(here())).map(e => e.location().position())
+      let ref-pos1 = ref-pos-array.at(ref-pos-array.len() - 2)
+      let ref-pos2 = ref-pos-array.last()
+      place(
+        dx: origin.x + ref-pos1.x - ref-pos2.x,
+        dy: origin.y + ref-pos1.y - ref-pos2.y,
+        cetz.canvas(preamble + drawable),
+      )
     }
   }
 

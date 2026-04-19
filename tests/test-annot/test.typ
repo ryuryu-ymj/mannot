@@ -83,7 +83,7 @@ $
   #annot(<0>, pos: left, dx: -1em, dy: 1.5em, leader-connect: (left + bottom, center + horizon))[$ integral x dif x $]
   #annot(<0>, pos: left, dx: -1em, dy: 1.5em, leader-connect: (right + top, center + horizon))[$ integral x dif x $]
   #annot(<0>, pos: left, dx: -1em, dy: 1.5em, leader-connect: (right + bottom, center + horizon))[$ integral x dif x $]
-  -
+  //
   #annot(<0>, pos: right, dx: 1em, dy: 1.5em, leader-connect: (center + horizon, left))[$ integral x dif x $]
   #annot(<0>, pos: right, dx: 1em, dy: 1.5em, leader-connect: (center + horizon, right))[$ integral x dif x $]
   #annot(<0>, pos: right, dx: 1em, dy: 1.5em, leader-connect: (center + horizon, top))[$ integral x dif x $]

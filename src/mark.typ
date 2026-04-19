@@ -88,9 +88,9 @@
         _label-each-child(c, label)
       })
       return body.func()(children)
-    } else if body == [ ] or body.func() == _align-point-func or body.func() == h or body.func() == v {
+    } else if body == [ ] or body.func() in (_align-point-func, h, v) or str(repr(body.func())) == "context" {
       // Do not put `label` on layout contents such as [ ], align-point(),
-      // h(), or v(), in order to avoid broken layout.
+      // h(), v(), or context{}, in order to avoid broken layout.
       return body
     }
   }
@@ -168,7 +168,7 @@
 
   context {
     let y-lab = label("_mannot-mark-y")
-    let x-lab = label("_mannot-mark-end")
+    let end-lab = label("_mannot-mark-end")
     let dy-lab = label("_mannot-mark-dy")
     let info-lab = if type(tag) == label {
       tag
@@ -185,7 +185,7 @@
 
     // Place `underlay(width, height, color)` under the `body`.
     if underlay != none {
-      sym.wj
+      // sym.wj
       context {
         let elems = query(selector(info-lab).after(begin-loc))
         if elems.len() > 0 {
@@ -204,28 +204,28 @@
           let width = info.width
           let height = info.height
           let color = info.color
-          math.attach(box(place(
+
+          place(
             dx: dx,
             dy: dy,
             float: false,
             left + top,
             underlay(width, height, color),
-          )))
+          )
         }
       }
     }
 
     // Put the labeled body for measuring its position and size.
     let labeled-body = _label-each-child(body, y-lab)
-    math.attach([#none#x-lab])
-    sym.wj
     labeled-body
-    sym.wj
+    // sym.wj
     math.attach(
-      math.limits([#none#x-lab]),
+      math.limits([#none#end-lab]),
       t: pad(-1em, [#none#dy-lab]),
       b: pad(-1em, [#none#dy-lab]),
     )
+    place([#none#dy-lab])
 
     // Measure the position and size, expose metadata and place the overlay.
     context {
@@ -237,12 +237,15 @@
         let dx = begin-loc.position().x - hpos.x
         let dy = begin-loc.position().y - hpos.y
         place(circle(radius: .5pt, stroke: none, fill: red), dx: dx, dy: dy)
+        let dx = end-loc.position().x - hpos.x
+        let dy = end-loc.position().y - hpos.y
+        place(circle(radius: .5pt, stroke: none, fill: orange), dx: dx, dy: dy)
         for pos in query(selector(y-lab).after(begin-loc).before(end-loc)).map(e => e.location().position()) {
           let dx = pos.x - hpos.x
           let dy = pos.y - hpos.y
           place(circle(radius: .5pt, stroke: none, fill: green), dx: dx, dy: dy)
         }
-        for pos in query(selector(x-lab).after(begin-loc).before(end-loc)).map(e => e.location().position()) {
+        for pos in query(selector(end-lab).after(begin-loc).before(end-loc)).map(e => e.location().position()) {
           let dx = pos.x - hpos.x
           let dy = pos.y - hpos.y
           place(circle(radius: .5pt, stroke: none, fill: blue), dx: dx, dy: dy)
@@ -258,16 +261,16 @@
       let min-y = calc.min(..y-array)
       let max-y = calc.max(..y-array)
 
-      let end-y = query(selector(x-lab).after(begin-loc).before(end-loc)).last().location().position().y
+      let end-pos = query(selector(end-lab).after(begin-loc).before(end-loc)).last().location().position()
       let dy-array = query(selector(dy-lab).after(begin-loc).before(end-loc)).map(e => e.location().position().y)
-      let top-dy = end-y - dy-array.at(0)
-      let bottom-dy = end-y - dy-array.at(1)
-      let top-y = min-y + top-dy
-      let bottom-y = max-y + bottom-dy
+      let top-dy = end-pos.y - dy-array.at(0)
+      let bottom-dy = end-pos.y - dy-array.at(1)
+      let place-dy = end-pos.y - dy-array.at(2)
+      let top-y = min-y + top-dy + place-dy
+      let bottom-y = max-y + bottom-dy + place-dy
 
-      let x-array = query(selector(x-lab).after(begin-loc).before(end-loc)).map(e => e.location().position().x)
-      let left-x = x-array.first()
-      let right-x = x-array.last()
+      let left-x = begin-loc.position().x
+      let right-x = end-pos.x
 
       let outset = if outset == none {
         (left: 0pt, right: 0pt, top: 0pt, bottom: 0pt)
@@ -292,7 +295,7 @@
 
       // Expose the metadata.
       let info = (body: body, x: x, y: y, width: width, height: height, color: color, tag: tag, begin-loc: begin-loc)
-      sym.wj
+      // sym.wj
       [#metadata(info)#info-lab]
 
       // Place `overlay(width, height, color)` over the `body`.
@@ -300,19 +303,19 @@
         let hpos = here().position()
         let dx = x - hpos.x
         let dy = y - hpos.y
-        sym.wj
-        math.attach(box(place(
+        // sym.wj
+        place(
           dx: dx,
           dy: dy,
           float: false,
           left + top,
           overlay(width, height, color),
-        )))
+        )
       }
     }
   }
 
-  sym.wj
+  // sym.wj
   trailing-h
 }
 
