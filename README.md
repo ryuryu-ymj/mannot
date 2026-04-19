@@ -145,7 +145,7 @@ $
 ## Usage
 Import the package `mannot` at the top of your document:
 ```typst
-#import "@preview/mannot:0.3.2": *
+#import "@preview/mannot:0.3.3": *
 ```
 
 ### Marking

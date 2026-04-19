@@ -48,7 +48,7 @@
       width: 100%,
       inset: preview-inset,
       {
-        set text(font: "Noto Serif")
+        // set text(font: "Noto Serif")
         eval(preamble + executed-code, mode: mode, scope: scope + inherited-scope)
       },
     ),
