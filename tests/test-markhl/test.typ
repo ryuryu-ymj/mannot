@@ -6,20 +6,20 @@ $
 
 $
   markhl(x, color: #blue)
+  + markhl(x, #blue)
   + markhl(x, color: #blue, stroke: #1pt)
   + markhl(x, color: #blue, stroke: #red)
   + markhl(x, color: #blue, stroke: #(1pt + red))
 $
 
 $
-  markhl(x, fill: #red, tag: #<0>)
+  markhl(x, #red, #<0>)
+  + markhl(x, fill: #red, tag: #<0>)
   + markhl(x, fill: #red, stroke: #1pt, tag: #<0>)
   + markhl(x, color: #green, fill: #red, tag: #<0>)
   #[
     #set text(blue)
-    $
-      + markhl(x, fill: #red, tag: #<0>)
-    $
+    $ + markhl(x, fill: #red, tag: #<0>) $
   ]
 $
 #context {

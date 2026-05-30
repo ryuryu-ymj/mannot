@@ -7,6 +7,7 @@ $
 
 $
   markrect(x, color: #red)
+  + markrect(x, #red)
   + markrect(x, stroke: #1pt)
   + markrect(x, color: #red, stroke: #1pt)
   + markrect(x, color: #red, stroke: #blue)
@@ -33,4 +34,9 @@ $
 $
   markrect(x, radius: #50%)
   + markrect(x, radius: #.1em, fill: #red)
+$
+
+$
+  markrect(x, #blue, #<tag>)
+  #context { assert(query(<tag>).len() == 1) }
 $

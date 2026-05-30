@@ -9,6 +9,7 @@ $
 
 $
   markul(x, color: #red)
+  markul(x, #red)
   markul(x, stroke: #1pt)
   markul(x, color: #red, stroke: #1pt)
   markul(x, color: #red, stroke: #blue)
@@ -37,4 +38,9 @@ $
 $
   markul(x, outset: #(bottom: .3em))
   + markul(x, outset: #.3em)
+$
+
+$
+  markul(x, #blue, #<tag>)
+  #context { assert(query(<tag>).len() == 1) }
 $

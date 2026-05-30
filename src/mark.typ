@@ -320,6 +320,26 @@
 }
 
 
+#let validate-args(args, body, tag, color) = {
+  if type(body) != content {
+    panic("`body` must be content, found " + str(type(body)))
+  }
+  if args.named().len() > 0 {
+    panic("unexpected named argument: " + args.named().keys().first())
+  }
+  for arg in args.pos() {
+    if tag == none and type(arg) == label {
+      tag = arg
+    } else if color == auto and type(arg) == std.color {
+      color = arg
+    } else {
+      panic("unexpected positional argument: `" + str(repr(arg)) + "`")
+    }
+  }
+  return (tag, color)
+}
+
+
 /// Marks an annotation target within a math block.
 ///
 /// If you mark content with a tag, you can annotate it using the `annot` function.
@@ -347,7 +367,10 @@
   /// or as a `dictionary` of `length` with keys `left`, `right`, `top`, `bottom`, `x`, `y`, or `rest`.
   /// -> none | length | dictionary
   outset: (y: .1em),
+  ..args,
 ) = {
+  (tag, color) = validate-args(args, body, tag, color)
+
   if color != auto {
     body = text(fill: color, body)
     return core-mark(body, tag: tag, color: color, outset: outset)
@@ -398,7 +421,10 @@
   /// or as a `dictionary` of `length` with keys `left`, `right`, `top`, `bottom`, `x`, `y`, or `rest`.
   /// -> none | length | dictionary
   outset: (y: .1em),
+  ..args,
 ) = {
+  (tag, color) = validate-args(args, body, tag, color)
+
   if fill == auto {
     if color == auto {
       color = orange
@@ -461,7 +487,10 @@
   /// or as a `dictionary` of `length` with keys `left`, `right`, `top`, `bottom`, `x`, `y`, or `rest`.
   /// -> none | length | dictionary
   outset: (y: .1em),
+  ..args,
 ) = {
+  (tag, color) = validate-args(args, body, tag, color)
+
   let underlay = if fill == none and stroke == none { none } else {
     (width, height, color) => {
       let stroke = stroke
@@ -513,7 +542,10 @@
   /// or as a `dictionary` of `length` with keys `left`, `right`, `top`, `bottom`, `x`, `y`, or `rest`.
   /// -> none | length | dictionary
   outset: (top: .1em, bottom: .144em),
+  ..args,
 ) = {
+  (tag, color) = validate-args(args, body, tag, color)
+
   let overlay = if stroke == none { none } else {
     (width, height, color) => {
       let stroke = stroke
