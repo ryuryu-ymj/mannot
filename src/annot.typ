@@ -108,27 +108,33 @@
 
 /// Places an annotation on content (or contents) within a math block that was previously marked.
 ///
+/// *CAUTION:*
+/// This function must be called within the same math block as the marked content.
+/// Using it outside the math block triggers unnecessary layout updates,
+/// which may result in a layout non-convergence error.
+///
 /// *Example*
 /// ```example
 /// #v(2em)
 /// $
-/// markhl(x, tag: #<e>)
+/// markhl(x, #<e>)
 /// #annot(<e>)[Annotation]
 /// #annot(<e>, pos: top + right, dy: -1em)[Another annotation]
 /// $
 /// #v(1em)
 /// ```
 ///
-/// #example(```typ
+/// ```example
+/// #v(1em)
 /// $
-/// markrect(integral x dif x, tag: #<0>, color: #blue)
-/// + markul(x, tag: #<1>, color: #blue)
+/// markrect(integral x dif x, #<0>, #blue)
+/// + markul(x, #<1>, #red)
 ///
 /// #annot((<0>, <1>), pos: top, dx: 4em)[Multi]
 /// #annot((<0>, <1>), pos: bottom + left, dx: -1em, dy: 1em, leader-connect: "elbow")[Elbow]
 /// $
-/// #v(1em)
-/// ```, preview-inset: 20pt)
+/// #v(2em)
+/// ```
 ///
 /// -> content
 #let annot(
@@ -158,17 +164,21 @@
   /// How to stroke the leader line.
   /// If its `paint` is set to `auto`, it will be set to the marking color.
   /// If its `thickness` is set to `auto`, it defaults to `.048em`.
+  /// -> length | color | gradient | stroke | pattern | dictionary
   leader-stroke: .048em,
   /// How to end the leader line.
   /// See #link("https://typst.app/universe/package/tiptoe")[tiptoe].
+  /// -> none | tiptoe
   leader-tip: none,
   /// How to start the leader line.
   /// See #link("https://typst.app/universe/package/tiptoe")[tiptoe].
+  /// -> none | tiptoe
   leader-toe: tiptoe.straight.with(length: 600%),
   /// How to connect the leader line. This can be:
   /// - A pair of alignments describing the start anchor of the marked content
   ///   and the end anchor of the annotation.
   /// - "elbow" for an elbow-shaped leader line
+  /// -> array | string
   leader-connect: (center + horizon, center + horizon),
   /// How much to pad the annotation content.
   /// -> length | dictionary
@@ -441,12 +451,17 @@
 /// using an anchor with the same name as the tag.
 /// For multiple tags, you'll have multiple corresponding anchors.
 ///
+/// *CAUTION:*
+/// This function must be called within the same math block as the marked content.
+/// Using it outside the math block triggers unnecessary layout updates,
+/// which may result in a layout non-convergence error.
+///
 /// *Example*
 /// ```example
 /// #import "@preview/cetz:0.4.2"
 ///
 /// $
-///   mark(x, tag: #<0>) + mark(y, tag: #<1>)
+///   mark(x, #<0>) + mark(y, #<1>)
 ///
 ///   #annot-cetz((<0>, <1>), cetz, {
 ///     import cetz.draw: *

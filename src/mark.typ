@@ -321,7 +321,7 @@
 
 
 #let validate-args(args, body, tag, color) = {
-  if type(body) != content {
+  if type(body) not in (content, symbol) {
     panic("`body` must be content, found " + str(type(body)))
   }
   if args.named().len() > 0 {
@@ -346,9 +346,19 @@
 ///
 /// If the `color` argument is provided, it will change the color of the marked text.
 ///
-/// *Example*
+/// *Basic Usage*
 /// ```example
-/// $ mark(x, color: #red) $
+/// $ mark(x, #red) $
+/// // Equivalent to: $mark(x, color: #red)$
+/// ```
+/// *Colors and Tags*
+/// ```example
+/// $
+///   mark(x, #olive, #<1>)
+///   // Or with named arguments:
+///   mark(+ 1/2, color: #maroon, tag: #<2>)
+///   // The `<1>`, `<2>` tags can be used to annotate this mark later.
+/// $
 /// ```
 ///
 /// -> content
@@ -356,10 +366,12 @@
   /// The content to be marked within a math block. -> content
   body,
   /// An optional tag used to identify the marked content for later annotations.
+  /// The argument name `tag` can be omitted.
   /// -> none | label
   tag: none,
   /// An optional color for the text and later annotations.
   /// If set to `auto`, it defaults to the text fill color.
+  /// The argument name `color` can be omitted.
   /// -> auto | color
   color: auto,
   /// How much to expand the marking box size without affecting the layout.
@@ -372,8 +384,10 @@
   (tag, color) = validate-args(args, body, tag, color)
 
   if color != auto {
-    body = text(fill: color, body)
-    return core-mark(body, tag: tag, color: color, outset: outset)
+    return context {
+      set text(fill: color)
+      core-mark(body, tag: tag, color: color, outset: outset)
+    }
   } else {
     return context {
       let color = text.fill
@@ -385,11 +399,26 @@
 
 /// Marks and highlights content within a math block.
 ///
-/// If you mark content with a tag, you can annotate it using the `annot` function.
+/// By marking content with a tag, you can later annotate it using the `annot` function.
 ///
-/// *Example*
+/// *Basic Usage*
 /// ```example
 /// $ markhl(x) $
+/// ```
+/// *Colors and Tags*
+/// ```example
+/// $
+///   markhl(x, #blue, #<1>)
+///   // Or with named arguments:
+///   markhl(- 1/2, color: #green, tag: #<2>)
+///   // The tags `<1>` and `<2>` can be used to annotate this mark later.
+/// $
+/// ```
+/// *Custom Styling*
+/// ```example
+/// $
+///   markhl(sum n, stroke: #(2pt + orange), radius: #10%, outset: #.3em)
+/// $
 /// ```
 ///
 /// -> content
@@ -397,11 +426,13 @@
   /// The content to be highlighted within a math block. -> content
   body,
   /// An optional tag used to identify the marked content for later annotations.
+  /// The argument name `tag` can be omitted.
   /// -> none | label
   tag: none,
   /// The color used for the highlight and later annotations.
   /// If both `color` and `fill` are set to `auto`, `color` defaults to `orange`.
   /// Otherwise, if only `color` is `auto`, it defaults to the text fill color.
+  /// The argument name `color` can be omitted.
   /// -> auto | color
   color: auto,
   /// How to fill the highlight rectangle.
@@ -453,11 +484,26 @@
 
 /// Marks and boxes around content within a math block.
 ///
-/// If you mark content with a tag, you can annotate it using the `annot` function.
+/// By marking content with a tag, you can annotate it using the `annot` function.
 ///
-/// *Example*
+/// *Basic Usage*
 /// ```example
 /// $ markrect(x + y) $
+/// ```
+/// *Colors and Tags*
+/// ```example
+/// $
+///   markrect(x, #red, #<1>)
+///   // Or with named arguments:
+///   markrect(- 1/2, color: #green, tag: #<2>)
+///   // The `<1>`, `<2>` tags can be used to annotate this mark later.
+/// $
+/// ```
+/// *Custom Styling*
+/// ```example
+/// $
+///   markrect(sum n, #red, stroke: #2pt, fill: #silver, outset: #(y: .4em))
+/// $
 /// ```
 ///
 /// -> content
@@ -465,10 +511,12 @@
   /// The content to be boxed around within a math block. -> content
   body,
   /// An optional tag used to identify the content for later annotations.
+  /// The argument name `tag` can be omitted.
   /// -> none | label
   tag: none,
   /// The color used for the rectangle's stroke and later annotations.
   /// If set to `auto`, it defaults to the text fill color.
+  /// The argument name `color` can be omitted.
   /// -> color
   color: auto,
   /// How to fill the rectangle.
@@ -514,11 +562,26 @@
 
 /// Marks and underlines content within a math block.
 ///
-/// If you mark content with a tag, you can annotate it using the `annot` function.
+/// By marking content with a tag, you can annotate it using the `annot` function.
 ///
-/// *Example*
+/// *Basic Usage*
 /// ```example
 /// $ markul(x + y) $
+/// ```
+/// *Colors and Tags*
+/// ```example
+/// $
+///   markul(x, #red, #<1>)
+///   // Or with named arguments:
+///   markul(- 1/2, color: #blue, tag: #<2>)
+///   // The `<1>`, `<2>` tags can be used to annotate this mark later.
+/// $
+/// ```
+/// *Custom Styling*
+/// ```example
+/// $
+///   markul(sum n, #red, stroke: #(thickness: 2pt, dash: "dashed"), outset: #(x: .2em, y: .4em))
+/// $
 /// ```
 ///
 /// -> content
@@ -526,10 +589,12 @@
   /// The content to be underlined within a math block. -> content
   body,
   /// An optional tag used to identify the content for later annotations.
+  /// The argument name `tag` can be omitted.
   /// -> none | label
   tag: none,
   /// The color used for the underline and later annotations.
   /// If set to `auto`, it defaults to the text fill color.
+  /// The argument name `color` can be omitted.
   /// -> auto | color
   color: auto,
   /// How to stroke the underline.
