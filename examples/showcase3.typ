@@ -1,5 +1,5 @@
 #import "/src/lib.typ": *
-#import "@preview/cetz:0.4.2"
+#import "@preview/cetz:0.5.2"
 
 #set page(width: auto, height: auto, margin: (y: 2cm, bottom: 1cm), fill: white)
 #set text(24pt)
@@ -9,8 +9,8 @@
 #let pmark = mark.with(color: purple)
 
 $
-  ( rmark(a x, tag: #<ax>) + bmark(b, tag: #<b>) )
-  ( rmark(c x, tag: #<cx>) + bmark(d, tag: #<d>) )
+  ( rmark(a x, #<ax>) + bmark(b, #<b>) )
+  ( rmark(c x, #<cx>) + bmark(d, #<d>) )
   =
   rmark(a c x^2)
   + pmark((a d + b c) x)

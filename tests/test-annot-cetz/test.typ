@@ -1,6 +1,6 @@
 #import "/src/mark.typ": mark
 #import "/src/annot.typ": annot-cetz
-#import "@preview/cetz:0.4.2"
+#import "@preview/cetz:0.5.2"
 
 $
   mark(integral x dif x, tag: #<0>)

@@ -1,11 +1,12 @@
 #import "/src/lib.typ": *
-#import "@preview/cetz:0.4.2"
+#import "@preview/cetz:0.5.2"
 
 #set page(width: auto, height: auto, margin: (bottom: 2cm, rest: 1cm), fill: white)
 #set text(24pt)
 
 $
-  mark(x, tag: #<x>) + mark(y, tag: #<y>)
+  mark(x, #<x>) + mark(y, #<y>)
+
   #annot-cetz((<x>, <y>), cetz, {
     import cetz.draw: *
     content((0, -1), [CeTZ], anchor: "north-west", name: "a")

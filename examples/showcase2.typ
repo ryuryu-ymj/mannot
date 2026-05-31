@@ -1,5 +1,5 @@
 #import "/src/lib.typ": *
-#import "@preview/cetz:0.4.2"
+#import "@preview/cetz:0.5.2"
 
 #set page(width: auto, height: auto, margin: (x: 4cm, top: 2cm, bottom: 1cm), fill: white)
 #set text(24pt)
@@ -7,11 +7,11 @@
 #let markhl = markhl.with(stroke: 1pt)
 
 $
-  markhl(1 mark(., tag: #<sep>) 23, tag: #<mantissa>, color: #red)
+  markhl(1 mark(., #<sep>) 23, #<mantissa>, #red)
   mark(
-    mark(times, tag: #<prd>)
-    mark(10, tag: #<base>)^mark(4, tag: #<exp>),
-    tag: #<pow>,
+    mark(times, #<prd>)
+    mark(10, #<base>)^mark(4, #<exp>),
+    #<pow>,
   )
 $
 

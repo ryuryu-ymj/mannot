@@ -6,7 +6,7 @@
 Text text text text text:
 #v(1em)
 $
-  mark(x, tag: #<1>, color: #green)
+  mark(x, #<1>, #green)
   #annot(<1>, pos: top + right)[Annotation]
   #annot(<1>, dy: 1em)[Annotation]
 $

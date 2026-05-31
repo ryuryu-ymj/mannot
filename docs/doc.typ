@@ -32,16 +32,16 @@ A package for marking and annotating in math blocks in Typst.
 #set text(12pt)
 #v(2em)
 $
-  markul(p_i, tag: #<p>)
+  markul(p_i, #<p>)
   = markrect(
-    exp(- mark(beta, tag: #<beta>, color: #red) mark(E_i, tag: #<E>, color: #green)),
-    tag: #<Boltzmann>, color: #blue,
-  ) / markhl(sum_j exp(- beta E_j), tag: #<Z>)
+    exp(- mark(beta, #<beta>, #red) mark(E_i, #<E>, #green)),
+    #<fac>, #blue,
+  ) / markhl(sum_j exp(- beta E_j), #<Z>)
 
   #annot(<p>, pos: bottom + left)[Probability of \ state $i$]
   #annot(<beta>, pos: top + left, dy: -1.5em, leader-connect: "elbow")[Inverse temperature]
   #annot(<E>, pos: top + right, dy: -1em)[Energy]
-  #annot(<Boltzmann>, pos: top + left)[Boltzmann factor]
+  #annot(<fac>, pos: top + left)[Boltzmann factor]
   #annot(<Z>)[Partition function]
 $
 #v(1em)
@@ -61,7 +61,7 @@ To decorate content within math blocks, use the following marking functions:
 - `markul`: Underlines the content.
 #example(```typst
 $
-  mark(x, color: #red) + markhl(f(x))
+  mark(x, #red) + markhl(f(x))
   + markrect(e^x) + markul(x + 1)
 $
 ```)
@@ -69,10 +69,10 @@ $
 You can customize the marking color and other styles:
 #example(```typst
 $
-  mark(x, color: #green)
-  + markhl(f(x), color: #purple, stroke: #1pt, radius: #10%)
-  + markrect(e^x, color: #red, fill: #blue, outset: #.2em)
-  + markul(x + 1, color: #gray, stroke: #2pt)
+  mark(x, #green)
+  + markhl(f(x), #purple, stroke: #1pt, radius: #10%)
+  + markrect(e^x, #red, fill: #blue, outset: #.2em)
+  + markul(x + 1, #gray, stroke: #2pt)
 $
 ```)
 
@@ -81,10 +81,10 @@ If you marked content with a tag,
 you can later annotate it using the `annot` function:
 #example(```typst
 $
-  mark(x, tag: #<1>, color: #green)
-  + markhl(f(x), tag: #<2>, color: #purple, stroke: #1pt, radius: #10%)
-  + markrect(e^x, tag: #<3>, color: #red, fill: #blue, outset: #.2em)
-  + markul(x + 1, tag: #<4>, color: #gray, stroke: #2pt)
+  mark(x, #<1>, #green)
+  + markhl(f(x), #<2>, #purple, stroke: #1pt, radius: #10%)
+  + markrect(e^x, #<3>, #red, fill: #blue, outset: #.2em)
+  + markul(x + 1, #<4>, #gray, stroke: #2pt)
 
   #annot(<1>)[Annotation]
   #annot(<3>, pos: top)[Another annotation]
@@ -103,7 +103,7 @@ so you might sometimes need to manually insert spacing before and after the equa
 Text text text text text:
 #v(1em)  // <- Manual spacing.
 $
-  mark(x, tag: #<1>, color: #green)
+  mark(x, #<1>, #green)
   #annot(<1>, pos: top + right)[Annotation]
   #annot(<1>, dy: 1em)[Annotation]
 $
@@ -129,21 +129,21 @@ The `annot` function offers the following arguments to control annotation placem
       columns: 3,
       gutter: (6em, 14em),
       $
-        markrect(integral x dif x, tag: #<1>, color: #red)
+        markrect(integral x dif x, #<1>, #red)
         #annot(<1>, pos: top, lab[top])
         #annot(<1>, pos: left, lab[left])
         #annot(<1>, pos: bottom, lab[bottom])
         #annot(<1>, pos: right, lab[right])
       $,
       $
-        markrect(integral x dif x, tag: #<1>, color: #red)
+        markrect(integral x dif x, #<1>, #red)
         #annot(<1>, pos: top + left, lab[top + left])
         #annot(<1>, pos: top + right, lab[top + right])
         #annot(<1>, pos: bottom + left, lab[bottom + left])
         #annot(<1>, pos: bottom + right, lab[bottom + right])
       $,
       $
-        markrect(integral x dif x, tag: #<1>, color: #red)
+        markrect(integral x dif x, #<1>, #red)
         #annot(<1>, pos: (top + left, bottom + right), lab[(top + left, bottom + right)])
         #annot(<1>, pos: (top + left, top + right), lab[(top + left, top + right)])
         #annot(<1>, pos: (top + left, bottom + left), lab[(top + left, bottom + left)])
@@ -158,7 +158,7 @@ The `annot` function offers the following arguments to control annotation placem
   #example(```typst
   #v(1em)
   $
-    markrect(integral x dif x, tag: #<1>, color: #red)
+    markrect(integral x dif x, #<1>, #red)
     #annot(<1>, pos: top)[annotation]
   $
   ```)
@@ -166,7 +166,7 @@ The `annot` function offers the following arguments to control annotation placem
   #example(```typst
   #v(1em)
   $
-    markrect(integral x dif x, tag: #<1>, color: #red)
+    markrect(integral x dif x, #<1>, #red)
     #annot(<1>, pos: top, dx: 1em, dy: -1em)[annotation]
   $
   ```)
@@ -181,7 +181,7 @@ You can customize its appearance using the following annot arguments:
   You can specify markers or `none`:
   #example(```typst
   $
-    markhl(x, tag: #<1>)
+    markhl(x, #<1>)
 
     #annot(
       <1>, pos: bottom + right, dy: 1em,
@@ -200,21 +200,21 @@ You can customize its appearance using the following annot arguments:
   - "elbow" to create an elbow-shaped leader line.
   #example(```typst
     $
-      markhl(x, tag: #<1>)
+      markhl(x, #<1>)
       #annot(<1>, pos: bottom + right, dy: 1em)[annotation]
     $
     #v(2em)
   ```)
   #example(```typst
     $
-      markhl(x, tag: #<1>)
+      markhl(x, #<1>)
       #annot(<1>, pos: bottom + right, dy: 1em, leader-connect: (bottom, top))[annotation]
     $
     #v(2em)
   ```)
   #example(```typst
     $
-      markhl(x, tag: #<1>)
+      markhl(x, #<1>)
       #annot(<1>, pos: bottom + right, dy: 1em, leader-connect: "elbow")[annotation]
     $
     #v(2em)
@@ -226,10 +226,10 @@ by passing an array of their tags to the `annot` function.
 #example(```typst
 #v(1em)
 $
-  mark(x, tag: #<1>, color: #green)
-  + markhl(f(x), tag: #<2>, color: #purple, stroke: #1pt, radius: #10%)
-  + markrect(e^x, tag: #<3>, color: #red, fill: #blue, outset: #.2em)
-  + markul(x + 1, tag: #<4>, color: #gray, stroke: #2pt)
+  mark(x, #<1>, #green)
+  + markhl(f(x), #<2>, #purple, stroke: #1pt, radius: #10%)
+  + markrect(e^x, #<3>, #red, fill: #blue, outset: #.2em)
+  + markul(x + 1, #<4>, #gray, stroke: #2pt)
 
   #annot((<1>, <2>), dy: 1em)[Annotation]
   #annot((<3>, <2>, <4>), pos: top, dy: -1em, leader-connect: "elbow")[Another annotation]
@@ -244,10 +244,10 @@ Within the CeTZ canvas code block,
 you can reference the position and dimensions of the marked content using an anchor with the same name as its tag.
 For elements marked with multiple tags, corresponding anchors will be available.
 #example(```typst
-#import "@preview/cetz:0.4.2"
+#import "@preview/cetz:0.5.2"
 
 $
-  mark(x, tag: #<x>) + mark(y, tag: #<y>)
+  mark(x, #<x>) + mark(y, #<y>)
 
   #annot-cetz((<x>, <y>), cetz, {
     import cetz.draw: *

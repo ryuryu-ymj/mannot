@@ -18,13 +18,13 @@ For comprehensive documentation, please refer to the [manual](docs/doc.pdf).
 ### Simple Example
 ```typst
 $
-  markhl(x) + markhl(y, color: #blue, tag: #<tag1>)
+  markhl(x) + markhl(y, #blue, #<tag1>)
 
   #annot(<tag1>)[Annotation]
 $
 ```
 
-![Simple example showing a highlighted math equation with an annotation.](examples/sample1.svg)
+![Simple example showing a highlighted math equation with an annotation.](examples/sample1.png)
 
 ### More Complex Example
 ![Complex example showing a equation where multiple parts are marked,
@@ -37,15 +37,16 @@ highlighted, and connected to text annotations.](examples/showcase1.svg)
 #set text(24pt)
 
 $
-  markul(p_i, tag: #<p>) = markrect(
-    exp(- mark(beta, tag: #<beta>, color: #red) mark(E_i, tag: #<E>, color: #green)),
-    tag: #<Boltzmann>, color: #blue,
-  ) / markhl(sum_j exp(- beta E_j), tag: #<Z>)
-
+  markul(p_i, #<p>)
+  = markrect(
+    exp(- mark(beta, #<beta>, #red) mark(E_i, #<E>, #green)),
+    #<fac>, #blue,
+  ) / markhl(sum_j exp(- beta E_j), #<Z>)
+  //
   #annot(<p>, pos: bottom + left)[Probability of \ state $i$]
   #annot(<beta>, pos: top + left, dy: -1.5em, leader-connect: "elbow")[Inverse temperature]
   #annot(<E>, pos: top + right, dy: -1em)[Energy]
-  #annot(<Boltzmann>, pos: top + left)[Boltzmann factor]
+  #annot(<fac>, pos: top + left)[Boltzmann factor]
   #annot(<Z>)[Partition function]
 $
 ```
@@ -59,7 +60,8 @@ colored arrows drawn between terms using CeTZ.](examples/showcase3.svg)
 <details> <summary> Source code </summary>
 
 ```typst
-#import "@preview/cetz:0.4.2"
+#import "/src/lib.typ": *
+#import "@preview/cetz:0.5.2"
 
 #set page(width: auto, height: auto, margin: (y: 2cm, bottom: 1cm), fill: white)
 #set text(24pt)
@@ -69,9 +71,9 @@ colored arrows drawn between terms using CeTZ.](examples/showcase3.svg)
 #let pmark = mark.with(color: purple)
 
 $
-  ( rmark(a x, tag: #<ax>) + bmark(b, tag: #<b>) )
-  ( rmark(c x, tag: #<cx>) + bmark(d, tag: #<d>) )
-  = rmark(a c x^2) + pmark((a d + b c) x) + bmark(b d)
+  ( rmark(a x, #<ax>) + bmark(b, #<b>) )
+  ( rmark(c x, #<cx>) + bmark(d, #<d>) )
+  = rmark(a c x^2) + pmark((a d + b c) x) bmark(b d)
 $
 
 #annot-cetz(
@@ -79,6 +81,7 @@ $
   cetz,
   {
     import cetz.draw: *
+
     set-style(mark: (end: "straight"))
     bezier-through("ax.south", (rel: (x: 1, y: -.5)), "cx.south", stroke: red)
     bezier-through("ax.south", (rel: (x: 1, y: -1)), "d.south", stroke: purple)
@@ -98,7 +101,8 @@ including a highlighted box, modified leader lines, and a curly brace.](examples
 <details> <summary> Source code </summary>
 
 ```typst
-#import "@preview/cetz:0.4.2"
+#import "/src/lib.typ": *
+#import "@preview/cetz:0.5.2"
 
 #set page(width: auto, height: auto, margin: (x: 4cm, top: 2cm, bottom: 1cm), fill: white)
 #set text(24pt)
@@ -106,11 +110,11 @@ including a highlighted box, modified leader lines, and a curly brace.](examples
 #let markhl = markhl.with(stroke: 1pt)
 
 $
-  markhl(1 mark(., tag: #<sep>) 23, tag: #<mantissa>, color: #red)
+  markhl(1 mark(., #<sep>) 23, #<mantissa>, #red)
   mark(
-    mark(times, tag: #<prd>)
-    mark(10, tag: #<base>)^mark(4, tag: #<exp>),
-    tag: #<pow>,
+    mark(times, #<prd>)
+    mark(10, #<base>)^mark(4, #<exp>),
+    #<pow>,
   )
 $
 
@@ -159,7 +163,7 @@ To decorate content within math blocks, use the following marking functions:
 - `markul`: Underlines the content.
 ```typst
 $
-  mark(x, color: #red) + markhl(f(x)) + markrect(e^x) + markul(x + 1)
+  mark(x, #red) + markhl(f(x)) + markrect(e^x) + markul(x + 1)
 $
 ```
 ![Example showing an equation with four different marking styles:
@@ -168,10 +172,10 @@ colored text, highlighting, a rectangle, and an underline.](examples/usage1.svg)
 You can customize the marking color and other styles:
 ```typst
 $
-  mark(x, color: #green)
-  + markhl(f(x), color: #purple, stroke: #1pt, radius: #10%)
-  + markrect(e^x, color: #red, fill: #blue, outset: #.2em)
-  + markul(x + 1, color: #gray, stroke: #2pt)
+  mark(x, #green)
+  + markhl(f(x), #purple, stroke: #1pt, radius: #10%)
+  + markrect(e^x, #red, fill: #blue, outset: #.2em)
+  + markul(x + 1, #gray, stroke: #2pt)
 $
 ```
 ![Example showing an equation with customized marking styles,
@@ -182,11 +186,10 @@ After marking content with a tag,
 you can later annotate it using the `annot` function:
 ```typst
 $
-  mark(x, tag: #<1>, color: #green)
-  + markhl(f(x), tag: #<2>, color: #purple, stroke: #1pt, radius: #10%)
-  + markrect(e^x, tag: #<3>, color: #red, fill: #blue, outset: #.2em)
-  + markul(x + 1, tag: #<4>, color: #gray, stroke: #2pt)
-
+  mark(x, #<1>, #green)
+  + markhl(f(x), #<2>, #purple, stroke: #1pt, radius: #10%)
+  + markrect(e^x, #<3>, #red, fill: #blue, outset: #.2em)
+  + markul(x + 1, #<4>, #gray, stroke: #2pt)
   #annot(<1>)[Annotation]
   #annot(<3>, pos: top)[Another annotation]
 $
@@ -202,13 +205,13 @@ Markings and annotations do not affect the layout,
 so you might sometimes need to manually insert spacing before and after the equations to achieve the desired visual appearance:
 ```typst
 Text text text text text:
-#v(1em)  // <- Spacing
+#v(1em)
 $
-  mark(x, tag: #<1>, color: #green)
+  mark(x, #<1>, #green)
   #annot(<1>, pos: top + right)[Annotation]
   #annot(<1>, dy: 1em)[Annotation]
 $
-#v(2em)  // <- Spacing
+#v(2em)
 text text text text text.
 ```
 ![Example showing manual vertical spacing added around an annotated equation to prevent overlap with surrounding text.](examples/usage4.svg)
@@ -238,7 +241,7 @@ You can customize its appearance using the following `annot` arguments:
   You can specify markers or `none`:
   ```typst
   $
-    markhl(x, tag: #<1>)
+    markhl(x, #<1>)
 
     #annot(
       <1>, pos: bottom + right, dy: 1em,
@@ -265,10 +268,10 @@ You can also annotate multiple marked elements simultaneously
 by passing an array of their tags to the `annot` function.
 ```typst
 $
-  mark(x, tag: #<1>, color: #green)
-  + markhl(f(x), tag: #<2>, color: #purple, stroke: #1pt, radius: #10%)
-  + markrect(e^x, tag: #<3>, color: #red, fill: #blue, outset: #.2em)
-  + markul(x + 1, tag: #<4>, color: #gray, stroke: #2pt)
+  mark(x, #<1>, #green)
+  + markhl(f(x), #<2>, #purple, stroke: #1pt, radius: #10%)
+  + markrect(e^x, #<3>, #red, fill: #blue, outset: #.2em)
+  + markul(x + 1, #<4>, #gray, stroke: #2pt)
 
   #annot((<1>, <2>), dy: 1em)[Annotation]
   #annot((<3>, <2>, <4>), pos: top, dy: -1em, leader-connect: "elbow")[Another annotation]
@@ -283,10 +286,10 @@ Within the CeTZ canvas code block,
 you can reference the position and dimensions of the marked content using an anchor with the same name as its tag.
 For elements marked with multiple tags, corresponding anchors will be available.
 ```typst
-#import "@preview/cetz:0.4.2"
+#import "@preview/cetz:0.5.2"
 
 $
-  mark(x, tag: #<x>) + mark(y, tag: #<y>)
+  mark(x, #<x>) + mark(y, #<y>)
 
   #annot-cetz((<x>, <y>), cetz, {
     import cetz.draw: *

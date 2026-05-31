@@ -5,8 +5,8 @@
 
 
 $
-  mark(x, color: #green)
-  + markhl(f(x), color: #purple, stroke: #1pt, radius: #10%)
-  + markrect(e^x, color: #red, fill: #blue, outset: #.2em)
-  + markul(x + 1, color: #gray, stroke: #2pt)
+  mark(x, #green)
+  + markhl(f(x), #purple, stroke: #1pt, radius: #10%)
+  + markrect(e^x, #red, fill: #blue, outset: #.2em)
+  + markul(x + 1, #gray, stroke: #2pt)
 $

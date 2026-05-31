@@ -1,6 +1,5 @@
 #import "/src/lib.typ": *
 #import "@preview/layout-ltd:0.1.0": layout-limiter
-#import "@preview/cetz:0.4.2"
 
 // This causes layout unconvergence.
 // #show: layout-limiter.with(max-iterations: 2)

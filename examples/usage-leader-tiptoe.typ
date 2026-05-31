@@ -4,11 +4,12 @@
 #set text(16pt)
 
 $
-  markhl(x, tag: #<1>)
+  markhl(x, #<1>)
 
   #annot(
     <1>,
-    pos: bottom + right, dy: 1em,
+    pos: bottom + right,
+    dy: 1em,
     leader-tip: tiptoe.circle,
     leader-toe: tiptoe.stealth.with(length: 1000%),
   )[annotaton]

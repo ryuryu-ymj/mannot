@@ -4,7 +4,7 @@
 #set text(24pt)
 
 $
-  markhl(x) + markhl(y, color: #blue, tag: #<tag1>)
+  markhl(x) + markhl(y, #blue, #<tag1>)
   #annot(<tag1>)[Annotation]
 $
 

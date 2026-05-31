@@ -5,5 +5,5 @@
 
 
 $
-  mark(x, color: #red) + markhl(f(x)) + markrect(e^x) + markul(x + 1)
+  mark(x, #red) + markhl(f(x)) + markrect(e^x) + markul(x + 1)
 $
