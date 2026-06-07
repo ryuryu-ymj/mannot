@@ -263,9 +263,9 @@
 
       let end-pos = query(selector(end-lab).after(begin-loc).before(end-loc)).last().location().position()
       let dy-array = query(selector(dy-lab).after(begin-loc).before(end-loc)).map(e => e.location().position().y)
-      let top-dy = end-pos.y - dy-array.at(0)
-      let bottom-dy = end-pos.y - dy-array.at(1)
-      let place-dy = end-pos.y - dy-array.at(2)
+      let top-dy = end-pos.y - dy-array.at(-3)
+      let bottom-dy = end-pos.y - dy-array.at(-2)
+      let place-dy = end-pos.y - dy-array.at(-1)
       let top-y = min-y + top-dy + place-dy
       let bottom-y = max-y + bottom-dy + place-dy
 

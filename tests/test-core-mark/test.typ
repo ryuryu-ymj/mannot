@@ -111,8 +111,10 @@ $
     $ x mark(difx) $
 
 
-    $ -x $
-    $ mark(-x) $
+    $
+      -x \
+      mark(-x)
+    $
 
     $ x + y - z $
     $ mark(x + y - z) $
@@ -136,6 +138,7 @@ $
       3mark(!)
     $
 
+    // nested
     $
       mark(mark(x) + mark(y)) +
       mark(mark(mark(x) + mark(y)) + mark(z))
@@ -144,6 +147,13 @@ $
     $
       x mark(mark(+) y) mark(mark(+))
       mark(x mark(+)) y
+    $
+
+    // Issue10
+    $
+      mark(mark(y) / T)
+      + mark(T / mark(y))
+      + mark((1 + mark(y)) / mark(T))
     $
   }),
 )
