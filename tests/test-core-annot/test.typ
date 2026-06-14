@@ -1,9 +1,9 @@
 #import "/src/mark.typ": mark
 #import "/src/annot.typ": core-annot
 
-#set page(width: 12cm, height: 10cm)
+// #set page(width: 12cm, height: 10cm)
 #let annot(tag) = core-annot(tag, markers => {
-  rect([ #markers ])
+  [ #markers ]
 })
 
 $
@@ -23,17 +23,19 @@ $
 #pagebreak()
 
 #let annot-fill(tag) = core-annot(tag, markers => {
+  let bounds = markers.first().annot-bounds
   place(
-    rect(width: markers.first().width, height: markers.first().height, fill: red.transparentize(60%)),
-    dx: markers.first().x,
-    dy: markers.first().y,
+    rect(width: bounds.width, height: bounds.height, fill: red.transparentize(60%)),
+    dx: bounds.x,
+    dy: bounds.y,
   )
 })
 #let annot-stroke(tag) = core-annot(tag, markers => {
+  let bounds = markers.first().annot-bounds
   place(
-    rect(width: markers.first().width, height: markers.first().height),
-    dx: markers.first().x,
-    dy: markers.first().y,
+    rect(width: bounds.width, height: bounds.height),
+    dx: bounds.x,
+    dy: bounds.y,
   )
 })
 

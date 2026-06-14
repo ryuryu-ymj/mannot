@@ -23,7 +23,8 @@ $
   ]
 $
 #context {
-  query(<0>).map(e => box(fill: e.value.color, width: 1em, height: 1em)).sum()
+  let colors = query(<0>).map(q => q.value.color)
+  assert(colors == (red, black, black, green, blue))
 }
 
 $

@@ -98,6 +98,27 @@
 }
 
 
+#let _validate-outset(outset) = {
+  return if outset == none {
+    (left: 0pt, right: 0pt, top: 0pt, bottom: 0pt)
+  } else if type(outset) == length {
+    let outset = outset.to-absolute()
+    (left: outset, right: outset, top: outset, bottom: outset)
+  } else if type(outset) == dictionary {
+    let rest = outset.at("rest", default: 0pt).to-absolute()
+    let x = outset.at("x", default: rest).to-absolute()
+    let left = outset.at("left", default: x).to-absolute()
+    let right = outset.at("right", default: x).to-absolute()
+    let y = outset.at("y", default: rest).to-absolute()
+    let top = outset.at("top", default: y).to-absolute()
+    let bottom = outset.at("bottom", default: y).to-absolute()
+    (left: left, right: right, top: top, bottom: bottom)
+  } else {
+    panic("unexpected argument: `" + str(repr(outset)) + "`")
+  }
+}
+
+
 /// Marks content within a math block with a custom underlay or overlay.
 ///
 /// This function measures the position and size of the marked content,
@@ -156,7 +177,12 @@
   /// This can be specified as a single `length` value, which applies to all sides,
   /// or as a `dictionary` of `length` with keys `left`, `right`, `top`, `bottom`, `x`, `y`, or `rest`.
   /// -> none | length | dictionary
-  outset: (:),
+  mark-outset: (:),
+  /// How much to expand the marking box size without affecting the layout.
+  /// This can be specified as a single `length` value, which applies to all sides,
+  /// or as a `dictionary` of `length` with keys `left`, `right`, `top`, `bottom`, `x`, `y`, or `rest`.
+  /// -> none | length | dictionary
+  annot-outset: (:),
   /// Whether to render visual markers for debugging purposes.
   /// -> bool
   debug: false,
@@ -170,10 +196,10 @@
     let y-lab = label("_mannot-mark-y")
     let end-lab = label("_mannot-mark-end")
     let dy-lab = label("_mannot-mark-dy")
-    let info-lab = if type(tag) == label {
+    let data-lab = if type(tag) == label {
       tag
     } else {
-      label("_mannot-mark-info")
+      label("_mannot-mark-data")
     }
 
     let color = color
@@ -187,23 +213,24 @@
     if underlay != none {
       // sym.wj
       context {
-        let elems = query(selector(info-lab).after(begin-loc))
+        let elems = query(selector(data-lab).after(begin-loc))
         if elems.len() > 0 {
-          let info
+          let data
           for e in elems {
-            info = e.value
-            // Find the corresponding info if nesting.
-            if info.begin-loc == begin-loc {
+            data = e.value
+            // Find the corresponding metadata if nesting.
+            if data.begin-loc == begin-loc {
               break
             }
           }
 
           let hpos = here().position()
-          let dx = info.x - hpos.x
-          let dy = info.y - hpos.y
-          let width = info.width
-          let height = info.height
-          let color = info.color
+          let bounds = data.mark-bounds
+          let dx = bounds.x - hpos.x
+          let dy = bounds.y - hpos.y
+          let width = bounds.width
+          let height = bounds.height
+          let color = data.color
 
           place(
             dx: dx,
@@ -272,46 +299,51 @@
       let left-x = begin-loc.position().x
       let right-x = end-pos.x
 
-      let outset = if outset == none {
-        (left: 0pt, right: 0pt, top: 0pt, bottom: 0pt)
-      } else if type(outset) == length {
-        let outset = outset.to-absolute()
-        (left: outset, right: outset, top: outset, bottom: outset)
-      } else if type(outset) == dictionary {
-        let rest = outset.at("rest", default: 0pt).to-absolute()
-        let x = outset.at("x", default: rest).to-absolute()
-        let left = outset.at("left", default: x).to-absolute()
-        let right = outset.at("right", default: x).to-absolute()
-        let y = outset.at("y", default: rest).to-absolute()
-        let top = outset.at("top", default: y).to-absolute()
-        let bottom = outset.at("bottom", default: y).to-absolute()
-        (left: left, right: right, top: top, bottom: bottom)
-      }
+      let mark-outset = _validate-outset(mark-outset)
+      let mark-bounds = (
+        x: left-x - mark-outset.left,
+        y: top-y - mark-outset.top,
+        width: right-x - left-x + mark-outset.left + mark-outset.right,
+        height: bottom-y - top-y + mark-outset.top + mark-outset.bottom,
+      )
 
-      let x = left-x - outset.left
-      let y = top-y - outset.top
-      let width = right-x + outset.right - x
-      let height = bottom-y - top-y + outset.top + outset.bottom
-
-      // Expose the metadata.
-      let info = (body: body, x: x, y: y, width: width, height: height, color: color, tag: tag, begin-loc: begin-loc)
-      // sym.wj
-      [#metadata(info)#info-lab]
-
+      let annot-outset = annot-outset
       // Place `overlay(width, height, color)` over the `body`.
       if overlay != none {
         let hpos = here().position()
-        let dx = x - hpos.x
-        let dy = y - hpos.y
-        // sym.wj
+        let overlay = overlay(mark-bounds.width, mark-bounds.height, color)
+        if type(overlay) == array {
+          annot-outset = overlay.at(1)
+          overlay = overlay.at(0)
+        }
         place(
-          dx: dx,
-          dy: dy,
+          dx: mark-bounds.x - hpos.x,
+          dy: mark-bounds.y - hpos.y,
           float: false,
           left + top,
-          overlay(width, height, color),
+          overlay,
         )
       }
+
+      annot-outset = _validate-outset(annot-outset)
+      let annot-bounds = (
+        x: mark-bounds.x - annot-outset.left,
+        y: mark-bounds.y - annot-outset.top,
+        width: mark-bounds.width + annot-outset.left + annot-outset.right,
+        height: mark-bounds.height + annot-outset.top + annot-outset.bottom,
+      )
+
+      // Expose the metadata.
+      let data = (
+        body: body,
+        tag: tag,
+        color: color,
+        mark-bounds: mark-bounds,
+        annot-bounds: annot-bounds,
+        begin-loc: begin-loc,
+      )
+      // sym.wj
+      [#metadata(data)#data-lab]
     }
   }
 
@@ -320,23 +352,27 @@
 }
 
 
-#let validate-args(args, body, tag, color) = {
-  if type(body) not in (content, symbol) {
-    panic("`body` must be content, found " + str(type(body)))
-  }
+#let _validate-args(args, body, tag, color) = {
   if args.named().len() > 0 {
     panic("unexpected named argument: " + args.named().keys().first())
   }
-  for arg in args.pos() {
+  let posargs = (body, ..args.pos())
+  body = none
+  for arg in posargs {
     if tag == none and type(arg) == label {
       tag = arg
     } else if color == auto and type(arg) == std.color {
       color = arg
+    } else if body == none {
+      body = arg
     } else {
       panic("unexpected positional argument: `" + str(repr(arg)) + "`")
     }
   }
-  return (tag, color)
+  if body == none {
+    panic("missing argument: body")
+  }
+  return (body, tag, color)
 }
 
 
@@ -381,17 +417,16 @@
   outset: (y: .1em),
   ..args,
 ) = {
-  (tag, color) = validate-args(args, body, tag, color)
+  (body, tag, color) = _validate-args(args, body, tag, color)
 
   if color != auto {
-    return context {
+    return {
       set text(fill: color)
-      core-mark(body, tag: tag, color: color, outset: outset)
+      core-mark(body, tag: tag, color: color, mark-outset: outset)
     }
   } else {
-    return context {
-      let color = text.fill
-      core-mark(body, tag: tag, color: color, outset: outset)
+    return {
+      core-mark(body, tag: tag, color: color, mark-outset: outset)
     }
   }
 }
@@ -454,7 +489,7 @@
   outset: (y: .1em),
   ..args,
 ) = {
-  (tag, color) = validate-args(args, body, tag, color)
+  (body, tag, color) = _validate-args(args, body, tag, color)
 
   if fill == auto {
     if color == auto {
@@ -478,7 +513,7 @@
     }
   }
 
-  return core-mark(body, tag: tag, color: color, underlay: underlay, outset: outset)
+  return core-mark(body, tag: tag, color: color, underlay: underlay, mark-outset: outset)
 }
 
 
@@ -537,16 +572,39 @@
   outset: (y: .1em),
   ..args,
 ) = {
-  (tag, color) = validate-args(args, body, tag, color)
+  (body, tag, color) = _validate-args(args, body, tag, color)
+
+  let is-stroke-sided = (
+    type(stroke) == dictionary and stroke.keys().first() in ("top", "right", "bottom", "left", "x", "y", "rest")
+  )
+
+  let annot-outset = (:)
+  if stroke != none {
+    if is-stroke-sided {
+      for (key, value) in stroke {
+        let s = default-stroke(value, thickness: .048em)
+        annot-outset.insert(key, s.thickness / 2)
+      }
+    } else {
+      let s = default-stroke(stroke, thickness: .048em)
+      annot-outset = s.thickness / 2
+    }
+  }
 
   let underlay = if fill == none and stroke == none { none } else {
     (width, height, color) => {
       let stroke = stroke
       if stroke != none {
-        stroke = default-stroke(stroke, paint: color, thickness: .048em)
+        if is-stroke-sided {
+          for (key, value) in stroke {
+            let value = default-stroke(value, paint: color, thickness: .048em)
+            stroke.insert(key, value)
+          }
+        } else {
+          stroke = default-stroke(stroke, paint: color, thickness: .048em)
+        }
       }
-
-      rect(
+      return rect(
         width: width,
         height: height,
         fill: fill,
@@ -556,7 +614,7 @@
     }
   }
 
-  return core-mark(body, tag: tag, color: color, underlay: underlay, outset: outset)
+  return core-mark(body, tag: tag, color: color, underlay: underlay, mark-outset: outset, annot-outset: annot-outset)
 }
 
 
@@ -609,18 +667,137 @@
   outset: (top: .1em, bottom: .144em),
   ..args,
 ) = {
-  (tag, color) = validate-args(args, body, tag, color)
+  (body, tag, color) = _validate-args(args, body, tag, color)
+
+  let annot-outset = (:)
+  if stroke != none {
+    let s = default-stroke(stroke, thickness: .048em)
+    annot-outset.insert("bottom", s.thickness / 2)
+  }
 
   let overlay = if stroke == none { none } else {
     (width, height, color) => {
-      let stroke = stroke
-      if stroke != none {
-        stroke = default-stroke(stroke, paint: color, thickness: .048em)
-      }
-
-      line(start: (0pt, height), end: (width, height), stroke: stroke)
+      let stroke = default-stroke(stroke, paint: color, thickness: .048em)
+      return line(start: (0pt, height), end: (width, height), stroke: stroke)
     }
   }
 
-  return core-mark(body, tag: tag, color: color, overlay: overlay, outset: outset)
+  return core-mark(body, tag: tag, color: color, overlay: overlay, mark-outset: outset, annot-outset: annot-outset)
+}
+
+
+/// Marks content within a math block and draw a horizontal wavy line under it.
+///
+/// If you mark content with a tag, you can annotate it using the `annot` function.
+///
+/// *Example*
+/// ```example
+/// $ markuw(x + y) $
+/// ```
+///
+/// -> content
+#let markuw(
+  /// The content above the wavy line. -> content
+  body,
+  /// An optional tag used to identify the content for later annotations.
+  /// -> none | label
+  tag: none,
+  /// The color used for the wavy line and later annotations.
+  /// If set to `auto`, it defaults to the text fill color.
+  /// -> auto | color
+  color: auto,
+  /// How to stroke the wavy line.
+  /// If its `paint` is set to `auto`, it will be set to the `color`.
+  /// If its `thickness` is set to `auto`, it defaults to `.048em`.
+  /// -> none | length | color | gradient | stroke | pattern | dictionary
+  stroke: .048em,
+  /// The amplitude of the wavy line.
+  amp: .04em,
+  /// The wavelength of the wavy line.
+  wavelen: .36em,
+  /// How much to expand the marking box size without affecting the layout.
+  /// This can be specified as a single `length` value which applies to all sides,
+  /// or as a `dictionary` of `length` with keys `left`, `right`, `top`, `bottom`, `x`, `y`, or `rest`.
+  /// -> none | length | dictionary
+  outset: (top: .1em, bottom: .144em),
+  ..args,
+) = {
+  (body, tag, color) = _validate-args(args, body, tag, color)
+
+  let annot-outset = (:)
+  if stroke != none {
+    let s = default-stroke(stroke, thickness: .048em)
+    annot-outset.insert("bottom", amp * 2 + s.thickness / 2)
+  }
+
+  let overlay = if stroke == none { none } else {
+    (width, height, color) => {
+      let stroke = default-stroke(stroke, paint: color, thickness: .048em)
+
+      return box(
+        width: width,
+        height: height + amp * 2 + stroke.thickness,
+        clip: true,
+        curve(
+          stroke: stroke,
+          curve.move((-wavelen / 4, height + amp)),
+          ..for i in range(int(width / wavelen.to-absolute()) + 2) {
+            (
+              // Amplitude is half of the control point height.
+              curve.quad((wavelen / 4, amp * 2), (wavelen / 2, 0pt), relative: true),
+              curve.quad((wavelen / 4, -amp * 2), (wavelen / 2, 0pt), relative: true),
+            )
+          },
+        ),
+      )
+    }
+  }
+
+  return core-mark(body, tag: tag, color: color, overlay: overlay, mark-outset: outset, annot-outset: annot-outset)
+}
+
+
+/// Marks content within a math block and draw a horizontal wavy line under it.
+///
+/// If you mark content with a tag, you can annotate it using the `annot` function.
+///
+/// *Example*
+/// ```example
+/// $ markuw(x + y) $
+/// ```
+///
+/// -> content
+#let markub(
+  /// The content above the wavy line. -> content
+  body,
+  /// An optional tag used to identify the content for later annotations.
+  /// -> none | label
+  tag: none,
+  /// The color used for the wavy line and later annotations.
+  /// If set to `auto`, it defaults to the text fill color.
+  /// -> auto | color
+  color: auto,
+  /// How much to expand the marking box size without affecting the layout.
+  /// This can be specified as a single `length` value which applies to all sides,
+  /// or as a `dictionary` of `length` with keys `left`, `right`, `top`, `bottom`, `x`, `y`, or `rest`.
+  /// -> none | length | dictionary
+  outset: (top: .1em, bottom: .144em),
+  bracket: sym.bracket.b,
+  ..args,
+) = {
+  (body, tag, color) = _validate-args(args, body, tag, color)
+
+  context {
+    let overlay = (width, height, color) => {
+      let ub = math.equation(math.stretch(bracket, size: width), block: true)
+      let size = measure(ub)
+      let annot-outset = (bottom: size.height, x: (size.width - width) / 2)
+      return (
+        box(place(ub, left + top, dx: width / 2 - size.width / 2, dy: height, float: false)),
+        annot-outset,
+      )
+    }
+
+    return core-mark(body, tag: tag, color: color, overlay: overlay, mark-outset: outset)
+  }
 }

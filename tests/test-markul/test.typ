@@ -41,6 +41,23 @@ $
 $
 
 $
-  markul(x, #blue, #<tag>)
-  #context { assert(query(<tag>).len() == 1) }
+  markul(x, #<0>)
+  + markul(x, #<0>, #red, stroke: #2pt, outset: #(right: 2pt, y: 4pt))
+  #context {
+    let queries = query(<0>)
+    assert(queries.len() == 2)
+    let size = measure($ x $)
+    let data = queries.at(0).value
+    assert(data.color == black)
+    assert(calc.abs(size.width - data.mark-bounds.width) < 1e-9 * 1pt)
+    assert(calc.abs((size.height + 0.244em - data.mark-bounds.height).to-absolute()) < 1e-9 * 1pt)
+    assert(calc.abs(size.width - data.annot-bounds.width) < 1e-9 * 1pt)
+    assert(calc.abs((size.height + 0.244em + 0.048em / 2 - data.annot-bounds.height).to-absolute()) < 1e-9 * 1pt)
+    let data = queries.at(1).value
+    assert(data.color == red)
+    assert(calc.abs(size.width + 2pt - data.mark-bounds.width) < 1e-9 * 1pt)
+    assert(calc.abs((size.height + 4pt * 2 - data.mark-bounds.height).to-absolute()) < 1e-9 * 1pt)
+    assert(calc.abs(size.width + 2pt - data.annot-bounds.width) < 1e-9 * 1pt)
+    assert(calc.abs((size.height + 4pt * 2 + 1pt - data.annot-bounds.height).to-absolute()) < 1e-9 * 1pt)
+  }
 $

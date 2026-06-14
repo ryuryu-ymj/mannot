@@ -191,11 +191,11 @@
                         <g class="typst-group" transform="matrix(1 0 0 1 161.39116010498688 54.292913385826765)">
                             <g>
                                 <path class="typst-shape" fill="none" d="M 0 0v 26.6352 h 58.908535 v -26.6352 h -58.908535 Z "/>
-                                <path class="typst-shape" fill="none" stroke="#0074d9" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="4" transform="matrix(1 0 0 1 0 26.635207748031497)" d="M 0 0c 1.2755905 2.551181 4.2519684 4.2519684 8.503937 4.2519684 h 12.446392 c 4.2519684 0 7.228348 1.7007875 8.503939 4.2519684 c 1.275589 -2.5511808 4.2519665 -4.2519684 8.503935 -4.2519684 h 12.446392 c 4.251972 0 7.228348 -1.7007873 8.503941 -4.2519684 "/>
-                                <path class="typst-shape" fill="none" transform="matrix(1 0 0 1 1.2230666666666499 35.13914475590551)" d="M 0 0h 56.4624 v 18.9432 h -56.4624 v -18.9432 Z "/>
+                                <path class="typst-shape" fill="none" stroke="#0074d9" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="4" transform="matrix(1 0 0 1 0 26.63520388243593)" d="M 0 0c 1.2755905 2.551181 4.2519684 4.2519684 8.503937 4.2519684 h 12.446392 c 4.2519684 0 7.228348 1.7007875 8.503939 4.2519684 c 1.275589 -2.5511808 4.2519665 -4.2519684 8.503935 -4.2519684 h 12.446392 c 4.251972 0 7.228348 -1.7007873 8.503941 -4.2519684 "/>
+                                <path class="typst-shape" fill="none" transform="matrix(1 0 0 1 1.2230666666666623 35.139140890309946)" d="M 0 0h 56.4624 v 18.9432 h -56.4624 v -18.9432 Z "/>
                                 <g class="typst-group">
                                     <g>
-                                        <g class="typst-group" transform="matrix(1 0 0 1 1.223066524934374 35.13914461417323)">
+                                        <g class="typst-group" transform="matrix(1 0 0 1 1.2230665249343882 35.13914074857767)">
                                             <g>
                                                 <g class="typst-text" transform="matrix(1 0 0 -1 0 14.752800000000002)">
                                                     <use xlink:href="#gACA55AC198E421C6CB35F6156E6DF609" x="0" y="0" fill="#0074d9" fill-rule="nonzero"/>

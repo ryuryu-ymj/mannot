@@ -233,10 +233,11 @@
     let ah = annot-size.height
 
     let overlay(markers) = {
-      let x = markers.first().x
-      let y = markers.first().y
-      let w = markers.first().width
-      let h = markers.first().height
+      let bounds = markers.first().annot-bounds
+      let x = bounds.x
+      let y = bounds.y
+      let w = bounds.width
+      let h = bounds.height
       let c = markers.first().color
 
       let leader-stroke = default-stroke(leader-stroke, paint: c, thickness: .048em)
@@ -266,11 +267,12 @@
       place(dx: ax, dy: ay, float: false, left + top, annotation)
 
       if leader != false {
-        for info in markers {
-          let x = info.x
-          let y = info.y
-          let w = info.width
-          let h = info.height
+        for data in markers {
+          let bounds = data.annot-bounds
+          let x = bounds.x
+          let y = bounds.y
+          let w = bounds.width
+          let h = bounds.height
 
           if leader == auto {
             let dst = calc.max(
@@ -488,13 +490,14 @@
   drawable,
 ) = {
   let overlay(markers) = {
-    let origin = markers.first()
+    let origin = markers.first().annot-bounds
     let preamble = markers
-      .map(info => {
+      .map(data => {
+        let bounds = data.annot-bounds
         cetz.draw.rect(
-          (info.x - origin.x, -(info.y - origin.y)),
-          (info.x + info.width - origin.x, -(info.y + info.height - origin.y)),
-          name: str(info.tag),
+          (bounds.x - origin.x, -(bounds.y - origin.y)),
+          (bounds.x + bounds.width - origin.x, -(bounds.y + bounds.height - origin.y)),
+          name: str(data.tag),
           stroke: none,
           fill: none,
         )

@@ -11,19 +11,38 @@ $
 
 == Outset
 $
-  #core-mark($x$, underlay: (w, h, c) => rect(width: w, height: h, fill: c), color: red, outset: none)
-  + #core-mark($x$, underlay: (w, h, c) => rect(width: w, height: h, fill: c), color: red, outset: .2em)
-  + #core-mark($x$, underlay: (w, h, c) => rect(width: w, height: h, fill: c), color: red, outset: (x: .1em, y: 4pt))
-  + #core-mark($x$, underlay: (w, h, c) => rect(width: w, height: h, fill: c), color: red, outset: (left: .1em, top: 4pt, rest: 8pt))
+  #core-mark($x$, underlay: (w, h, c) => rect(width: w, height: h, fill: c), color: red, mark-outset: none)
+  + #core-mark($x$, underlay: (w, h, c) => rect(width: w, height: h, fill: c), color: red, mark-outset: .2em)
+  + #core-mark($x$, underlay: (w, h, c) => rect(width: w, height: h, fill: c), color: red, mark-outset: (x: .1em, y: 4pt))
+  + #core-mark($x$, underlay: (w, h, c) => rect(width: w, height: h, fill: c), color: red, mark-outset: (left: .1em, top: 4pt, rest: 8pt))
 $
 
-== Tag
+== Metadata
 $
-  #core-mark($x$, tag: <tag1>, underlay: (w, h, c) => rect(width: w, height: h))
-  #core-mark($x$, tag: <tag1>, color: red, outset: 1pt, underlay: (w, h, c) => rect(width: w, height: h, fill: c))
+  #core-mark($x$, tag: <tag-test>, underlay: (w, h, c) => rect(width: w, height: h))
+  quad
+  #core-mark($y + 1$, tag: <tag-test>, color: red, mark-outset: (x: 1pt, y: .5pt), annot-outset: (left: 2pt, top: 3pt, rest: 4pt), underlay: (w, h, c) => rect(width: w, height: h, fill: c))
 $
 #context {
-  query(<tag1>)
+  let queries = query(<tag-test>)
+  assert(queries.len() == 2)
+  let data = queries.first().value
+  assert(data.body == $x$.body)
+  assert(data.tag == <tag-test>)
+  assert(data.color == black)
+  let size = measure($ x $)
+  assert(calc.abs(data.mark-bounds.width - size.width) < 1e-9 * 1pt)
+  assert(calc.abs(data.mark-bounds.height - size.height) < 1e-9 * 1pt)
+  assert(data.mark-bounds == data.annot-bounds)
+  let data = queries.at(1).value
+  assert(data.body == $y + 1$.body)
+  assert(data.tag == <tag-test>)
+  assert(data.color == red)
+  let size = measure($ y + 1 $)
+  assert(calc.abs(data.mark-bounds.width - size.width - 2pt) < 1e-9 * 1pt)
+  assert(calc.abs(data.mark-bounds.height - size.height - 1pt) < 1e-9 * 1pt)
+  assert(calc.abs(data.annot-bounds.width - size.width - 8pt) < 1e-9 * 1pt)
+  assert(calc.abs(data.annot-bounds.height - size.height - 8pt) < 1e-9 * 1pt)
 }
 
 = Debug
@@ -154,6 +173,13 @@ $
       mark(mark(y) / T)
       + mark(T / mark(y))
       + mark((1 + mark(y)) / mark(T))
+    $
+
+    $
+      mark(mark(x)^T)
+      + mark(x^mark(T))
+      + mark(mark(x)_q)
+      + mark(x_mark(q))
     $
   }),
 )
