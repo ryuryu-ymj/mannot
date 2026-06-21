@@ -60,7 +60,7 @@
 /// #let myannot(tag, annotation) = {
 ///   let a = rect(annotation)
 ///   let overlay(markers) = {
-///     let m = markers.first()
+///     let m = markers.first().annot-bounds
 ///     place(dx: m.x, dy: m.y + m.height, a)
 ///   }
 ///   return core-annot(tag, overlay)
@@ -115,17 +115,14 @@
 ///
 /// *Example*
 /// ```example
-/// #v(2em)
 /// $
 /// markhl(x, #<e>)
 /// #annot(<e>)[Annotation]
 /// #annot(<e>, pos: top + right, dy: -1em)[Another annotation]
 /// $
-/// #v(1em)
 /// ```
 ///
 /// ```example
-/// #v(1em)
 /// $
 /// markrect(integral x dif x, #<0>, #blue)
 /// + markul(x, #<1>, #red)
@@ -133,7 +130,6 @@
 /// #annot((<0>, <1>), pos: top, dx: 4em)[Multi]
 /// #annot((<0>, <1>), pos: bottom + left, dx: -1em, dy: 1em, leader-connect: "elbow")[Elbow]
 /// $
-/// #v(2em)
 /// ```
 ///
 /// -> content
@@ -467,13 +463,12 @@
 ///
 ///   #annot-cetz((<0>, <1>), cetz, {
 ///     import cetz.draw: *
-///     content((0, -.6), [Annotation], anchor: "north-west", name: "a")
-///     set-style(stroke: .7pt, mark: (start: "straight", scale: 0.6))
+///     content((0, -1), [Annotation], anchor: "north-west", name: "a")
+///     set-style(stroke: .7pt, mark: (start: ">", scale: 0.6))
 ///     line("0", "a")
-///     line("1", "a")
+///     bezier-through("1.south-east", (rel: (0.2, -0.1)), "a.north")
 ///   })
 /// $
-/// #v(1em)
 /// ```
 ///
 /// -> content

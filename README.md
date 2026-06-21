@@ -24,7 +24,7 @@ $
 $
 ```
 
-![Simple example showing a highlighted math equation with an annotation.](examples/sample1.png)
+![Simple example showing a highlighted math equation with an annotation.](examples/sample1.svg)
 
 ### More Complex Example
 ![Complex example showing a equation where multiple parts are marked,
@@ -53,6 +53,45 @@ $
 
 </details>
 
+
+### Customized Markings and Annotations
+![Example showing a scientific notation number with customized annotations,
+including a highlighted box, modified leader lines, and a curly brace.](examples/showcase2.svg)
+
+<details> <summary> Source code </summary>
+
+```typst
+#import "@preview/cetz:0.5.2"
+
+#set page(width: auto, height: auto, margin: (x: 4cm, top: 2cm, bottom: 2cm), fill: white)
+#set text(24pt)
+
+#let markhl = markhl.with(stroke: 1pt)
+
+$
+  markhl(1 mark(., #<sep>) 23, #<mantissa>, #red)
+  markub(
+    mark(times, #<prd>)
+    mark(10, #<base>)^mark(4, #<exp>),
+    #<pow>, #blue, bracket: brace.b,
+  )
+  #{
+    annot(<pow>, dy: 0em, annot-text-props: (size: .9em))[power]
+    let annot = annot.with(leader-tip: tiptoe.triangle, leader-toe: none)
+    annot(<mantissa>, pos: left, dx: -.5em, dy: -1em, annot-text-props: (size: .9em))[mantissa]
+
+    let annot = annot.with(leader-stroke: .03em, leader-tip: none, leader-toe: none)
+    annot(<sep>, pos: bottom + left, dx: -.5em)[decimal \ separator]
+    annot(<prd>, pos: top, dx: -1em, dy: -1.2em)[product]
+    annot(<base>, pos: top, dy: -1em)[base]
+    annot(<exp>, pos: top + right, dx: 1em)[exponent]
+  }
+$
+```
+
+</details>
+
+
 ### Annotations using CeTZ
 ![Example showing a polynomial expansion with curved,
 colored arrows drawn between terms using CeTZ.](examples/showcase3.svg)
@@ -60,7 +99,6 @@ colored arrows drawn between terms using CeTZ.](examples/showcase3.svg)
 <details> <summary> Source code </summary>
 
 ```typst
-#import "/src/lib.typ": *
 #import "@preview/cetz:0.5.2"
 
 #set page(width: auto, height: auto, margin: (y: 2cm, bottom: 1cm), fill: white)
@@ -94,65 +132,10 @@ $
 </details>
 
 
-### Customized Markings and Annotations
-![Example showing a scientific notation number with customized annotations,
-including a highlighted box, modified leader lines, and a curly brace.](examples/showcase2.svg)
-
-<details> <summary> Source code </summary>
-
-```typst
-#import "/src/lib.typ": *
-#import "@preview/cetz:0.5.2"
-
-#set page(width: auto, height: auto, margin: (x: 4cm, top: 2cm, bottom: 1cm), fill: white)
-#set text(24pt)
-
-#let markhl = markhl.with(stroke: 1pt)
-
-$
-  markhl(1 mark(., #<sep>) 23, #<mantissa>, #red)
-  mark(
-    mark(times, #<prd>)
-    mark(10, #<base>)^mark(4, #<exp>),
-    #<pow>,
-  )
-$
-
-#{
-  let annot = annot.with(leader-tip: tiptoe.triangle, leader-toe: none)
-  annot(<mantissa>, pos: left, dx: -.5em, dy: -1em, annot-text-props: (size: .9em))[mantissa]
-
-  let annot = annot.with(leader-stroke: .03em, leader-tip: none, leader-toe: none)
-  annot(<sep>, pos: bottom + left, dx: -.5em)[decimal \ separator]
-  annot(<prd>, pos: top, dx: -1em, dy: -1.2em)[product]
-  annot(<base>, pos: top, dy: -1em)[base]
-  annot(<exp>, pos: top + right, dx: 1em)[exponent]
-
-  annot-cetz(
-    <pow>,
-    cetz,
-    {
-      import cetz.draw: *
-      cetz.decorations.flat-brace(
-        "pow.south-west",
-        "pow.south-east",
-        flip: true,
-        name: "brace",
-        stroke: blue,
-      )
-      content("brace.south", anchor: "north", text(blue, .9em)[power])
-    },
-  )
-}
-```
-
-</details>
-
-
 ## Usage
 Import the package `mannot` at the top of your document:
 ```typst
-#import "@preview/mannot:0.3.3": *
+#import "@preview/mannot:0.4.0": *
 ```
 
 ### Marking
@@ -161,37 +144,25 @@ To decorate content within math blocks, use the following marking functions:
 - `markhl`: Highlights the content.
 - `markrect`: Draws a rectangle around the content.
 - `markul`: Underlines the content.
-```typst
-$
-  mark(x, #red) + markhl(f(x)) + markrect(e^x) + markul(x + 1)
-$
-```
+- `markuw`: Draws a wavy line under the content.
+- `markub`: Draws a bracket under the content.
+
 ![Example showing an equation with four different marking styles:
 colored text, highlighting, a rectangle, and an underline.](examples/usage1.svg)
 
 You can customize the marking color and other styles:
-```typst
-$
-  mark(x, #green)
-  + markhl(f(x), #purple, stroke: #1pt, radius: #10%)
-  + markrect(e^x, #red, fill: #blue, outset: #.2em)
-  + markul(x + 1, #gray, stroke: #2pt)
-$
-```
 ![Example showing an equation with customized marking styles,
 including specific colors, strokes, and fills.](examples/usage2.svg)
 
 ### Annotations
-After marking content with a tag,
+After marking content with a tag (`label`),
 you can later annotate it using the `annot` function:
 ```typst
 $
-  mark(x, #<1>, #green)
-  + markhl(f(x), #<2>, #purple, stroke: #1pt, radius: #10%)
-  + markrect(e^x, #<3>, #red, fill: #blue, outset: #.2em)
-  + markul(x + 1, #<4>, #gray, stroke: #2pt)
-  #annot(<1>)[Annotation]
-  #annot(<3>, pos: top)[Another annotation]
+  mark(x, #<tag>) + markhl(f(x), #<0>)
+  //
+  #annot(<tag>)[Annotation]
+  #annot(<0>, pos: top, dy: -1em)[Another Annotation]
 $
 ```
 ![Example showing an equation with various marking styles and text annotations attached to specific elements.](examples/usage3.svg)
@@ -204,15 +175,15 @@ $
 Markings and annotations do not affect the layout,
 so you might sometimes need to manually insert spacing before and after the equations to achieve the desired visual appearance:
 ```typst
-Text text text text text:
-#v(1em)
+You need to insert spacing
+#v(1em)  // <- Manual spacing.
 $
   mark(x, #<1>, #green)
   #annot(<1>, pos: top + right)[Annotation]
   #annot(<1>, dy: 1em)[Annotation]
 $
-#v(2em)
-text text text text text.
+#v(2em)  // <- Manual spacing.
+before/after the equations.
 ```
 ![Example showing manual vertical spacing added around an annotated equation to prevent overlap with surrounding text.](examples/usage4.svg)
 
@@ -270,9 +241,9 @@ by passing an array of their tags to the `annot` function.
 $
   mark(x, #<1>, #green)
   + markhl(f(x), #<2>, #purple, stroke: #1pt, radius: #10%)
-  + markrect(e^x, #<3>, #red, fill: #blue, outset: #.2em)
+  + markrect(e^x, #<3>, #red, outset: #.2em)
   + markul(x + 1, #<4>, #gray, stroke: #2pt)
-
+  //
   #annot((<1>, <2>), dy: 1em)[Annotation]
   #annot((<3>, <2>, <4>), pos: top, dy: -1em, leader-connect: "elbow")[Another annotation]
 $
@@ -312,6 +283,10 @@ For example, to always use elbow-shaped leader lines for annotations:
 
 
 ## Changelog
+* v0.4.0:
+  - Added `markuw` and `markub` functions.
+  - Fixed an issue where the align-point (`&`) did not work inside the `mark` function (Issue #9).
+  - Fixed a layout calculation bug in `core-mark` where nested marks inside fractions caused shifted bounding boxes (Issue #10).
 * v0.3.3:
   - Fixed layout issues when marking contents starting with unary operators.
 * v0.3.2:

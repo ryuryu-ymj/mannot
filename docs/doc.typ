@@ -29,7 +29,6 @@ A package for marking and annotating in math blocks in Typst.
 
 = Example
 #example-vstack(```typst
-#set text(12pt)
 #v(2em)
 $
   markul(p_i, #<p>)
@@ -59,37 +58,49 @@ To decorate content within math blocks, use the following marking functions:
 - `markhl`: Highlights the content.
 - `markrect`: Draws a rectangle around the content.
 - `markul`: Underlines the content.
-#example(```typst
-$
-  mark(x, #red) + markhl(f(x))
-  + markrect(e^x) + markul(x + 1)
-$
-```)
+- `markuw`: Draws a wavy line under the content.
+- `markub`: Draws a bracket under the content.
+#columns(
+  2,
+  {
+    example-grid(
+      ```typst $ mark(x + y, #red) $```,
+      ```typst $ markhl(x + y) $```,
+      ```typst $ markrect(x + y) $```,
+    )
+    colbreak()
+    example-grid(
+      ```typst $ markul(x + y) $```,
+      ```typst $ markuw(x + y) $```,
+      ```typst $ markub(x + y) $```,
+    )
+  },
+)
 
 You can customize the marking color and other styles:
-#example(```typst
-$
-  mark(x, #green)
-  + markhl(f(x), #purple, stroke: #1pt, radius: #10%)
-  + markrect(e^x, #red, fill: #blue, outset: #.2em)
-  + markul(x + 1, #gray, stroke: #2pt)
-$
-```)
+#example-grid(
+  ```typst $ mark(x, #blue) $```,
+  ```typst $ markhl(f(x), #purple, stroke: #1pt, radius: #10%) $```,
+  ```typst $ markrect(e^x, #red, outset: #.2em) $```,
+  ```typst $ markul(x + 1, #gray, stroke: #2pt) $```,
+  ```typst $ markuw(x -> 0, #olive, amp: #.1em, wavelen: #.5em) $```,
+  ```typst $ markub(lim sin x, #red, bracket: brace.b) $```,
+)
 
 == Annotations
-If you marked content with a tag,
+If you marked content with a tag (`lable`),
 you can later annotate it using the `annot` function:
-#example(```typst
-$
-  mark(x, #<1>, #green)
-  + markhl(f(x), #<2>, #purple, stroke: #1pt, radius: #10%)
-  + markrect(e^x, #<3>, #red, fill: #blue, outset: #.2em)
-  + markul(x + 1, #<4>, #gray, stroke: #2pt)
+#example-grid(
+  ```typst
+  $
+    mark(x, #<tag>) + markhl(f(x), #<0>)
 
-  #annot(<1>)[Annotation]
-  #annot(<3>, pos: top)[Another annotation]
-$
-```)
+    #annot(<tag>)[Annotation]
+    #annot(<0>, pos: top, dy: -1em)[Another Annotation]
+  $
+
+  ```,
+)
 
 #caution[
   The `annot` function must be called within the same math block as the marked content.
@@ -99,8 +110,8 @@ $
 
 Markings and annotations do not affect the layout,
 so you might sometimes need to manually insert spacing before and after the equations to achieve the desired visual appearance:
-#example(```typst
-Text text text text text:
+#example-grid(```typst
+You need to insert spacing
 #v(1em)  // <- Manual spacing.
 $
   mark(x, #<1>, #green)
@@ -108,7 +119,7 @@ $
   #annot(<1>, dy: 1em)[Annotation]
 $
 #v(2em)  // <- Manual spacing.
-text text text text text.
+before/after the equations.
 ```)
 
 === Annotation Positioning
@@ -155,21 +166,22 @@ The `annot` function offers the following arguments to control annotation placem
 - `dx`, `dy`: the horizontal and vertical displacement of the annotation's anchor
   from the marked content's anchor.
 
-  #example(```typst
-  #v(1em)
-  $
-    markrect(integral x dif x, #<1>, #red)
-    #annot(<1>, pos: top)[annotation]
-  $
-  ```)
-
-  #example(```typst
-  #v(1em)
-  $
-    markrect(integral x dif x, #<1>, #red)
-    #annot(<1>, pos: top, dx: 1em, dy: -1em)[annotation]
-  $
-  ```)
+  #example-grid(
+    ```typst
+    #v(1em)
+    $
+      markrect(integral x dif x, #<1>, #red)
+      #annot(<1>, pos: top)[annotation]
+    $
+    ```,
+    ```typst
+    #v(1em)
+    $
+      markrect(integral x dif x, #<1>, #red)
+      #annot(<1>, pos: top, dx: 1em, dy: -1em)[annotation]
+    $
+    ```,
+  )
 
 === Annotation Leader Line
 When the annotation is far from the marked content, a leader line is drawn by default.
@@ -179,7 +191,7 @@ You can customize its appearance using the following annot arguments:
 - `leader-tip`, `leader-toe`: Define the end and start markers of the leader line.
   Leader lines are drawn by package #link("https://typst.app/universe/package/tiptoe/0.3.0")[tiptoe].
   You can specify markers or `none`:
-  #example(```typst
+  #example-grid(```typst
   $
     markhl(x, #<1>)
 
@@ -189,7 +201,6 @@ You can customize its appearance using the following annot arguments:
       leader-toe: tiptoe.stealth.with(length: 1000%),
     )[annotaiton]
   $
-  #v(2em)
   ```)
 
   For more options, see the #link("https://typst.app/universe/package/tiptoe/0.3.0")[tiptoe page].
@@ -198,43 +209,40 @@ You can customize its appearance using the following annot arguments:
   This can be:
   - A pair of alignments defining the connection points on the marked content and the annotation.
   - "elbow" to create an elbow-shaped leader line.
-  #example(```typst
-    $
-      markhl(x, #<1>)
-      #annot(<1>, pos: bottom + right, dy: 1em)[annotation]
-    $
-    #v(2em)
-  ```)
-  #example(```typst
-    $
-      markhl(x, #<1>)
-      #annot(<1>, pos: bottom + right, dy: 1em, leader-connect: (bottom, top))[annotation]
-    $
-    #v(2em)
-  ```)
-  #example(```typst
-    $
-      markhl(x, #<1>)
-      #annot(<1>, pos: bottom + right, dy: 1em, leader-connect: "elbow")[annotation]
-    $
-    #v(2em)
-  ```)
+  #example-grid(
+    ```typst
+      $
+        markhl(x, #<1>)
+        #annot(<1>, pos: bottom + right, dy: 1em)[annotation]
+      $
+    ```,
+    ```typst
+      $
+        markhl(x, #<1>)
+        #annot(<1>, pos: bottom + right, dy: 1em, leader-connect: (bottom, top))[annotation]
+      $
+    ```,
+    ```typst
+      $
+        markhl(x, #<1>)
+        #annot(<1>, pos: bottom + right, dy: 1em, leader-connect: "elbow")[annotation]
+      $
+    ```,
+  )
 
 == Multi Annotations
 You can also annotate multiple marked elements simultaneously
 by passing an array of their tags to the `annot` function.
-#example(```typst
-#v(1em)
+#example-grid(```typst
 $
   mark(x, #<1>, #green)
   + markhl(f(x), #<2>, #purple, stroke: #1pt, radius: #10%)
-  + markrect(e^x, #<3>, #red, fill: #blue, outset: #.2em)
+  + markrect(e^x, #<3>, #red, outset: #.2em)
   + markul(x + 1, #<4>, #gray, stroke: #2pt)
 
   #annot((<1>, <2>), dy: 1em)[Annotation]
   #annot((<3>, <2>, <4>), pos: top, dy: -1em, leader-connect: "elbow")[Another annotation]
 $
-#v(1em)
 ```)
 
 == Annotations using CeTZ
@@ -243,27 +251,27 @@ This allows you to embed a CeTZ canvas directly onto previously marked content.
 Within the CeTZ canvas code block,
 you can reference the position and dimensions of the marked content using an anchor with the same name as its tag.
 For elements marked with multiple tags, corresponding anchors will be available.
-#example(```typst
+#example-grid(```typst
 #import "@preview/cetz:0.5.2"
 
 $
-  mark(x, #<x>) + mark(y, #<y>)
+  mark(x, #<tag-x>) + mark(y, #<tag-y>)
 
-  #annot-cetz((<x>, <y>), cetz, {
+  #annot-cetz((<tag-x>, <tag-y>), cetz, {
     import cetz.draw: *
-    content((0, -.6), [CeTZ], anchor: "north-west", name: "a")
-    line("x", "a") // You can refer the marked content.
-    line("y", "a")
+    content((0, -1), [CeTZ], anchor: "north-west", name: "a")
+    set-style(mark: (end: "straight"))
+    line("a", "tag-x") // You can refer the marked content.
+    bezier-through("a.east", (rel: (.4, 0)), "tag-y.south-east")
   })
 $
-#v(1em)
 ```)
 
 
 = Limitations
 Marking multi-line inline math content is not supported.
-#example(```typst
-$markhl(x + x + x + x + x + x + x + x)$
+#example-grid(```typst
+$markhl(x + x + x + x + x + x + x + x + x + x)$
 ```)
 
 

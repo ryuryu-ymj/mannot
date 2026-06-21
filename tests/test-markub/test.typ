@@ -12,6 +12,11 @@ $
   markub(- integral x dif x)
 $
 
+$
+  markub(x + y, #red)
+  + markub(x + y, #blue, bracket: brace.b)
+$
+
 #for b in (sym.bracket.b, sym.brace.b, sym.paren.b, sym.shell.b) {
   $
     #range(0, 10).map(w => $markub(#rect(width: w * .4em, height: 1em), bracket: #b, tag: #<0>)$).join($+$)
@@ -30,3 +35,18 @@ $
     }
   }
 $
+
+#box(
+  fill: red.transparentize(50%),
+  width: 4em,
+  $
+    markub(x + y)
+  $,
+)
+#box(
+  fill: red.transparentize(50%),
+  width: 2em,
+  $
+    markub(x + y)
+  $,
+)

@@ -35,22 +35,26 @@
     message: "Previewing code only supports the languages \"typ\", \"typc\", and \"typm\"",
   )
 
-  grid(
-    columns: (2fr, 1fr),
-    rows: auto,
-    align: horizon,
-    gutter: col-spacing,
-    {
-      set text(0.9em)
-      raw(displayed-code, lang: lang, block: true)
-    },
-    rect(
-      width: 100%,
-      inset: preview-inset,
+  rect(
+    radius: .3em,
+    stroke: .3pt + gray,
+    inset: .6em,
+    grid(
+      columns: (2fr, 1fr),
+      rows: auto,
+      align: horizon,
+      gutter: col-spacing,
       {
-        // set text(font: "Noto Serif")
-        eval(preamble + executed-code, mode: mode, scope: scope + inherited-scope)
+        set text(0.9em)
+        raw(displayed-code, lang: lang, block: true)
       },
+      box(
+        width: 100%,
+        inset: preview-inset,
+        {
+          eval(preamble + executed-code, mode: mode, scope: scope + inherited-scope)
+        },
+      ),
     ),
   )
 }

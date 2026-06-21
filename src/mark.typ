@@ -134,19 +134,15 @@
 ///   let overlay(width, height, color) = {
 ///     rect(width: width, height: height, stroke: color)
 ///   }
-///   return core-mark(body, tag: tag, color: red, overlay: overlay, outset: (y: .1em))
+///   return core-mark(body, tag: tag, color: red, overlay: overlay, mark-outset: (y: .1em))
 /// }
 ///
-/// $
-///   mymark(x, tag: #<e>)
-///
-///   #context {
-///     let info = query(<e>).last()
-///     sym.wj
-///     box(place(repr(info.value), dx: -5em))
-///   }
-/// $
-/// #v(12em)
+/// $ mymark(x, tag: #<e>) $
+/// #context {
+///   set text(0.8em)
+///   let info = query(<e>).last()
+///   raw(repr(info.value), lang: "typc")
+/// }
 /// ```
 ///
 /// -> content
@@ -686,13 +682,28 @@
 }
 
 
-/// Marks content within a math block and draw a horizontal wavy line under it.
+/// Marks content within a math block and draws a horizontal wavy line under it.
 ///
-/// If you mark content with a tag, you can annotate it using the `annot` function.
+/// By marking content with a tag, you can annotate it using the `annot` function.
 ///
-/// *Example*
+/// *Basic Usage*
 /// ```example
 /// $ markuw(x + y) $
+/// ```
+/// *Colors and Tags*
+/// ```example
+/// $
+///   markuw(x, #red, #<1>)
+///   // Or with named arguments:
+///   markuw(- 1/2, color: #blue, tag: #<2>)
+///   // The `<1>`, `<2>` tags can be used to annotate this mark later.
+/// $
+/// ```
+/// *Custom Styling*
+/// ```example
+/// $
+///   markuw(x + y, #red, stroke: #2pt, amp: #.2em, wavelen: #.6em)
+/// $
 /// ```
 ///
 /// -> content
@@ -700,10 +711,12 @@
   /// The content above the wavy line. -> content
   body,
   /// An optional tag used to identify the content for later annotations.
+  /// The argument name `tag` can be omitted.
   /// -> none | label
   tag: none,
   /// The color used for the wavy line and later annotations.
   /// If set to `auto`, it defaults to the text fill color.
+  /// The argument name `color` can be omitted.
   /// -> auto | color
   color: auto,
   /// How to stroke the wavy line.
@@ -757,24 +770,43 @@
 }
 
 
-/// Marks content within a math block and draw a horizontal wavy line under it.
+/// Marks content within a math block and draws a bottom bracket under it.
 ///
-/// If you mark content with a tag, you can annotate it using the `annot` function.
+/// By marking content with a tag, you can annotate it using the `annot` function.
 ///
-/// *Example*
+/// *Basic Usage*
 /// ```example
-/// $ markuw(x + y) $
+/// $ markub(x + y) $
+/// ```
+/// *Colors and Tags*
+/// ```example
+/// $
+///   markub(x, #red, #<1>)
+///   // Or with named arguments:
+///   markub(- 1/2, color: #blue, tag: #<2>)
+///   // The `<1>`, `<2>` tags can be used to annotate this mark later.
+/// $
+/// ```
+/// *Custom Brackets*
+/// ```example
+/// $
+///   markub(1 + 2, bracket: brace.b)
+///   + markub(3 + 4, bracket: paren.b)
+///   + markub(5 + 6, bracket: shell.b)
+/// $
 /// ```
 ///
 /// -> content
 #let markub(
-  /// The content above the wavy line. -> content
+  /// The content above the bracket. -> content
   body,
   /// An optional tag used to identify the content for later annotations.
+  /// The argument name `tag` can be omitted.
   /// -> none | label
   tag: none,
-  /// The color used for the wavy line and later annotations.
+  /// The color used for the bracket and later annotations.
   /// If set to `auto`, it defaults to the text fill color.
+  /// The argument name `color` can be omitted.
   /// -> auto | color
   color: auto,
   /// How much to expand the marking box size without affecting the layout.
@@ -782,6 +814,9 @@
   /// or as a `dictionary` of `length` with keys `left`, `right`, `top`, `bottom`, `x`, `y`, or `rest`.
   /// -> none | length | dictionary
   outset: (top: .1em, bottom: .144em),
+  /// The bracket symbol to be drawn under the marked content.
+  /// One of `bracket.b` (default), `brace.b`, `paren.b`, or `shell.b`.
+  /// -> symbol
   bracket: sym.bracket.b,
   ..args,
 ) = {
@@ -791,9 +826,10 @@
     let overlay = (width, height, color) => {
       let ub = math.equation(math.stretch(bracket, size: width), block: true)
       let size = measure(ub)
+      let ub = text(fill: color, box(width: size.width, ub))
       let annot-outset = (bottom: size.height, x: (size.width - width) / 2)
       return (
-        box(place(ub, left + top, dx: width / 2 - size.width / 2, dy: height, float: false)),
+        place(ub, left + top, dx: width / 2 - size.width / 2, dy: height, float: false),
         annot-outset,
       )
     }

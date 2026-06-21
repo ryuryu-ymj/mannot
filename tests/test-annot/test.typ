@@ -1,4 +1,4 @@
-#import "/src/mark.typ": markhl, markrect
+#import "/src/mark.typ": markhl, markrect, markub, markul, markuw
 #import "/src/annot.typ": annot, tiptoe
 
 
@@ -170,3 +170,21 @@ $
   #annot(<0>, pos: left, dx: -1em, annot-inset: 1em)[aaa]
   #annot(<0>, pos: bottom + left, dy: 1em, leader-connect: "elbow", annot-inset: (left: 1em, right: .5em, y: .8em))[aaa]
 $
+
+#v(3em)
+
+$
+  markrect(x, #<r>, #red, stroke: #1em)
+  #h(3em)
+  markul(x, #<l>, #blue, stroke: #1em, outset: #1em)
+  #h(3em)
+  markuw(x + y, #<w>, amp: #1em)
+  #h(3em)
+  markub(x + y, #<b>, bracket: brace.b)
+  #let annot = annot.with(dy: 0pt, annot-inset: 0pt)
+  #annot(<r>)[markrect]
+  #annot(<l>)[markul]
+  #annot(<w>)[markuw]
+  #annot(<b>)[markub]
+$
+
