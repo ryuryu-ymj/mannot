@@ -202,6 +202,7 @@ The `annot` function offers the following arguments to control annotation placem
 
   ![Example demonstrating how to adjust an annotation's position using horizontal (`dx`) and vertical (`dy`) offsets.](examples/usage-dxdy.svg)
 
+
 #### Annotation Leader Line
 When the annotation is far from the marked content, a leader line is drawn by default.
 You can customize its appearance using the following `annot` arguments:
@@ -232,6 +233,18 @@ You can customize its appearance using the following `annot` arguments:
   - "elbow" to create an elbow-shaped leader line.
 
   ![Example demonstrating different leader line connection styles, including specific anchor points and an elbow shape.](examples/usage-leader-connect.svg)
+
+* `anchor-inset`: How much to pad the marked content's boundary (anchor boundary) for this annotation.
+  This can be specified as a single `length` or a dictionary. It is primarily useful for adjusting the gap between the marked content (including its borders/decorations) and the leader line.
+
+  ```typst
+  $
+    markhl(x, #<1>)
+
+    #annot(<1>, dy: 1em, anchor-inset: 5pt)[annotation]
+  $
+  ```
+  ![Example demonstrating how to adjust the spacing between the marked content and the leader line using `anchor-inset`.](examples/usage-anchor-inset.svg)
 
 
 ### Annotating Multiple Elements
