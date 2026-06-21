@@ -171,7 +171,7 @@
                                 <g class="typst-group">
                                     <g/>
                                 </g>
-                                <g class="typst-group" transform="matrix(1 0 0 1 52.265600000000006 58.007191338582665)">
+                                <g class="typst-group" transform="matrix(1 0 0 1 52.265600000000006 57.623191338582664)">
                                     <g>
                                         <g class="typst-text" transform="matrix(1 0 0 -1 1.28 10.2096)">
                                             <use xlink:href="#g9119555E6313C444C5D9B8B613AF1D41" x="0" y="0" fill="#ff4136" fill-rule="nonzero"/>
@@ -209,7 +209,7 @@
                                 </g>
                                 <g class="typst-group">
                                     <g>
-                                        <g class="typst-group" transform="matrix(1 0 0 1 228.2656 45.207191338582675)">
+                                        <g class="typst-group" transform="matrix(1 0 0 1 228.2656 44.823191338582674)">
                                             <g>
                                                 <g class="typst-text" transform="matrix(1 0 0 -1 1.28 10.2096)">
                                                     <use xlink:href="#g9119555E6313C444C5D9B8B613AF1D41" x="0" y="0" fill="#ff4136" fill-rule="nonzero"/>
@@ -225,10 +225,10 @@
                                                 </g>
                                             </g>
                                         </g>
-                                        <path class="typst-shape" fill="none" stroke="#ff4136" stroke-width="0.768" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="4" transform="matrix(1 0 0 1 0 -4)" d="M 0 0m 247.79353 77.01128 l 5.7602234 -15.034485 "/>
+                                        <path class="typst-shape" fill="none" stroke="#ff4136" stroke-width="0.768" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="4" transform="matrix(1 0 0 1 0 -4)" d="M 0 0m 247.86873 76.62616 l 5.707321 -15.033367 "/>
                                         <g class="typst-group">
                                             <g>
-                                                <path class="typst-shape" fill="none" stroke="#ff4136" stroke-width="0.768" stroke-linecap="round" stroke-linejoin="miter" stroke-miterlimit="7" transform="matrix(-0.3577740591149092 0.9338081829928679 -0.9338081829928679 -0.3577740591149092 247.42361257447175 73.97679133858267)" d="M 0 0m -4.224 1.4592 l 3.1900482 -1.4592 l -3.1900482 -1.4592 "/>
+                                                <path class="typst-shape" fill="none" stroke="#ff4136" stroke-width="0.768" stroke-linecap="round" stroke-linejoin="miter" stroke-miterlimit="7" transform="matrix(-0.35492652003475367 0.9348942000975402 -0.9348942000975402 -0.35492652003475367 247.50175585125567 73.59279133858267)" d="M 0 0m -4.224 1.4592 l 3.1900482 -1.4592 l -3.1900482 -1.4592 "/>
                                             </g>
                                         </g>
                                     </g>
