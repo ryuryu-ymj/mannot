@@ -40,26 +40,26 @@ $
   assert(data.color == black)
   assert(calc.abs(size.width - data.mark-bounds.width) < 1e-9 * 1pt)
   assert(calc.abs((size.height + 0.1em * 2 - data.mark-bounds.height).to-absolute()) < 1e-9 * 1pt)
-  assert(calc.abs(size.width + 2pt - data.annot-bounds.width) < 1e-9 * 1pt)
-  assert(calc.abs((size.height + 0.1em * 2 + 2pt - data.annot-bounds.height).to-absolute()) < 1e-9 * 1pt)
+  assert(calc.abs(size.width + 2pt - data.anchor-bounds.width) < 1e-9 * 1pt)
+  assert(calc.abs((size.height + 0.1em * 2 + 2pt - data.anchor-bounds.height).to-absolute()) < 1e-9 * 1pt)
   let data = queries.at(1).value
   assert(data.color == red)
   assert(calc.abs(size.width + 2pt * 2 - data.mark-bounds.width) < 1e-9 * 1pt)
   assert(calc.abs(size.height + 2pt * 2 - data.mark-bounds.height) < 1e-9 * 1pt)
-  assert(calc.abs((size.width + 2pt * 2 + 0.048em - data.annot-bounds.width).to-absolute()) < 1e-9 * 1pt)
-  assert(calc.abs((size.height + 2pt * 2 + 0.048em - data.annot-bounds.height).to-absolute()) < 1e-9 * 1pt)
+  assert(calc.abs((size.width + 2pt * 2 + 0.048em - data.anchor-bounds.width).to-absolute()) < 1e-9 * 1pt)
+  assert(calc.abs((size.height + 2pt * 2 + 0.048em - data.anchor-bounds.height).to-absolute()) < 1e-9 * 1pt)
   let data = queries.at(2).value
   assert(data.color == green)
   assert(calc.abs(size.width - data.mark-bounds.width) < 1e-9 * 1pt)
   assert(calc.abs((size.height + 0.1em * 2 - data.mark-bounds.height).to-absolute()) < 1e-9 * 1pt)
-  assert(calc.abs(size.width + 0.5pt - data.annot-bounds.width) < 1e-9 * 1pt)
-  assert(calc.abs((size.height + 0.1em * 2 - data.annot-bounds.height).to-absolute()) < 1e-9 * 1pt)
+  assert(calc.abs(size.width + 0.5pt - data.anchor-bounds.width) < 1e-9 * 1pt)
+  assert(calc.abs((size.height + 0.1em * 2 - data.anchor-bounds.height).to-absolute()) < 1e-9 * 1pt)
   let data = queries.at(3).value
   assert(data.color == purple)
   assert(calc.abs(size.width - data.mark-bounds.width) < 1e-9 * 1pt)
   assert(calc.abs((size.height + 0.1em * 2 - data.mark-bounds.height).to-absolute()) < 1e-9 * 1pt)
-  assert(calc.abs(size.width - data.annot-bounds.width) < 1e-9 * 1pt)
-  assert(calc.abs((size.height + 0.1em * 2 + 2pt - data.annot-bounds.height).to-absolute()) < 1e-9 * 1pt)
+  assert(calc.abs(size.width - data.anchor-bounds.width) < 1e-9 * 1pt)
+  assert(calc.abs((size.height + 0.1em * 2 + 2pt - data.anchor-bounds.height).to-absolute()) < 1e-9 * 1pt)
 }
 
 $

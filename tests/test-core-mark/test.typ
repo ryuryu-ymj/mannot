@@ -21,7 +21,7 @@ $
 $
   #core-mark($x$, tag: <tag-test>, underlay: (w, h, c) => rect(width: w, height: h))
   quad
-  #core-mark($y + 1$, tag: <tag-test>, color: red, mark-outset: (x: 1pt, y: .5pt), annot-outset: (left: 2pt, top: 3pt, rest: 4pt), underlay: (w, h, c) => rect(width: w, height: h, fill: c))
+  #core-mark($y + 1$, tag: <tag-test>, color: red, mark-outset: (x: 1pt, y: .5pt), anchor-outset: (left: 2pt, top: 3pt, rest: 4pt), underlay: (w, h, c) => rect(width: w, height: h, fill: c))
 $
 #context {
   let queries = query(<tag-test>)
@@ -33,7 +33,7 @@ $
   let size = measure($ x $)
   assert(calc.abs(data.mark-bounds.width - size.width) < 1e-9 * 1pt)
   assert(calc.abs(data.mark-bounds.height - size.height) < 1e-9 * 1pt)
-  assert(data.mark-bounds == data.annot-bounds)
+  assert(data.mark-bounds == data.anchor-bounds)
   let data = queries.at(1).value
   assert(data.body == $y + 1$.body)
   assert(data.tag == <tag-test>)
@@ -41,8 +41,8 @@ $
   let size = measure($ y + 1 $)
   assert(calc.abs(data.mark-bounds.width - size.width - 2pt) < 1e-9 * 1pt)
   assert(calc.abs(data.mark-bounds.height - size.height - 1pt) < 1e-9 * 1pt)
-  assert(calc.abs(data.annot-bounds.width - size.width - 8pt) < 1e-9 * 1pt)
-  assert(calc.abs(data.annot-bounds.height - size.height - 8pt) < 1e-9 * 1pt)
+  assert(calc.abs(data.anchor-bounds.width - size.width - 8pt) < 1e-9 * 1pt)
+  assert(calc.abs(data.anchor-bounds.height - size.height - 8pt) < 1e-9 * 1pt)
 }
 
 = Debug

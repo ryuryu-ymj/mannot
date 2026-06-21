@@ -43,22 +43,22 @@ $
     assert(data.color == black)
     assert(calc.abs(size.width - data.mark-bounds.width) < 1e-9 * 1pt)
     assert(calc.abs((size.height + 0.244em - data.mark-bounds.height).to-absolute()) < 1e-9 * 1pt)
-    assert(calc.abs(size.width - data.annot-bounds.width) < 1e-9 * 1pt)
-    assert(calc.abs((size.height + 0.244em + 0.04em * 2 + 0.048em / 2 - data.annot-bounds.height).to-absolute()) < 1e-9 * 1pt)
-    place(dx: data.annot-bounds.x - hpos.x, dy: data.annot-bounds.y - hpos.y, rect(
-      width: data.annot-bounds.width,
-      height: data.annot-bounds.height,
+    assert(calc.abs(size.width - data.anchor-bounds.width) < 1e-9 * 1pt)
+    assert(calc.abs((size.height + 0.244em + 0.04em * 2 + 0.048em / 2 - data.anchor-bounds.height).to-absolute()) < 1e-9 * 1pt)
+    place(dx: data.anchor-bounds.x - hpos.x, dy: data.anchor-bounds.y - hpos.y, rect(
+      width: data.anchor-bounds.width,
+      height: data.anchor-bounds.height,
       fill: red.transparentize(50%),
     ))
     let data = queries.at(1).value
     assert(data.color == black)
     assert(calc.abs(size.width + 2pt - data.mark-bounds.width) < 1e-9 * 1pt)
     assert(calc.abs((size.height + 4pt - data.mark-bounds.height).to-absolute()) < 1e-9 * 1pt)
-    assert(calc.abs(size.width + 2pt - data.annot-bounds.width) < 1e-9 * 1pt)
-    assert(calc.abs((size.height + 4pt + 2pt * 2 + 1pt / 2 - data.annot-bounds.height).to-absolute()) < 1e-9 * 1pt)
-    place(dx: data.annot-bounds.x - hpos.x, dy: data.annot-bounds.y - hpos.y, rect(
-      width: data.annot-bounds.width,
-      height: data.annot-bounds.height,
+    assert(calc.abs(size.width + 2pt - data.anchor-bounds.width) < 1e-9 * 1pt)
+    assert(calc.abs((size.height + 4pt + 2pt * 2 + 1pt / 2 - data.anchor-bounds.height).to-absolute()) < 1e-9 * 1pt)
+    place(dx: data.anchor-bounds.x - hpos.x, dy: data.anchor-bounds.y - hpos.y, rect(
+      width: data.anchor-bounds.width,
+      height: data.anchor-bounds.height,
       fill: red.transparentize(50%),
     ))
   }

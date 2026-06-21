@@ -60,7 +60,7 @@
 /// #let myannot(tag, annotation) = {
 ///   let a = rect(annotation)
 ///   let overlay(markers) = {
-///     let m = markers.first().annot-bounds
+///     let m = markers.first().anchor-bounds
 ///     place(dx: m.x, dy: m.y + m.height, a)
 ///   }
 ///   return core-annot(tag, overlay)
@@ -229,7 +229,7 @@
     let ah = annot-size.height
 
     let overlay(markers) = {
-      let bounds = markers.first().annot-bounds
+      let bounds = markers.first().anchor-bounds
       let x = bounds.x
       let y = bounds.y
       let w = bounds.width
@@ -264,7 +264,7 @@
 
       if leader != false {
         for data in markers {
-          let bounds = data.annot-bounds
+          let bounds = data.anchor-bounds
           let x = bounds.x
           let y = bounds.y
           let w = bounds.width
@@ -485,10 +485,10 @@
   drawable,
 ) = {
   let overlay(markers) = {
-    let origin = markers.first().annot-bounds
+    let origin = markers.first().anchor-bounds
     let preamble = markers
       .map(data => {
-        let bounds = data.annot-bounds
+        let bounds = data.anchor-bounds
         cetz.draw.rect(
           (bounds.x - origin.x, -(bounds.y - origin.y)),
           (bounds.x + bounds.width - origin.x, -(bounds.y + bounds.height - origin.y)),

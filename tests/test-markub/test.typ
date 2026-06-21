@@ -27,9 +27,9 @@ $
     let hpos = here().position()
     for q in query(<0>) {
       let data = q.value
-      place(dx: data.annot-bounds.x - hpos.x, dy: data.annot-bounds.y - hpos.y, rect(
-        width: data.annot-bounds.width,
-        height: data.annot-bounds.height,
+      place(dx: data.anchor-bounds.x - hpos.x, dy: data.anchor-bounds.y - hpos.y, rect(
+        width: data.anchor-bounds.width,
+        height: data.anchor-bounds.height,
         fill: red.transparentize(50%),
       ))
     }

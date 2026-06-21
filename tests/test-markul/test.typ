@@ -51,13 +51,13 @@ $
     assert(data.color == black)
     assert(calc.abs(size.width - data.mark-bounds.width) < 1e-9 * 1pt)
     assert(calc.abs((size.height + 0.244em - data.mark-bounds.height).to-absolute()) < 1e-9 * 1pt)
-    assert(calc.abs(size.width - data.annot-bounds.width) < 1e-9 * 1pt)
-    assert(calc.abs((size.height + 0.244em + 0.048em / 2 - data.annot-bounds.height).to-absolute()) < 1e-9 * 1pt)
+    assert(calc.abs(size.width - data.anchor-bounds.width) < 1e-9 * 1pt)
+    assert(calc.abs((size.height + 0.244em + 0.048em / 2 - data.anchor-bounds.height).to-absolute()) < 1e-9 * 1pt)
     let data = queries.at(1).value
     assert(data.color == red)
     assert(calc.abs(size.width + 2pt - data.mark-bounds.width) < 1e-9 * 1pt)
     assert(calc.abs((size.height + 4pt * 2 - data.mark-bounds.height).to-absolute()) < 1e-9 * 1pt)
-    assert(calc.abs(size.width + 2pt - data.annot-bounds.width) < 1e-9 * 1pt)
-    assert(calc.abs((size.height + 4pt * 2 + 1pt - data.annot-bounds.height).to-absolute()) < 1e-9 * 1pt)
+    assert(calc.abs(size.width + 2pt - data.anchor-bounds.width) < 1e-9 * 1pt)
+    assert(calc.abs((size.height + 4pt * 2 + 1pt - data.anchor-bounds.height).to-absolute()) < 1e-9 * 1pt)
   }
 $

@@ -23,7 +23,7 @@ $
 #pagebreak()
 
 #let annot-fill(tag) = core-annot(tag, markers => {
-  let bounds = markers.first().annot-bounds
+  let bounds = markers.first().anchor-bounds
   place(
     rect(width: bounds.width, height: bounds.height, fill: red.transparentize(60%)),
     dx: bounds.x,
@@ -31,7 +31,7 @@ $
   )
 })
 #let annot-stroke(tag) = core-annot(tag, markers => {
-  let bounds = markers.first().annot-bounds
+  let bounds = markers.first().anchor-bounds
   place(
     rect(width: bounds.width, height: bounds.height),
     dx: bounds.x,
