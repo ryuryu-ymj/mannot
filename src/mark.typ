@@ -153,11 +153,11 @@
   /// or as a `dictionary` of `length` with keys `left`, `right`, `top`, `bottom`, `x`, `y`, or `rest`.
   /// -> none | length | dictionary
   mark-outset: (:),
-  /// How much to expand the anchor boundary (used for annotations) relative to the marking box.
+  /// How much to pad the anchor boundary (used for annotations) relative to the marking box.
   /// This can be specified as a single `length` value, which applies to all sides,
   /// or as a `dictionary` of `length` with keys `left`, `right`, `top`, `bottom`, `x`, `y`, or `rest`.
   /// -> none | length | dictionary
-  anchor-outset: (:),
+  anchor-inset: (:),
   /// Whether to render visual markers for debugging purposes.
   /// -> bool
   debug: false,
@@ -282,13 +282,13 @@
         height: bottom-y - top-y + mark-outset.top + mark-outset.bottom,
       )
 
-      let anchor-outset = anchor-outset
+      let anchor-inset = anchor-inset
       // Place `overlay(width, height, color)` over the `body`.
       if overlay != none {
         let hpos = here().position()
         let overlay = overlay(mark-bounds.width, mark-bounds.height, color)
         if type(overlay) == array {
-          anchor-outset = overlay.at(1)
+          anchor-inset = overlay.at(1)
           overlay = overlay.at(0)
         }
         place(
@@ -300,12 +300,12 @@
         )
       }
 
-      anchor-outset = coerce-outset(anchor-outset)
+      anchor-inset = coerce-outset(anchor-inset)
       let anchor-bounds = (
-        x: mark-bounds.x - anchor-outset.left,
-        y: mark-bounds.y - anchor-outset.top,
-        width: mark-bounds.width + anchor-outset.left + anchor-outset.right,
-        height: mark-bounds.height + anchor-outset.top + anchor-outset.bottom,
+        x: mark-bounds.x - anchor-inset.left,
+        y: mark-bounds.y - anchor-inset.top,
+        width: mark-bounds.width + anchor-inset.left + anchor-inset.right,
+        height: mark-bounds.height + anchor-inset.top + anchor-inset.bottom,
       )
 
       // Expose the metadata.
@@ -553,16 +553,16 @@
     type(stroke) == dictionary and stroke.keys().first() in ("top", "right", "bottom", "left", "x", "y", "rest")
   )
 
-  let anchor-outset = (:)
+  let anchor-inset = (:)
   if stroke != none {
     if is-stroke-sided {
       for (key, value) in stroke {
         let s = default-stroke(value, thickness: .048em)
-        anchor-outset.insert(key, s.thickness / 2)
+        anchor-inset.insert(key, s.thickness / 2)
       }
     } else {
       let s = default-stroke(stroke, thickness: .048em)
-      anchor-outset = s.thickness / 2
+      anchor-inset = s.thickness / 2
     }
   }
 
@@ -589,7 +589,7 @@
     }
   }
 
-  return core-mark(body, tag: tag, color: color, underlay: underlay, mark-outset: outset, anchor-outset: anchor-outset)
+  return core-mark(body, tag: tag, color: color, underlay: underlay, mark-outset: outset, anchor-inset: anchor-inset)
 }
 
 
@@ -644,10 +644,10 @@
 ) = {
   (body, tag, color) = _coerce-args(args, body, tag, color)
 
-  let anchor-outset = (:)
+  let anchor-inset = (:)
   if stroke != none {
     let s = default-stroke(stroke, thickness: .048em)
-    anchor-outset.insert("bottom", s.thickness / 2)
+    anchor-inset.insert("bottom", s.thickness / 2)
   }
 
   let overlay = if stroke == none { none } else {
@@ -657,7 +657,7 @@
     }
   }
 
-  return core-mark(body, tag: tag, color: color, overlay: overlay, mark-outset: outset, anchor-outset: anchor-outset)
+  return core-mark(body, tag: tag, color: color, overlay: overlay, mark-outset: outset, anchor-inset: anchor-inset)
 }
 
 
@@ -716,10 +716,10 @@
 ) = {
   (body, tag, color) = _coerce-args(args, body, tag, color)
 
-  let anchor-outset = (:)
+  let anchor-inset = (:)
   if stroke != none {
     let s = default-stroke(stroke, thickness: .048em)
-    anchor-outset.insert("bottom", amp * 2 + s.thickness / 2)
+    anchor-inset.insert("bottom", amp * 2 + s.thickness / 2)
   }
 
   let overlay = if stroke == none { none } else {
@@ -745,7 +745,7 @@
     }
   }
 
-  return core-mark(body, tag: tag, color: color, overlay: overlay, mark-outset: outset, anchor-outset: anchor-outset)
+  return core-mark(body, tag: tag, color: color, overlay: overlay, mark-outset: outset, anchor-inset: anchor-inset)
 }
 
 
@@ -806,10 +806,10 @@
       let ub = math.equation(math.stretch(bracket, size: width), block: true)
       let size = measure(ub)
       let ub = text(fill: color, box(width: size.width, ub))
-      let anchor-outset = (bottom: size.height, x: (size.width - width) / 2)
+      let anchor-inset = (bottom: size.height, x: (size.width - width) / 2)
       return (
         place(ub, left + top, dx: width / 2 - size.width / 2, dy: height, float: false),
-        anchor-outset,
+        anchor-inset,
       )
     }
 

@@ -189,11 +189,11 @@
   /// Properties for the annotation paragraph.
   /// -> dictionary
   annot-par-props: (leading: .4em),
-  /// How much to expand the marked content's boundary.
+  /// How much to pad the marked content.
   /// This can be specified as a single `length` value, which applies to all sides,
   /// or as a `dictionary` of `length` with keys `left`, `right`, `top`, `bottom`, `x`, `y`, or `rest`.
   /// -> none | length | dictionary
-  anchor-outset: 0pt,
+  anchor-inset: 0pt,
 ) = {
   pos = _coerce-pos(pos)
 
@@ -232,14 +232,14 @@
     let annot-size = measure(annotation)
     let aw = annot-size.width
     let ah = annot-size.height
-    let anchor-outset = coerce-outset(anchor-outset)
+    let anchor-inset = coerce-outset(anchor-inset)
 
     let overlay(markers) = {
       let bounds = markers.first().anchor-bounds
-      let x = bounds.x - anchor-outset.left
-      let y = bounds.y - anchor-outset.top
-      let w = bounds.width + anchor-outset.left + anchor-outset.right
-      let h = bounds.height + anchor-outset.top + anchor-outset.bottom
+      let x = bounds.x - anchor-inset.left
+      let y = bounds.y - anchor-inset.top
+      let w = bounds.width + anchor-inset.left + anchor-inset.right
+      let h = bounds.height + anchor-inset.top + anchor-inset.bottom
       let c = markers.first().color
 
       let leader-stroke = default-stroke(leader-stroke, paint: c, thickness: .048em)
@@ -271,10 +271,10 @@
       if leader != false {
         for data in markers {
           let bounds = data.anchor-bounds
-          let x = bounds.x - anchor-outset.left
-          let y = bounds.y - anchor-outset.top
-          let w = bounds.width + anchor-outset.left + anchor-outset.right
-          let h = bounds.height + anchor-outset.top + anchor-outset.bottom
+          let x = bounds.x - anchor-inset.left
+          let y = bounds.y - anchor-inset.top
+          let w = bounds.width + anchor-inset.left + anchor-inset.right
+          let h = bounds.height + anchor-inset.top + anchor-inset.bottom
 
           if leader == auto {
             let dst = calc.max(

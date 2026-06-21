@@ -230,6 +230,22 @@ You can customize its appearance using the following annot arguments:
     ```,
   )
 
+- `anchor-inset`: How much to pad the marked content (anchor boundary) for this annotation.
+  This can be specified as a single `length` or a dictionary.
+  It is primarily useful for adjusting the gap between the marked content (including its borders/decorations) and the leader line.
+
+  #example-grid(
+    ```typst
+    #v(1em)
+    $
+      markhl(x, #<1>)
+      #annot(<1>, dy: 1em, anchor-inset: 5pt)[annotation]
+    $
+    ```,
+  )
+
+
+
 == Multi Annotations
 You can also annotate multiple marked elements simultaneously
 by passing an array of their tags to the `annot` function.

@@ -21,7 +21,7 @@ $
 $
   #core-mark($x$, tag: <tag-test>, underlay: (w, h, c) => rect(width: w, height: h))
   quad
-  #core-mark($y + 1$, tag: <tag-test>, color: red, mark-outset: (x: 1pt, y: .5pt), anchor-outset: (left: 2pt, top: 3pt, rest: 4pt), underlay: (w, h, c) => rect(width: w, height: h, fill: c))
+  #core-mark($y + 1$, tag: <tag-test>, color: red, mark-outset: (x: 1pt, y: .5pt), anchor-inset: (left: 2pt, top: 3pt, rest: 4pt), underlay: (w, h, c) => rect(width: w, height: h, fill: c))
 $
 #context {
   let queries = query(<tag-test>)

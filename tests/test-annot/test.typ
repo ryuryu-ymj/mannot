@@ -194,9 +194,9 @@ $
 $
   markhl(x, tag: #<gap1>)
   + markhl(y, tag: #<gap2>)
-  #annot(<gap1>, dy: 1em, anchor-outset: 2pt)[Gap]
-  #annot((<gap1>, <gap2>), pos: top, dx: 1em, dy: -1em, anchor-outset: 5pt)[Gap]
-  #annot(<gap2>, pos: right, dx: 3em, dy: 1em, leader-connect: "elbow", anchor-outset: (y: 5pt))[Elbow Gap]
+  #annot(<gap1>, dy: 1em, anchor-inset: 2pt)[Gap]
+  #annot((<gap1>, <gap2>), pos: top, dx: 1em, dy: -1em, anchor-inset: 5pt)[Gap]
+  #annot(<gap2>, pos: right, dx: 3em, dy: 1em, leader-connect: "elbow", anchor-inset: (y: 5pt))[Elbow Gap]
 $
 
 
