@@ -57,7 +57,7 @@
           trailingCount += 1
           continue
         }
-        let (crest, cremove) = _remove-leading-h(c)
+        let (crest, cremove) = _remove-trailing-h(c)
         rest = crest
         remove += cremove
         if rest != none {

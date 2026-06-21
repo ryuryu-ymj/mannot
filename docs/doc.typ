@@ -199,7 +199,7 @@ You can customize its appearance using the following annot arguments:
       <1>, pos: bottom + right, dy: 1em,
       leader-tip: tiptoe.circle,
       leader-toe: tiptoe.stealth.with(length: 1000%),
-    )[annotaiton]
+    )[annotation]
   $
   ```)
 

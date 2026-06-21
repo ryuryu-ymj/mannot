@@ -449,7 +449,7 @@
 }
 
 
-/// Places a CeTZ canvas annotation on content (or contecnts) within a math block that was previously marked.
+/// Places a CeTZ canvas annotation on content (or contents) within a math block that was previously marked.
 ///
 /// Within the CeTZ canvas code block, you can refer to the position of the marked content
 /// using an anchor with the same name as the tag.
