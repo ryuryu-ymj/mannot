@@ -37,3 +37,23 @@
     miter-limit: if miter-limit == auto { s.miter-limit } else { miter-limit },
   )
 }
+
+#let coerce-outset(outset) = {
+  return if outset == none {
+    (left: 0pt, right: 0pt, top: 0pt, bottom: 0pt)
+  } else if type(outset) == length {
+    let outset = outset.to-absolute()
+    (left: outset, right: outset, top: outset, bottom: outset)
+  } else if type(outset) == dictionary {
+    let rest = outset.at("rest", default: 0pt).to-absolute()
+    let x = outset.at("x", default: rest).to-absolute()
+    let left = outset.at("left", default: x).to-absolute()
+    let right = outset.at("right", default: x).to-absolute()
+    let y = outset.at("y", default: rest).to-absolute()
+    let top = outset.at("top", default: y).to-absolute()
+    let bottom = outset.at("bottom", default: y).to-absolute()
+    (left: left, right: right, top: top, bottom: bottom)
+  } else {
+    panic("unexpected argument: `" + str(repr(outset)) + "`")
+  }
+}

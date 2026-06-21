@@ -1,4 +1,4 @@
-#import "util.typ": default-stroke
+#import "util.typ": coerce-outset, default-stroke
 
 
 #let _sequence-func = ([x] + [y]).func()
@@ -95,27 +95,6 @@
     }
   }
   return math.attach(math.limits(body), t: pad([#none#label], -1em), b: pad([#none#label], -1em))
-}
-
-
-#let _validate-outset(outset) = {
-  return if outset == none {
-    (left: 0pt, right: 0pt, top: 0pt, bottom: 0pt)
-  } else if type(outset) == length {
-    let outset = outset.to-absolute()
-    (left: outset, right: outset, top: outset, bottom: outset)
-  } else if type(outset) == dictionary {
-    let rest = outset.at("rest", default: 0pt).to-absolute()
-    let x = outset.at("x", default: rest).to-absolute()
-    let left = outset.at("left", default: x).to-absolute()
-    let right = outset.at("right", default: x).to-absolute()
-    let y = outset.at("y", default: rest).to-absolute()
-    let top = outset.at("top", default: y).to-absolute()
-    let bottom = outset.at("bottom", default: y).to-absolute()
-    (left: left, right: right, top: top, bottom: bottom)
-  } else {
-    panic("unexpected argument: `" + str(repr(outset)) + "`")
-  }
 }
 
 
@@ -295,7 +274,7 @@
       let left-x = begin-loc.position().x
       let right-x = end-pos.x
 
-      let mark-outset = _validate-outset(mark-outset)
+      let mark-outset = coerce-outset(mark-outset)
       let mark-bounds = (
         x: left-x - mark-outset.left,
         y: top-y - mark-outset.top,
@@ -321,7 +300,7 @@
         )
       }
 
-      anchor-outset = _validate-outset(anchor-outset)
+      anchor-outset = coerce-outset(anchor-outset)
       let anchor-bounds = (
         x: mark-bounds.x - anchor-outset.left,
         y: mark-bounds.y - anchor-outset.top,
@@ -348,7 +327,7 @@
 }
 
 
-#let _validate-args(args, body, tag, color) = {
+#let _coerce-args(args, body, tag, color) = {
   if args.named().len() > 0 {
     panic("unexpected named argument: " + args.named().keys().first())
   }
@@ -413,7 +392,7 @@
   outset: (y: .1em),
   ..args,
 ) = {
-  (body, tag, color) = _validate-args(args, body, tag, color)
+  (body, tag, color) = _coerce-args(args, body, tag, color)
 
   if color != auto {
     return {
@@ -485,7 +464,7 @@
   outset: (y: .1em),
   ..args,
 ) = {
-  (body, tag, color) = _validate-args(args, body, tag, color)
+  (body, tag, color) = _coerce-args(args, body, tag, color)
 
   if fill == auto {
     if color == auto {
@@ -568,7 +547,7 @@
   outset: (y: .1em),
   ..args,
 ) = {
-  (body, tag, color) = _validate-args(args, body, tag, color)
+  (body, tag, color) = _coerce-args(args, body, tag, color)
 
   let is-stroke-sided = (
     type(stroke) == dictionary and stroke.keys().first() in ("top", "right", "bottom", "left", "x", "y", "rest")
@@ -663,7 +642,7 @@
   outset: (top: .1em, bottom: .144em),
   ..args,
 ) = {
-  (body, tag, color) = _validate-args(args, body, tag, color)
+  (body, tag, color) = _coerce-args(args, body, tag, color)
 
   let anchor-outset = (:)
   if stroke != none {
@@ -735,7 +714,7 @@
   outset: (top: .1em, bottom: .144em),
   ..args,
 ) = {
-  (body, tag, color) = _validate-args(args, body, tag, color)
+  (body, tag, color) = _coerce-args(args, body, tag, color)
 
   let anchor-outset = (:)
   if stroke != none {
@@ -820,7 +799,7 @@
   bracket: sym.bracket.b,
   ..args,
 ) = {
-  (body, tag, color) = _validate-args(args, body, tag, color)
+  (body, tag, color) = _coerce-args(args, body, tag, color)
 
   context {
     let overlay = (width, height, color) => {

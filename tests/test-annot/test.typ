@@ -181,10 +181,22 @@ $
   markuw(x + y, #<w>, amp: #1em)
   #h(3em)
   markub(x + y, #<b>, bracket: brace.b)
-  #let annot = annot.with(dy: 0pt, annot-inset: 0pt)
-  #annot(<r>)[markrect]
-  #annot(<l>)[markul]
-  #annot(<w>)[markuw]
-  #annot(<b>)[markub]
+  #{
+    let annot = annot.with(dy: 0pt, annot-inset: 0pt)
+    annot(<r>)[markrect]
+    annot(<l>)[markul]
+    annot(<w>)[markuw]
+    annot(<b>)[markub]
+  }
 $
+
+#v(4em)
+$
+  markhl(x, tag: #<gap1>)
+  + markhl(y, tag: #<gap2>)
+  #annot(<gap1>, dy: 1em, anchor-outset: 2pt)[Gap]
+  #annot((<gap1>, <gap2>), pos: top, dx: 1em, dy: -1em, anchor-outset: 5pt)[Gap]
+  #annot(<gap2>, pos: right, dx: 3em, dy: 1em, leader-connect: "elbow", anchor-outset: (y: 5pt))[Elbow Gap]
+$
+
 

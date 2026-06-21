@@ -1,4 +1,4 @@
-#import "util.typ": copy-stroke, default-stroke
+#import "util.typ": coerce-outset, copy-stroke, default-stroke
 
 #import "@preview/tiptoe:0.4.0"
 
@@ -189,6 +189,11 @@
   /// Properties for the annotation paragraph.
   /// -> dictionary
   annot-par-props: (leading: .4em),
+  /// How much to expand the marked content's boundary.
+  /// This can be specified as a single `length` value, which applies to all sides,
+  /// or as a `dictionary` of `length` with keys `left`, `right`, `top`, `bottom`, `x`, `y`, or `rest`.
+  /// -> none | length | dictionary
+  anchor-outset: 0pt,
 ) = {
   pos = _coerce-pos(pos)
 
@@ -227,13 +232,14 @@
     let annot-size = measure(annotation)
     let aw = annot-size.width
     let ah = annot-size.height
+    let anchor-outset = coerce-outset(anchor-outset)
 
     let overlay(markers) = {
       let bounds = markers.first().anchor-bounds
-      let x = bounds.x
-      let y = bounds.y
-      let w = bounds.width
-      let h = bounds.height
+      let x = bounds.x - anchor-outset.left
+      let y = bounds.y - anchor-outset.top
+      let w = bounds.width + anchor-outset.left + anchor-outset.right
+      let h = bounds.height + anchor-outset.top + anchor-outset.bottom
       let c = markers.first().color
 
       let leader-stroke = default-stroke(leader-stroke, paint: c, thickness: .048em)
@@ -265,10 +271,10 @@
       if leader != false {
         for data in markers {
           let bounds = data.anchor-bounds
-          let x = bounds.x
-          let y = bounds.y
-          let w = bounds.width
-          let h = bounds.height
+          let x = bounds.x - anchor-outset.left
+          let y = bounds.y - anchor-outset.top
+          let w = bounds.width + anchor-outset.left + anchor-outset.right
+          let h = bounds.height + anchor-outset.top + anchor-outset.bottom
 
           if leader == auto {
             let dst = calc.max(
