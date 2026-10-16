@@ -295,6 +295,10 @@ For example, to always use elbow-shaped leader lines for annotations:
 ```
 
 
+## Development
+The tests in `tests/` are run with [tytanic](https://github.com/typst-community/tytanic) (`tt run --use-system-fonts`, or `just tests` with [just](https://just.systems/man/en/)).
+
+
 ## Changelog
 * v0.4.0:
   - Added `markuw` and `markub` functions.

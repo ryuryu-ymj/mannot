@@ -48,6 +48,18 @@
 }
 
 
+/// Calls `fn` (in a context) only if this point is placed in the document,
+/// i.e. not inside `measure()`, where nothing can be queried.
+#let _run-if-placed(fn) = {
+  let probe-lab = <_mannot-placed-probe>
+  context {
+    let begin-loc = here()
+    [#none#probe-lab]
+    context if query(selector(probe-lab).after(begin-loc).before(here())).len() > 0 { fn() }
+  }
+}
+
+
 /// Places a custom annotation on content (or contents) within a math block that was previously marked.
 ///
 /// This function generates a custom annotation by applying an overlay based on
@@ -88,8 +100,12 @@
     tag = (tag,)
   }
 
-  context {
-    let markers = tag.map(tag => query(selector(tag).before(here())).last().value)
+  _run-if-placed(() => {
+    let markers = tag.map(tag => {
+      let elems = query(selector(tag).before(here()))
+      assert(elems.len() > 0, message: "no mark with tag " + repr(tag) + " found before this annotation")
+      elems.last().value
+    })
     let hpos = here().position()
     // sym.wj
     math.equation(
@@ -102,7 +118,7 @@
       ),
       block: false,
     )
-  }
+  })
 }
 
 

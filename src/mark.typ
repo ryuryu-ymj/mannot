@@ -260,6 +260,9 @@
       }
 
       let y-array = query(selector(y-lab).after(begin-loc).before(end-loc)).map(e => e.location().position().y)
+      // Not placed in the document (e.g. inside `measure()`): the markers are
+      // not found, so only lay out the body, without overlay and metadata.
+      if y-array.len() == 0 { return }
       let min-y = calc.min(..y-array)
       let max-y = calc.max(..y-array)
 
